@@ -83,3 +83,7 @@ Bundled third-party licenses are retained under dist/vendor (or vendor in the do
 Java and Python runs use their standard libraries. External JARs, Python packages, arbitrary Node packages and page DOM APIs are not included in this single-file practice environment.
 
 Coding practice begins with one problem-specific hint. Next hint reveals the remaining guidance progressively. Worked answers and the solution-loading button are inserted only after Show answer is clicked; hiding or changing a problem resets the reveal. Saved drafts remain intact. Independent prompts have hints without a fabricated worked answer.
+
+The Practice Lab self-check criteria use static tick-mark bullets. It has no completion counter, focus countdown, Start focus/Reset controls or Copy answer button.
+
+Practice Lab has its own domain filter (All domains, Investment Banking, Core Banking, Ecommerce, AI, Cloud and Data Engineering). The selected domain narrows the coding question list, including shared coding problems, and is retained in the URL and browser preferences.
