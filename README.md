@@ -34,13 +34,21 @@ Each round has concepts and methods, questions and prospective answers, access t
 
 ## Practice lab
 
-Every round has a selectable question, a timer with a round-appropriate duration, an answer editor, an expandable prospective answer where available, and five self-review checks. Coding questions use a language-specific starter and external compiler link.
+Every round has a selectable question, a timer with a round-appropriate duration, an answer editor, an expandable prospective answer where available, and five self-review checks. Coding questions include a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
 
-The site does not execute code or provide automatic grading. Self-review is explicitly labelled as self-assessment. Notes, checklists, saved questions and selected filters persist in the visitor's browser. Programming drafts and review progress are separate by language. Prior Java drafts and progress are preserved. No application accounts or shared database are implemented.
+The integrated runner executes code; it does not automatically grade interview answers. Self-review is explicitly labelled as self-assessment. Notes, checklists, saved questions and selected filters persist in the visitor's browser. Programming drafts and review progress are separate by language. Prior Java drafts and progress are preserved. No application accounts or shared database are implemented.
 
 ## Run locally
 
-No dependency installation or build is required. Serve `dist/` in the source checkout, or the folder containing `index.html` in the download, with a static HTTP server. Opening `index.html` locally also works; clipboard support depends on browser local-file policy.
+No npm installation or frontend build is required. To use all four integrated runtimes on this Mac, run from the source checkout or downloaded website folder:
+
+```sh
+python3 server/local_server.py --port 8796
+```
+
+Then open `http://127.0.0.1:8796/#/lab?round=coding`. `Run PrepSpace.command` is an equivalent macOS launcher. Python 3 and a JDK 17+ must be installed. The local service uses macOS sandbox-exec and fails closed if its self-test does not pass.
+
+A static HTTP server can run the JavaScript/TypeScript browser runner, but Java/Python require the bundled local service. Opening index.html as a file is suitable for reading; compiler assets and execution require HTTP.
 
 Main routes: `#/`, `#/rounds`, `#/round/introduction`, `#/round/coding`, `#/round/technical`, `#/round/manager`, `#/round/hr`, `#/domains`, `#/languages`, `#/roles`, `#/lab` and `#/best-practices`.
 
@@ -55,3 +63,19 @@ Main routes: `#/`, `#/rounds`, `#/round/introduction`, `#/round/coding`, `#/roun
 ## Publication status
 
 Source synchronization to the existing Sites repository at git.chatgpt-team.site is authorized. No website deployment or public-access change is requested. Keep the Site unpublished when synchronizing this source.
+
+## Integrated editor and compiler
+
+- CodeMirror 5.65.21 provides syntax highlighting for all four languages, line numbers, indentation, bracket matching and keyboard access. Ctrl/Cmd+Enter runs code; Esc moves to Run.
+- Demo loading, worked-solution loading, earlier-draft restoration and code download are available. Drafts and standard input persist separately per question and language.
+- Java compiles with --release 17 and then runs in a temporary job directory on this computer. Python performs a syntax check before execution. The local service does not send source or input to third-party execution APIs.
+- JavaScript runs in a dedicated worker inside an opaque sandboxed iframe. Its CSP blocks networking; the worker has no page DOM or browser-local notes. TypeScript 5.7.3 performs strict ES2022 type checking before execution, using bundled definition files.
+- JavaScript/TypeScript are terminal-program browser runtimes, not a general Node.js installation. Use readAll() or readLine() for standard input. The fs.readFileSync(0, "utf8") input idiom is supported, but arbitrary packages and filesystem operations are not. SharedArrayBuffer examples require a compatible isolated runtime and are not enabled in this browser sandbox.
+- Java/Python execution is loopback-only, accepts same-origin JSON requests, blocks network access and subprocess creation in the macOS sandbox, restricts personal-file reads and writes, and uses CPU/wall/output limits. The service caps concurrency at two jobs, code at 128 KiB and standard input at 64 KiB. Stop terminates the process group, including cancellation arriving before job registration.
+- This local runner is for the local preparation site. Public Java/Python execution needs a separate hardened, container-isolated execution backend; the loopback service must not be exposed as a public multi-tenant runner.
+
+New verification covered all four demo programs returning 30 from input 10 20, and the real duplicate-ID worked solution passing in all four integrated runtimes. Browser checks also covered TypeScript type errors, worker isolation, Stop, timeouts and keyboard editing. Eleven API checks covered Java/Python execution, diagnostics, sandbox/private-file/network restrictions, cross-origin denial, code bounds, cancellation and time limits. Final checks also verified cancellation before job registration and removal of the stopped browser runner.
+
+Bundled third-party licenses are retained under dist/vendor (or vendor in the download): CodeMirror (MIT) and TypeScript (Apache 2.0, with its third-party notice).
+
+Java and Python runs use their standard libraries. External JARs, Python packages, arbitrary Node packages and page DOM APIs are not included in this single-file practice environment.
