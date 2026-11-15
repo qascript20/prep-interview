@@ -86,4 +86,4 @@ Coding practice begins with one problem-specific hint. Next hint reveals the rem
 
 The Practice Lab self-check criteria use static tick-mark bullets. It has no completion counter, focus countdown, Start focus/Reset controls or Copy answer button.
 
-Practice Lab has its own domain filter (All domains, Investment Banking, Core Banking, Ecommerce, AI, Cloud and Data Engineering). The selected domain narrows the coding question list, including shared coding problems, and is retained in the URL and browser preferences.
+Practice Lab has its own domain filter (All domains, Investment Banking, Core Banking, Ecommerce, AI, Cloud and Data Engineering). The selected domain strictly matches coding problems tagged with that domain and is retained in the URL and browser preferences. Shared coding exercises appear only under All domains. The lab does not inherit a hidden role filter. Domains without their own coding problems show an empty state while keeping the domain selector available.
