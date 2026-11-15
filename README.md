@@ -34,7 +34,7 @@ Each round has concepts and methods, questions and prospective answers, and best
 
 ## Practice lab
 
-The Practice Lab lists only programming problems from the Live Coding Round, with a coding timer, progressive hints and an explicit Show answer button for worked solutions, and five self-review checks. It has a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
+The Practice Lab lists only programming problems from the Live Coding Round, with progressive hints and an explicit Show answer button for worked solutions, and five self-review checks. It has a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
 
 Legacy non-coding lab URLs open the coding lab; non-coding questions and saved answer drafts remain in their question pages.
 
