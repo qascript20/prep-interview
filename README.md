@@ -20,7 +20,7 @@ Visitors can start with one path or combine the filters. Domain, language and ro
 4. Manager Round — senior stakeholder communication, release decisions, investment and influence.
 5. HR Round — career motivation, development and mutual fit.
 
-Each round has concepts and methods, questions and prospective answers, access to the practice lab, and best practices with self-review criteria. Sample experience answers are clearly illustrative structures to adapt using truthful personal examples.
+Each round has concepts and methods, questions and prospective answers, and best practices with self-review criteria. The Practice Lab is exclusive to live coding. Sample experience answers are clearly illustrative structures to adapt using truthful personal examples.
 
 ## Content
 
@@ -34,7 +34,9 @@ Each round has concepts and methods, questions and prospective answers, access t
 
 ## Practice lab
 
-Every round has a selectable question, a timer with a round-appropriate duration, an answer editor, an expandable prospective answer where available, and five self-review checks. Coding questions include a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
+The Practice Lab lists only programming problems from the Live Coding Round, with a coding timer, an expandable worked solution where available, and five self-review checks. It has a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
+
+Legacy non-coding lab URLs open the coding lab; non-coding questions and saved answer drafts remain in their question pages.
 
 The integrated runner executes code; it does not automatically grade interview answers. Self-review is explicitly labelled as self-assessment. Notes, checklists, saved questions and selected filters persist in the visitor's browser. Programming drafts and review progress are separate by language. Prior Java drafts and progress are preserved. No application accounts or shared database are implemented.
 
