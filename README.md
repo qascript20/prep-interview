@@ -10,7 +10,7 @@ Programming languages: Java, Python, JavaScript and TypeScript.
 
 Roles: Software Engineer, QA / SDET, Test Director / QA Lead, Engineering Manager, Data Engineer, AI / ML Engineer and Cloud / DevOps Engineer.
 
-Visitors can start with one path or combine the filters. Domain, language and role catalogue links establish a useful independent starting point; the filters then refine the path.
+Visitors can start with one path or combine the filters. Domain, language and role catalogue links establish a useful independent starting point. The top bar provides search; preparation choices are available through the catalogue pages.
 
 ## Interview rounds
 
