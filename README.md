@@ -87,3 +87,5 @@ Coding practice begins with one problem-specific hint. Next hint reveals the rem
 The Practice Lab self-check criteria use static tick-mark bullets. It has no completion counter, focus countdown, Start focus/Reset controls or Copy answer button.
 
 Practice Lab has its own domain filter (All domains, Investment Banking, Core Banking, Ecommerce, AI, Cloud and Data Engineering). The selected domain strictly matches coding problems tagged with that domain and is retained in the URL and browser preferences. Shared coding exercises appear only under All domains. The lab does not inherit a hidden role filter. Domains without their own coding problems show an empty state while keeping the domain selector available.
+
+A Solution language selector in Practice Lab switches between Java, Python, JavaScript and TypeScript while preserving the selected domain and coding problem. It updates the editor syntax, starter, runtime and click-to-reveal answer. Drafts and standard input remain separate per question/language; changing language keeps the worked answer hidden. The language preference is saved and reflected in the URL.
