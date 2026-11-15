@@ -34,7 +34,7 @@ Each round has concepts and methods, questions and prospective answers, and best
 
 ## Practice lab
 
-The Practice Lab lists only programming problems from the Live Coding Round, with a coding timer, an expandable worked solution where available, and five self-review checks. It has a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
+The Practice Lab lists only programming problems from the Live Coding Round, with a coding timer, progressive hints and an explicit Show answer button for worked solutions, and five self-review checks. It has a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
 
 Legacy non-coding lab URLs open the coding lab; non-coding questions and saved answer drafts remain in their question pages.
 
@@ -81,3 +81,5 @@ New verification covered all four demo programs returning 30 from input 10 20, a
 Bundled third-party licenses are retained under dist/vendor (or vendor in the download): CodeMirror (MIT) and TypeScript (Apache 2.0, with its third-party notice).
 
 Java and Python runs use their standard libraries. External JARs, Python packages, arbitrary Node packages and page DOM APIs are not included in this single-file practice environment.
+
+Coding practice begins with one problem-specific hint. Next hint reveals the remaining guidance progressively. Worked answers and the solution-loading button are inserted only after Show answer is clicked; hiding or changing a problem resets the reveal. Saved drafts remain intact. Independent prompts have hints without a fabricated worked answer.
