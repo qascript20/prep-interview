@@ -14,6 +14,12 @@ A public-facing interview preparation site with a working local Java assessment 
 - Local SQLite persistence; hosted Worker support for native Sites identity, single-use invitations, a 30-person membership cap, revisioned cloud drafts/plans, account export/deletion, issue reports and opt-in research events.
 - Hosted E2B adapter with short-lived network-disabled sandboxes, bounded candidate processes, cancellation, daily/queue/concurrency limits and budget reservations. Cloud execution remains disabled until configured and live-verified.
 
+## Interactive concepts
+
+All 27 concept pages use Learn, Try it and Quick check modes, with short explanations, explorable method cards, searchable methods, input/output predictions and explanations revealed on demand. The ten core Java lessons include step-through teaching models for construction, null guards, exact arithmetic, collections, map updates, stream stages, grouping, executors, atomic updates and context cleanup. Python, JavaScript and TypeScript use their own existing code scenarios and language-specific learning checks. Models are illustrative, not code execution or automatic certification. Predictions are saved in this browser; complete original references remain printable.
+
+Verify with `node tests/browser-concepts.mjs`.
+
 ## Preserved
 
 The existing six-domain, four-language and seven-role study library remains accessible. The coding lab lists 35 Java coding exercises: 24 assessed pilot exercises and 11 manual-practice exercises (33 Investment Banking plus two shared exercises). Other domain filters show honest empty states for coding. Python, JavaScript and TypeScript retain existing manual runners and language-specific drafts; Java assessment results do not imply assessment parity in another language.
