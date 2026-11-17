@@ -10,4 +10,4 @@ const original=JSON.parse(await readFile('.openai/hosting.json','utf8'));
 const hosted={project_id:original.project_id,d1:'DB',r2:null};
 await cp('drizzle','dist/.openai/drizzle',{recursive:true});
 await writeFile('dist/.openai/hosting.json',JSON.stringify(hosted,null,2)+'\n');
-console.log('Built Worker + client assets. Existing source hosting manifest remains static/unpublished. See docs/OPERATIONS.md before activating the hosted build.');
+console.log('Built Worker + client assets. Hosted configuration is prepared; the Site remains unpublished. See docs/OPERATIONS.md before deployment.');

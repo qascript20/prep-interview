@@ -14,7 +14,7 @@ Plans use role/format preferences and 7/14/28-day windows. Sessions and round se
 
 Local: loopback HTTP + SQLite, existing macOS execution sandbox, two background workers, owner-scoped opaque browser cookie, revisioned persistence. This is a local convenience environment, not a multi-tenant hosted identity boundary.
 
-Hosted: Worker ESM + D1 + Sites-managed identity + membership, bounded queue and E2B microVM adapter. The existing Site remains static/unpublished until hosted activation. Identity headers must come from trusted Sites dispatch. User IDs are always obtained server-side and every owned query includes them. Invitations are single-use, expire and respect the 30-member cap.
+Hosted: Worker ESM + D1 + Sites-managed identity + membership, bounded queue and E2B microVM adapter. The source hosting configuration is server-backed; the Site remains unpublished until hosted activation. Identity headers must come from trusted Sites dispatch. User IDs are always obtained server-side and every owned query includes them. Invitations are single-use, expire and respect the 30-member cap.
 
 Daily admission, queue limits and monthly capacity reservations are enforced before execution. An unlinked cost ledger survives account deletion so deleting private records cannot reset shared capacity. Provider failures are excluded from correctness conclusions while possible compute cost remains conservatively accounted for. Budgets are estimates rather than invoice reconciliation.
 

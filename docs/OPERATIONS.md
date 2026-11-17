@@ -4,7 +4,7 @@
 
 The local site runs the complete 24-exercise Java catalogue with deterministic evaluation, multi-file editing, recoverable drafts, local SQLite history, issue reports, data export/deletion, opt-in research activity, and preparation plans. The hosted Worker is implemented and builds successfully, but is **not deployed or live-verified**. No vendor account was purchased and no candidates or reviewers were contacted.
 
-The existing Site stays unpublished. Its source manifest deliberately retains the static configuration until hosted staging is approved and the checks below pass. Uploading source does not activate a cloud runner.
+The existing Site stays unpublished. Its source manifest now declares the server-backed Worker and DB binding required by the implementation. These declarations are source configuration; uploading them does not provision a production database or activate a cloud runner.
 
 ## Local preview
 
@@ -36,7 +36,7 @@ Initial D1 schema: `drizzle/0000_pilot.sql`. It has not been applied to producti
 
 ## Hosted staging setup
 
-1. Keep the existing Site audience and unpublished state. Provision the `DB` D1 binding and apply the schema in a staging environment. `npm run build` creates `dist/server/index.js`, `dist/client/`, and `dist/.openai/hosting.json`. Static assets must be bound as `ASSETS`. A conventional Cloudflare staging configuration is supplied in `hosted/wrangler.jsonc`; replace its database identifier before use. When activating through Sites, migrate the source hosting manifest to server-backed mode with `d1: "DB"`, preserve `project_id`, and package using the Sites workflow.
+1. Keep the existing Site audience and unpublished state. Provision the `DB` D1 binding and apply the schema in a staging environment. `npm run build` creates `dist/server/index.js`, `dist/client/`, and `dist/.openai/hosting.json`. Static assets must be bound as `ASSETS`. A conventional Cloudflare staging configuration is supplied in `hosted/wrangler.jsonc`; replace its database identifier before use. The source hosting manifest already declares server-backed mode with `d1: "DB"`. Preserve `project_id` and package using the Sites workflow.
 2. Build an E2B template from `hosted/Dockerfile` and `hosted/runner.py`, using the provider's template tooling. Pin the resulting template ID. The template must contain JDK 17, Python 3, UID/GID 10001 without sudo, a root-only `/opt/prepspace`, and writable `/work` for the candidate user. Review the base image, provider terms and processing location.
 3. Set runtime secrets using Sites environment-variable tools: `E2B_API_KEY`, `E2B_TEMPLATE_ID`, `PILOT_ADMIN_TOKEN` (at least 32 random characters). Keep values out of source, terminal arguments and browser code. Set `PILOT_PROCESSING_REGION` truthfully. No UK/EU residency guarantee is made by the code.
 4. Leave `PILOT_EXECUTION_ENABLED=false` until live acceptance checks pass. Public reading and answers can work without execution. All execution admissions require native sign-in plus membership. Set `PILOT_IDENTITY_BOUNDARY=sites` only behind the verified Sites gateway. Without it, identity headers are ignored. Sites supplies `oai-authenticated-user-id`; do not deploy this handler behind a proxy that accepts spoofed identity headers.

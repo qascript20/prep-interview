@@ -33,7 +33,7 @@ node tests/browser.mjs
 
 Use macOS, Python 3, JDK 17+ and Node 24+ for the complete local verification workflow. Java/Python run through a loopback-only macOS sandbox that fails closed. JavaScript/TypeScript manual programs run in isolated browser workers. Never expose the local server as an internet-facing execution service.
 
-Private local data is in `.runtime/`, which is ignored by Git. Environment secrets are documented by name only in `.env.example`. The hosted build uses D1 and Sites-managed identity; it is prepared but not deployed or live-verified.
+Private local data is in `.runtime/`, which is ignored by Git. Environment secrets are documented by name only in `.env.example`. The server-backed hosting configuration uses D1 and Sites-managed identity; it is prepared but not deployed or live-verified.
 
 ## Status and remaining launch gates
 
