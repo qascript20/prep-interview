@@ -1,0 +1,107 @@
+{
+  "reviewDate": "2026-11-17",
+  "coverage": "Representative, not exhaustive; public documentation rather than a paid-product audit.",
+  "nextReview": "2027-02-17",
+  "platforms": [
+    {
+      "name": "LeetCode",
+      "source": "https://leetcode.com/subscribe/",
+      "observed": "AI assistance, debugger, practice and company filters"
+    },
+    {
+      "name": "HackerRank",
+      "source": "https://www.hackerrank.com/mock-interviews",
+      "observed": "Multiple AI mock interview formats"
+    },
+    {
+      "name": "CoderPad",
+      "source": "https://coderpad.io/resources/docs/screen/tests/projects/",
+      "observed": "Project assessments and collaboration"
+    },
+    {
+      "name": "HackerEarth",
+      "source": "https://help.hackerearth.com/facecode",
+      "observed": "Live interviews and AI capabilities"
+    },
+    {
+      "name": "CodeSignal",
+      "source": "https://support.codesignal.com/hc/en-us/articles/44756135372567-Product-Updates-October-2026",
+      "observed": "Assessment/practice changes and AI workflows"
+    },
+    {
+      "name": "Codility",
+      "source": "https://www.codility.com/ai-native-tasks/",
+      "observed": "AI-native assessment tasks"
+    },
+    {
+      "name": "NeetCode",
+      "source": "https://neetcode.io/roadmap",
+      "observed": "Organised problem practice"
+    },
+    {
+      "name": "AlgoExpert",
+      "source": "https://www.algoexpert.io/questions",
+      "observed": "Curated coding exercises"
+    },
+    {
+      "name": "Educative",
+      "source": "https://www.educative.io/mock-interview",
+      "observed": "Structured learning and AI mock interviews"
+    },
+    {
+      "name": "Design Gurus",
+      "source": "https://www.designgurus.io/",
+      "observed": "Interview courses and coaching"
+    },
+    {
+      "name": "Aced (formerly Exponent)",
+      "source": "https://www.aced.io/practice",
+      "observed": "Peer and AI practice, including banking categories"
+    },
+    {
+      "name": "interviewing.io",
+      "source": "https://interviewing.io/",
+      "observed": "Expert and AI interview practice"
+    },
+    {
+      "name": "CodeCrafters",
+      "source": "https://codecrafters.io/",
+      "observed": "Practical systems projects"
+    },
+    {
+      "name": "Exercism",
+      "source": "https://exercism.org/",
+      "observed": "Language practice and mentoring"
+    },
+    {
+      "name": "GreatFrontEnd",
+      "source": "https://www.greatfrontend.com/",
+      "observed": "Frontend interview preparation"
+    },
+    {
+      "name": "Frontend Mentor",
+      "source": "https://www.frontendmentor.io/",
+      "observed": "Implementation projects and feedback"
+    },
+    {
+      "name": "StrataScratch",
+      "source": "https://www.stratascratch.com/",
+      "observed": "Data practice and interview preparation"
+    },
+    {
+      "name": "DataLemur",
+      "source": "https://datalemur.com/",
+      "observed": "SQL and data interview practice"
+    },
+    {
+      "name": "Codewars",
+      "source": "https://www.codewars.com/",
+      "observed": "Community coding exercises"
+    },
+    {
+      "name": "CodeChef",
+      "source": "https://www.codechef.com/",
+      "observed": "Practice, learning and contests"
+    }
+  ]
+}

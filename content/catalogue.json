@@ -1,0 +1,2219 @@
+[
+  {
+    "id": "2-01-find-duplicate-trade-ids-in-second-occurrence-order",
+    "version": "2.0.0",
+    "title": "Find duplicate trade IDs in second-occurrence order",
+    "competency": "collections",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Easy",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "A trade feed may repeat a record. Return each duplicated ID once, ordered by when its second occurrence arrives.",
+    "contract": "Input: one comma-separated list. A dash (-) means an empty list; ~ means a null list or ID. Output: comma-separated duplicates, or -. Reject a null list, null ID or blank ID with ERROR. Do not trim or normalise valid IDs.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Second occurrence order",
+        "input": "T1,T2,T2,T3,T1,T2",
+        "expected": "T2,T1",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty feed",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        Map<String,Integer> counts = new HashMap<>();\n            List<String> result = new ArrayList<>();\n            for (String id : ids(input)) {\n                int count = counts.merge(id, 1, Integer::sum);\n                if (count == 2) result.add(id);\n            }\n            return list(result);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Second occurrence order",
+        "input": "T1,T2,T2,T3,T1,T2",
+        "expected": "T2,T1",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty feed",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Exact matching",
+        "input": "T1,t1,t1,T1",
+        "expected": "t1,T1",
+        "category": "ordering",
+        "sample": false
+      },
+      {
+        "name": "Third retry",
+        "input": "A,A,A,A",
+        "expected": "A",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "No duplicates",
+        "input": "A,B,C",
+        "expected": "-",
+        "category": "normal",
+        "sample": false
+      },
+      {
+        "name": "Null list",
+        "input": "~",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Blank ID",
+        "input": "A, ,A",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Null ID",
+        "input": "A,~",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Validate IDs before recording them so incomplete records cannot become map keys.",
+      "The map stores the number of times an ID has appeared. Append an ID only when its new count is exactly two; later retries do not append it again.",
+      "Walking the feed in encounter order makes the second occurrence determine the output position. For n IDs and u distinct IDs, expected time is O(n) and additional storage is O(u).",
+      "A production feed needs a retention window and a policy for conflicting payloads, which this ID-only exercise deliberately leaves to the follow-up."
+    ],
+    "transferGroup": "collections",
+    "estimatedMinutes": 25,
+    "digest": "d364d6ff63679dd54ba6fe792610e9d89de622457012a229279dde4fb598b178"
+  },
+  {
+    "id": "2-03-validate-a-trading-order-and-return-all-errors",
+    "version": "2.0.0",
+    "title": "Validate an order and report every error",
+    "competency": "validation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Validate an order without stopping at the first invalid field. Return messages in symbol, quantity, price order.",
+    "contract": "Input: symbol|quantity|price. ~ means a missing symbol or price. Quantity is a signed long; present prices are valid decimal text. Output: OK, or semicolon-separated messages exactly as shown. A symbol containing only whitespace is invalid. Quantity and price must both be strictly positive.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Valid order",
+        "input": "AAPL|10|100.25",
+        "expected": "OK",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "All errors",
+        "input": " |0|-1",
+        "expected": "Symbol is required;Quantity must be positive;Price must be positive",
+        "category": "validation",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] fields = input.split(\"\\\\|\", -1);\n        String symbol = fields[0]; long quantity = Long.parseLong(fields[1]);\n        BigDecimal price = fields[2].equals(\"~\") ? null : new BigDecimal(fields[2]);\n        List<String> errors = new ArrayList<>();\n        if (symbol.equals(\"~\") || symbol.isBlank()) errors.add(\"Symbol is required\");\n        if (quantity <= 0) errors.add(\"Quantity must be positive\");\n        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) errors.add(\"Price must be positive\");\n        return errors.isEmpty() ? \"OK\" : String.join(\";\", errors);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Valid order",
+        "input": "AAPL|10|100.25",
+        "expected": "OK",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "All errors",
+        "input": " |0|-1",
+        "expected": "Symbol is required;Quantity must be positive;Price must be positive",
+        "category": "validation",
+        "sample": true
+      },
+      {
+        "name": "Missing symbol",
+        "input": "~|1|1",
+        "expected": "Symbol is required",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Missing price",
+        "input": "MSFT|1|~",
+        "expected": "Price must be positive",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Negative quantity",
+        "input": "IBM|-1|2",
+        "expected": "Quantity must be positive",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Zero price",
+        "input": "IBM|1|0.00",
+        "expected": "Price must be positive",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Fractional price",
+        "input": "IBM|1|0.001",
+        "expected": "OK",
+        "category": "precision",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Parse the terminal representation into domain values. Keep a missing price as null rather than constructing BigDecimal from ~.",
+      "Evaluate each independent rule and append messages to a list in the specified order. Independent if statements ensure that one error does not hide another.",
+      "The null check short-circuits the decimal comparison. compareTo checks numeric value, so both 0 and 0.00 are rejected.",
+      "The number of fields is fixed, so work and additional storage are O(1), apart from the length of the input text."
+    ],
+    "transferGroup": "validation",
+    "estimatedMinutes": 25,
+    "digest": "f63f031ad35dae36422c694457e829eacbe765c27be32689461ec86d39f091dd"
+  },
+  {
+    "id": "2-04-calculate-total-trade-quantity-by-symbol",
+    "version": "2.0.0",
+    "title": "Aggregate trade quantities safely",
+    "competency": "aggregation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Calculate total traded quantity per symbol. Large quantities must not wrap into negative totals.",
+    "contract": "Input: symbol,quantity records on separate lines; - means no records. Symbols are nonblank and quantities are nonnegative signed longs. Output: symbol=total pairs in alphabetical symbol order, comma-separated; - for empty. Print ERROR for negative quantities, blank symbols, or a total exceeding Long.MAX_VALUE.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Repeated symbols",
+        "input": "AAPL,100\nMSFT,50\nAAPL,200",
+        "expected": "AAPL=300,MSFT=50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        Map<String,Long> totals = new TreeMap<>();\n            for (String row : rows(input)) {\n                String[] f = row.split(\",\", -1); long quantity = Long.parseLong(f[1]);\n                if (f[0].isBlank() || quantity < 0) throw new IllegalArgumentException();\n                totals.put(f[0], Math.addExact(totals.getOrDefault(f[0], 0L), quantity));\n            }\n            return map(totals);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Repeated symbols",
+        "input": "AAPL,100\nMSFT,50\nAAPL,200",
+        "expected": "AAPL=300,MSFT=50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Long total",
+        "input": "X,2147483647\nX,1",
+        "expected": "X=2147483648",
+        "category": "overflow",
+        "sample": false
+      },
+      {
+        "name": "Overflow",
+        "input": "X,9223372036854775807\nX,1",
+        "expected": "ERROR",
+        "category": "overflow",
+        "sample": false
+      },
+      {
+        "name": "Zero",
+        "input": "X,0",
+        "expected": "X=0",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Negative",
+        "input": "X,-1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "A map connects each symbol to its running total; getOrDefault supplies zero for the first trade.",
+      "Use long for the quantity and Math.addExact for accumulation. A long type alone does not prevent overflow.",
+      "TreeMap supplies alphabetical output directly. For n records and u symbols, work is O(n log u) and storage is O(u).",
+      "Zero is a valid contribution under this contract. Negative quantities and overflow are rejected rather than silently changing the financial result."
+    ],
+    "transferGroup": "aggregation",
+    "estimatedMinutes": 25,
+    "digest": "a0bf401b26abaa222448ad88d8c592a363c761ba9b9288d00207e18afb051269"
+  },
+  {
+    "id": "2-06-find-trades-missing-from-actual-results",
+    "version": "2.0.0",
+    "title": "Reconcile missing trades without changing inputs",
+    "competency": "reconciliation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Easy",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Find IDs in the expected snapshot that have no matching actual record. Extra actual IDs are ignored.",
+    "contract": "Input: expected comma-separated IDs on line 1, actual IDs on line 2. Each list contains unique, nonblank IDs. - represents an empty list. Output: missing IDs in expected order, comma-separated, or -. Do not change either input list.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Missing and extra",
+        "input": "T1,T2,T3,T4\nT2,T4,T5",
+        "expected": "T1,T3",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty actual",
+        "input": "Z,A\n-",
+        "expected": "Z,A",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] f = input.split(\"\\\\R\", -1);\n            List<String> expected = ids(f[0]); Set<String> actual = new HashSet<>(ids(f[1]));\n            List<String> missing = new ArrayList<>();\n            for (String id : expected) if (!actual.contains(id)) missing.add(id);\n            return list(missing);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Missing and extra",
+        "input": "T1,T2,T3,T4\nT2,T4,T5",
+        "expected": "T1,T3",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty actual",
+        "input": "Z,A\n-",
+        "expected": "Z,A",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Empty expected",
+        "input": "-\nX",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Exact case",
+        "input": "a,A\nA",
+        "expected": "a",
+        "category": "ordering",
+        "sample": false
+      },
+      {
+        "name": "Complete",
+        "input": "A,B\nB,A",
+        "expected": "-",
+        "category": "normal",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Build a membership set from actual IDs once, then traverse expected IDs in their original order.",
+      "Append to a new result list instead of removing from expected. This also works when the input list has a fixed size or is unmodifiable.",
+      "Expected work is O(n+m) for the two lists, with O(m) membership storage plus the result.",
+      "A missing-only comparison does not detect unexpected records or field mismatches; the full-snapshot exercise extends this contract."
+    ],
+    "transferGroup": "reconciliation",
+    "estimatedMinutes": 25,
+    "digest": "5e4563a2acedab5678aee3445b5f6f537b26b40ec24d7a119cc309a3397f4d6d"
+  },
+  {
+    "id": "2-09-create-an-immutable-order-with-validation-and-notional",
+    "version": "2.0.0",
+    "title": "Model an immutable financial order",
+    "competency": "validation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Complete the immutable Order type and calculate its notional. Validate state at construction time.",
+    "contract": "Input: id|symbol|quantity|price. ID and symbol must be nonblank; quantity and price strictly positive; ~ is a missing price. Output: quantity \u00d7 price rounded once to two decimals with HALF_UP, or ERROR. The object must have private final state and no setters; automated checks cover constructor behaviour and notional, while immutability design is a self-review item.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Notional",
+        "input": "O1|AAPL|10|100.25",
+        "expected": "1002.50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Invalid quantity",
+        "input": "O1|AAPL|0|2",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n    static final class Order {\n        // Add private final fields and validate the constructor.\n        Order(String id, String symbol, long quantity, BigDecimal price) { }\n        BigDecimal notional() { throw new UnsupportedOperationException(\"Implement notional\"); }\n    }\n    static String solve(String input) throws Exception {\n        String[] f = input.split(\"\\\\|\", -1);\n        Order order = new Order(f[0], f[1], Long.parseLong(f[2]), f[3].equals(\"~\") ? null : new BigDecimal(f[3]));\n        return money(order.notional());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n    static final class Order {\n        private final String id;\n        private final String symbol;\n        private final long quantity;\n        private final BigDecimal price;\n        Order(String id, String symbol, long quantity, BigDecimal price) {\n            if (id == null || id.isBlank() || symbol == null || symbol.isBlank() || quantity <= 0 || price == null || price.signum() <= 0) throw new IllegalArgumentException();\n            this.id=id; this.symbol=symbol; this.quantity=quantity; this.price=price;\n        }\n        BigDecimal notional() { return price.multiply(BigDecimal.valueOf(quantity)); }\n    }\n    static String solve(String input) throws Exception {\n        String[] f = input.split(\"\\\\|\", -1);\n            return money(new Order(f[0], f[1], Long.parseLong(f[2]), f[3].equals(\"~\") ? null : new BigDecimal(f[3])).notional());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Notional",
+        "input": "O1|AAPL|10|100.25",
+        "expected": "1002.50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Invalid quantity",
+        "input": "O1|AAPL|0|2",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      },
+      {
+        "name": "Blank ID",
+        "input": " |X|1|2",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Blank symbol",
+        "input": "O| |1|2",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Null price",
+        "input": "O|X|1|~",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Rounding",
+        "input": "O|X|3|0.335",
+        "expected": "1.01",
+        "category": "precision",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Validate every invariant before storing constructor arguments. An invalid order should never become observable.",
+      "Private final fields prevent direct access and reassignment. String and BigDecimal are immutable, so these references do not expose mutable internal state.",
+      "Multiply with BigDecimal.valueOf(quantity), then round the final result for the terminal output. BigDecimal arithmetic returns a new value.",
+      "The output tests cannot prove every design property. Inspect field visibility, finality and the absence of setters during the explanation review."
+    ],
+    "transferGroup": "validation",
+    "estimatedMinutes": 25,
+    "digest": "7290c889e832e4c340dca8e78c843299a17bd9603c58d8cad9ffeabc7d6ccfca"
+  },
+  {
+    "id": "2-10-deduplicate-orders-using-equals-and-hashcode",
+    "version": "2.0.0",
+    "title": "Deduplicate orders using business identity",
+    "competency": "collections",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Order identity is its ID, regardless of symbol changes. Keep the first record for each ID in encounter order.",
+    "contract": "Input: id,symbol records on separate lines, or -. All fields are nonblank. Output: id:symbol pairs in first-occurrence order. Implement equals and hashCode consistently on the immutable ID and use a hash-based collection.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Keep first",
+        "input": "O1,AAPL\nO2,MSFT\nO1,GOOG",
+        "expected": "O1:AAPL,O2:MSFT",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n    static final class Order {\n        final String id, symbol;\n        Order(String id, String symbol) { this.id=id; this.symbol=symbol; }\n        // Implement equals and hashCode using business identity.\n    }\n    static String solve(String input) throws Exception {\n        Set<Order> orders = new LinkedHashSet<>();\n        for (String row : rows(input)) { String[] f=row.split(\",\",-1); orders.add(new Order(f[0],f[1])); }\n        return list(orders.stream().map(o -> o.id+\":\"+o.symbol).toList());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n    static final class Order {\n        final String id, symbol;\n        Order(String id, String symbol) { this.id=id; this.symbol=symbol; }\n        public boolean equals(Object other) { return other instanceof Order o && id.equals(o.id); }\n        public int hashCode() { return id.hashCode(); }\n    }\n    static String solve(String input) throws Exception {\n        Set<Order> orders = new LinkedHashSet<>();\n            for (String row : rows(input)) { String[] f=row.split(\",\",-1); orders.add(new Order(f[0],f[1])); }\n            return list(orders.stream().map(o -> o.id+\":\"+o.symbol).toList());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Keep first",
+        "input": "O1,AAPL\nO2,MSFT\nO1,GOOG",
+        "expected": "O1:AAPL,O2:MSFT",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Case sensitive",
+        "input": "o,X\nO,Y",
+        "expected": "o:X,O:Y",
+        "category": "ordering",
+        "sample": false
+      },
+      {
+        "name": "Repeated",
+        "input": "A,X\nA,X\nA,Y",
+        "expected": "A:X",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Define equality from the stable business identity before selecting a collection.",
+      "equals and hashCode must use the same ID field. Otherwise HashSet or LinkedHashSet may put equal orders in different buckets.",
+      "LinkedHashSet retains insertion order and keeps the first object when a later equal object is added.",
+      "Expected work is O(n), storage O(u). Functional checks validate output; explain why immutable identity prevents broken membership after insertion."
+    ],
+    "transferGroup": "collections",
+    "estimatedMinutes": 25,
+    "digest": "02661a3df883336a3124c9947c4eb63fc76a36e97d266cf384f9c7602e98ffdf"
+  },
+  {
+    "id": "2-16-calculate-executed-buy-notional-by-symbol",
+    "version": "2.0.0",
+    "title": "Aggregate executed BUY notional by symbol",
+    "competency": "financial-precision",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Create a summary of executed BUY orders. SELL and nonexecuted orders must not contribute.",
+    "contract": "Input: symbol,side,status,quantity,price records, or -. Side is BUY/SELL; status EXECUTED/PENDING/CANCELLED; quantities and prices are positive. Output: alphabetical symbol=notional pairs. Sum exact quantity \u00d7 price products before rounding each symbol total to two decimals HALF_UP. A symbol with no eligible orders is omitted.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Filter both conditions",
+        "input": "AAPL,BUY,EXECUTED,10,100.25\nAAPL,SELL,EXECUTED,5,99\nMSFT,BUY,PENDING,8,20\nAAPL,BUY,EXECUTED,2,100",
+        "expected": "AAPL=1202.50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "No eligible trades",
+        "input": "X,SELL,EXECUTED,1,2",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        Map<String,BigDecimal> totals = new TreeMap<>();\n            for (String row : rows(input)) {\n                String[] f=row.split(\",\");\n                if (f[1].equals(\"BUY\") && f[2].equals(\"EXECUTED\")) {\n                    BigDecimal notional=new BigDecimal(f[4]).multiply(new BigDecimal(f[3]));\n                    totals.merge(f[0], notional, BigDecimal::add);\n                }\n            }\n            return list(totals.entrySet().stream().map(e -> e.getKey()+\"=\"+money(e.getValue())).toList());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Filter both conditions",
+        "input": "AAPL,BUY,EXECUTED,10,100.25\nAAPL,SELL,EXECUTED,5,99\nMSFT,BUY,PENDING,8,20\nAAPL,BUY,EXECUTED,2,100",
+        "expected": "AAPL=1202.50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "No eligible trades",
+        "input": "X,SELL,EXECUTED,1,2",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Sum before rounding",
+        "input": "X,BUY,EXECUTED,1,0.335\nX,BUY,EXECUTED,1,0.335",
+        "expected": "X=0.67",
+        "category": "precision",
+        "sample": false
+      },
+      {
+        "name": "Alphabetical",
+        "input": "Z,BUY,EXECUTED,1,2\nA,BUY,EXECUTED,3,1.1",
+        "expected": "A=3.30,Z=2.00",
+        "category": "ordering",
+        "sample": false
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Filter by both side and execution status. Checking only one condition includes ineligible orders.",
+      "Construct decimals from input strings and multiply before aggregating. No binary floating-point conversion is needed.",
+      "Merge each exact contribution into its symbol total and apply rounding only when formatting the result. Rounding each trade first changes some totals.",
+      "TreeMap provides deterministic output. Work is O(n log u), storage O(u). A stream solution can use filtering and grouping, provided it preserves these arithmetic rules."
+    ],
+    "transferGroup": "financial-precision",
+    "estimatedMinutes": 25,
+    "digest": "66730478d12a9e18257eec2ccafd8b2b308abb2fe48359da3f7cd221ece0d5bf"
+  },
+  {
+    "id": "2-17-calculate-volume-weighted-average-execution-price",
+    "version": "2.0.0",
+    "title": "Calculate a volume-weighted execution price",
+    "competency": "financial-precision",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Calculate the average execution price weighted by executed quantity, rather than the arithmetic mean of prices.",
+    "contract": "Input: quantity,price records, or -. All quantities and prices are positive. Output: sum(quantity \u00d7 price) / sum(quantity), rounded to two decimals HALF_UP. Empty input returns NO_VOLUME. Totals may exceed long range, so accumulate quantity without integer overflow.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Weighted result",
+        "input": "10,100\n30,110",
+        "expected": "107.50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "No volume",
+        "input": "-",
+        "expected": "NO_VOLUME",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        BigDecimal notional=BigDecimal.ZERO, volume=BigDecimal.ZERO;\n            for (String row : rows(input)) {\n                String[] f=row.split(\",\"); BigDecimal quantity=new BigDecimal(f[0]);\n                volume=volume.add(quantity); notional=notional.add(quantity.multiply(new BigDecimal(f[1])));\n            }\n            return volume.signum()==0 ? \"NO_VOLUME\" : notional.divide(volume,2,RoundingMode.HALF_UP).toPlainString();\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Weighted result",
+        "input": "10,100\n30,110",
+        "expected": "107.50",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "No volume",
+        "input": "-",
+        "expected": "NO_VOLUME",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Rounding",
+        "input": "1,1.005",
+        "expected": "1.01",
+        "category": "precision",
+        "sample": false
+      },
+      {
+        "name": "Large quantities",
+        "input": "9223372036854775807,1\n9223372036854775807,2",
+        "expected": "1.50",
+        "category": "overflow",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Maintain the total notional and total quantity as separate accumulators.",
+      "The quotient is meaningful only when volume is nonzero; handle the empty case before division.",
+      "BigDecimal quantity accumulation avoids overflowing a long sum. Divide with an explicit output scale and rounding mode to handle nonterminating decimal quotients.",
+      "The algorithm is one pass, O(n) record operations and O(1) accumulator count; decimal arithmetic cost grows with operand size."
+    ],
+    "transferGroup": "financial-precision",
+    "estimatedMinutes": 25,
+    "digest": "bf04a94441827ef9be4f0a71d38010b89cae47b6258b9d9fccbffacf53076e68"
+  },
+  {
+    "id": "2-18-find-the-largest-executed-trades",
+    "version": "2.0.0",
+    "title": "Rank the largest executed trades",
+    "competency": "ranking",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Return the top k executed trades by notional. Resolve equal notionals by ascending trade ID.",
+    "contract": "Input: k on line 1, followed by id,status,quantity,price records. IDs are unique. Status is EXECUTED/PENDING; quantities and prices are positive. Output: at most k IDs ordered by descending exact notional then ascending ID. k=0 or no eligible trades returns -. k is between 0 and 10,000.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Ranking and tie",
+        "input": "2\nT3,EXECUTED,2,10\nT1,EXECUTED,1,20\nT2,PENDING,100,100",
+        "expected": "T1,T3",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Zero k",
+        "input": "0\nA,EXECUTED,1,1",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] all=rows(input); int k=Integer.parseInt(all[0]);\n            record Execution(String id, BigDecimal notional) {}\n            List<Execution> executions=new ArrayList<>();\n            for (int i=1;i<all.length;i++) { String[] f=all[i].split(\",\"); if(f[1].equals(\"EXECUTED\")) executions.add(new Execution(f[0],new BigDecimal(f[2]).multiply(new BigDecimal(f[3])))); }\n            executions.sort(Comparator.comparing(Execution::notional).reversed().thenComparing(Execution::id));\n            return list(executions.stream().limit(k).map(Execution::id).toList());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Ranking and tie",
+        "input": "2\nT3,EXECUTED,2,10\nT1,EXECUTED,1,20\nT2,PENDING,100,100",
+        "expected": "T1,T3",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Zero k",
+        "input": "0\nA,EXECUTED,1,1",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Decimal order",
+        "input": "3\nB,EXECUTED,1,1.001\nA,EXECUTED,1,1.000",
+        "expected": "B,A",
+        "category": "precision",
+        "sample": false
+      },
+      {
+        "name": "No trades",
+        "input": "4",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Filter executions before ranking them so a large pending trade cannot enter the result.",
+      "Compare exact notionals numerically and then apply the ID tie-breaker. Avoid converting values to double.",
+      "Sorting m eligible trades costs O(m log m); producing the first k is straightforward and easy to verify.",
+      "When k is much smaller than m, a bounded priority queue can reduce ranking work to O(m log k), with careful handling of the tie-breaker."
+    ],
+    "transferGroup": "ranking",
+    "estimatedMinutes": 25,
+    "digest": "c6bc4b5479af538893bb2bd4fe01c0ef9f95143ffeb192ba1b5edd8eb07c51c7"
+  },
+  {
+    "id": "2-19-reconcile-two-complete-trade-snapshots",
+    "version": "2.0.0",
+    "title": "Reconcile complete trade snapshots",
+    "competency": "reconciliation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Compare UI and API trade snapshots by stable ID and report missing, unexpected and changed records.",
+    "contract": "Input: expected|actual. Each snapshot is semicolon-separated id,symbol,quantity,price records; - is empty. Fields are present, quantities positive and prices valid positive decimals. Duplicate IDs in either snapshot produce ERROR. Output: ID:MISSING, ID:UNEXPECTED or ID:CHANGED in ascending ID order; - if equal. Compare prices numerically, including different scales.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "All mismatch classes",
+        "input": "A,X,1,2;B,Y,2,3|B,Y,3,3;C,Z,1,1",
+        "expected": "A:MISSING,B:CHANGED,C:UNEXPECTED",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Scale equality",
+        "input": "A,X,1,10.0|A,X,1,10.00",
+        "expected": "-",
+        "category": "precision",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n    static Map<String,String[]> snapshot(String section) {\n        Map<String,String[]> result=new HashMap<>();\n        if(section.equals(\"-\")) return result;\n        for(String row:section.split(\";\")) {\n            String[] f=row.split(\",\");\n            if(result.putIfAbsent(f[0], Arrays.copyOfRange(f,1,4))!=null) throw new IllegalArgumentException();\n        }\n        return result;\n    }\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n    static Map<String,String[]> snapshot(String section) {\n        Map<String,String[]> result=new HashMap<>();\n        if(section.equals(\"-\")) return result;\n        for(String row:section.split(\";\")) {\n            String[] f=row.split(\",\");\n            if(result.putIfAbsent(f[0], Arrays.copyOfRange(f,1,4))!=null) throw new IllegalArgumentException();\n        }\n        return result;\n    }\n    static String solve(String input) throws Exception {\n        String[] sections=input.split(\"\\\\|\",-1);\n        Map<String,String[]> expected=snapshot(sections[0]),actual=snapshot(sections[1]);\n        Set<String> keys=new TreeSet<>(expected.keySet()); keys.addAll(actual.keySet());\n        List<String> result=new ArrayList<>();\n        for(String id:keys) {\n            if(!actual.containsKey(id)) result.add(id+\":MISSING\");\n            else if(!expected.containsKey(id)) result.add(id+\":UNEXPECTED\");\n            else {String[] a=expected.get(id),b=actual.get(id); if(!a[0].equals(b[0]) || Long.parseLong(a[1])!=Long.parseLong(b[1]) || new BigDecimal(a[2]).compareTo(new BigDecimal(b[2]))!=0) result.add(id+\":CHANGED\");}\n        }\n        return list(result);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "All mismatch classes",
+        "input": "A,X,1,2;B,Y,2,3|B,Y,3,3;C,Z,1,1",
+        "expected": "A:MISSING,B:CHANGED,C:UNEXPECTED",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Scale equality",
+        "input": "A,X,1,10.0|A,X,1,10.00",
+        "expected": "-",
+        "category": "precision",
+        "sample": true
+      },
+      {
+        "name": "Duplicate expected",
+        "input": "A,X,1,1;A,X,1,1|-",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Both empty",
+        "input": "-|-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Symbol mismatch",
+        "input": "A,X,1,1|A,Y,1,1",
+        "expected": "A:CHANGED",
+        "category": "normal",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Index each snapshot by trade ID. Reject duplicates before comparing, because silently overwriting a record hides data-quality problems.",
+      "Traverse the sorted union of IDs. Membership determines missing versus unexpected; matching IDs then require field comparison.",
+      "Use BigDecimal.compareTo for prices. BigDecimal.equals also considers scale, which would falsely report 10.0 and 10.00 as different.",
+      "Indexing is O(n+m); sorting u IDs costs O(u log u). Storage is O(n+m). In production, snapshots also need an agreed consistency boundary."
+    ],
+    "transferGroup": "reconciliation",
+    "estimatedMinutes": 25,
+    "digest": "3124cb54ff43c95631b7425ae575f4f7e9affe95296ab9c510baeeabac794bda"
+  },
+  {
+    "id": "2-20-deduplicate-execution-events",
+    "version": "2.0.0",
+    "title": "Apply execution events idempotently",
+    "competency": "idempotency",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Consistent retries must not increase executed quantity twice. Reusing an event ID with a different payload is a conflict.",
+    "contract": "Input: eventId,orderId,quantity records, or -. IDs are nonblank, quantities strictly positive signed longs. Output: alphabetical orderId=total pairs, counting each unique event once. A repeated event ID must have identical order ID and quantity, otherwise print ERROR. Reject overflow.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Retry does not double count",
+        "input": "E1,O1,10\nE1,O1,10\nE2,O1,5",
+        "expected": "O1=15",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Conflicting retry",
+        "input": "E1,O1,10\nE1,O1,11",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        Map<String,String> events=new HashMap<>(); Map<String,Long> totals=new TreeMap<>();\n            for(String row:rows(input)) {\n                String[] f=row.split(\",\"); long quantity=Long.parseLong(f[2]); if(quantity<=0) throw new IllegalArgumentException();\n                String payload=f[1]+\",\"+quantity; String existing=events.putIfAbsent(f[0],payload);\n                if(existing!=null) { if(!existing.equals(payload)) throw new IllegalArgumentException(); continue; }\n                totals.put(f[1],Math.addExact(totals.getOrDefault(f[1],0L),quantity));\n            }\n            return map(totals);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Retry does not double count",
+        "input": "E1,O1,10\nE1,O1,10\nE2,O1,5",
+        "expected": "O1=15",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Conflicting retry",
+        "input": "E1,O1,10\nE1,O1,11",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      },
+      {
+        "name": "Different order conflict",
+        "input": "E,O,1\nE,P,1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Separate orders",
+        "input": "B,Z,2\nA,A,1",
+        "expected": "A=1,Z=2",
+        "category": "ordering",
+        "sample": false
+      },
+      {
+        "name": "Overflow",
+        "input": "A,O,9223372036854775807\nB,O,1",
+        "expected": "ERROR",
+        "category": "overflow",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Store the business payload against each event ID, rather than only remembering that the ID was seen.",
+      "An identical retry is ignored. A changed order or quantity under the same event ID is rejected as a conflict.",
+      "Add quantity only after accepting a new event. Math.addExact prevents a large accumulated quantity from wrapping.",
+      "This implementation is sequential. ConcurrentHashMap alone does not make the separate event and aggregate updates atomic; discuss a lock, transaction or durable idempotency record for production."
+    ],
+    "transferGroup": "idempotency",
+    "estimatedMinutes": 25,
+    "digest": "53373bec8e6001ae53adfb601f093458e6c69c304b14cd94e78bb99a4fde6774"
+  },
+  {
+    "id": "2-21-maintain-best-bid-and-ask",
+    "version": "2.0.0",
+    "title": "Maintain the best bid and ask",
+    "competency": "ordered-collections",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "implementation",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Process price-level updates and return the highest live bid and lowest live ask. A zero quantity removes a level.",
+    "contract": "Input: side,price,quantity records, or -. Side is BID/ASK, price positive decimal, quantity nonnegative. Updates replace the quantity at that numeric price level. Output: BID=price,ASK=price with two-decimal HALF_UP display; NONE for a side without levels. Numeric prices with different scales identify the same level.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Best prices",
+        "input": "BID,100,2\nBID,101,1\nASK,103,4\nASK,102,2",
+        "expected": "BID=101.00,ASK=102.00",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Remove same numeric level",
+        "input": "BID,100.0,1\nBID,100.00,0",
+        "expected": "BID=NONE,ASK=NONE",
+        "category": "precision",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        throw new UnsupportedOperationException(\"Implement the documented contract.\");\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        NavigableMap<BigDecimal,Long> bids=new TreeMap<>(),asks=new TreeMap<>();\n            for(String row:rows(input)) {String[] f=row.split(\",\"); BigDecimal price=new BigDecimal(f[1]); long quantity=Long.parseLong(f[2]); NavigableMap<BigDecimal,Long> levels=f[0].equals(\"BID\")?bids:asks; if(quantity==0) levels.remove(price); else levels.put(price,quantity);}\n            return \"BID=\"+(bids.isEmpty()?\"NONE\":money(bids.lastKey()))+\",ASK=\"+(asks.isEmpty()?\"NONE\":money(asks.firstKey()));\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Best prices",
+        "input": "BID,100,2\nBID,101,1\nASK,103,4\nASK,102,2",
+        "expected": "BID=101.00,ASK=102.00",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Remove same numeric level",
+        "input": "BID,100.0,1\nBID,100.00,0",
+        "expected": "BID=NONE,ASK=NONE",
+        "category": "precision",
+        "sample": true
+      },
+      {
+        "name": "Replace level",
+        "input": "ASK,2,5\nASK,2.00,1",
+        "expected": "BID=NONE,ASK=2.00",
+        "category": "normal",
+        "sample": false
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "BID=NONE,ASK=NONE",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Use ordered maps for the two sides. The highest bid is lastKey; the lowest ask is firstKey.",
+      "Treat updates as replacement values and zero as deletion. Adding quantities instead would implement a different contract.",
+      "TreeMap uses numeric comparison for BigDecimal keys, so 100.0 and 100.00 refer to the same level.",
+      "Each update costs O(log p) for p live levels. Production designs also need sequence-gap detection and snapshot recovery."
+    ],
+    "transferGroup": "ordered-collections",
+    "estimatedMinutes": 25,
+    "digest": "a3d4fc69c68e049981a0964b4da35144d4cc1a9f95eef5481d639d78e2e4a060"
+  },
+  {
+    "id": "banking-debug-price-scale",
+    "version": "2.0.0",
+    "title": "Debug false price mismatches",
+    "competency": "financial-precision",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "debugging",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "A reconciliation job flags equal prices when their displayed decimal scales differ. Repair the comparison without changing its input contract.",
+    "contract": "Input: decimalA|decimalB. Output: SAME when numerically equal, DIFFERENT otherwise. Both inputs are valid decimals, including negatives and zero.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Equal value, different scale",
+        "input": "10.0|10.00",
+        "expected": "SAME",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Different value",
+        "input": "10.0|10.01",
+        "expected": "DIFFERENT",
+        "category": "normal",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] f=input.split(\"\\\\|\",-1); return new BigDecimal(f[0]).equals(new BigDecimal(f[1])) ? \"SAME\" : \"DIFFERENT\";\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] f=input.split(\"\\\\|\",-1); return new BigDecimal(f[0]).compareTo(new BigDecimal(f[1]))==0 ? \"SAME\" : \"DIFFERENT\";\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Equal value, different scale",
+        "input": "10.0|10.00",
+        "expected": "SAME",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Different value",
+        "input": "10.0|10.01",
+        "expected": "DIFFERENT",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Zero scales",
+        "input": "0.000|0",
+        "expected": "SAME",
+        "category": "precision",
+        "sample": false
+      },
+      {
+        "name": "Negative",
+        "input": "-1.20|-1.2",
+        "expected": "SAME",
+        "category": "precision",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Reproduce the failure with equal numeric values that have different scales.",
+      "BigDecimal.equals compares value and scale. compareTo returns zero for numeric equality.",
+      "Use the repaired comparison in reconciliation and consider whether a business rule separately requires a particular display scale."
+    ],
+    "transferGroup": "financial-precision",
+    "estimatedMinutes": 25,
+    "digest": "e8854cc86b22db9ddcfb04ef7d2c472e70011a929e4daa7bc3c215af5fc08b73"
+  },
+  {
+    "id": "banking-debug-first-order",
+    "version": "2.0.0",
+    "title": "Debug overwritten order records",
+    "competency": "collections",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "debugging",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "A deduplication job keeps the last retry, but its contract requires the first record. Repair the update logic.",
+    "contract": "Input: id,symbol records or -. Output: id:symbol pairs in first-occurrence order, retaining the first payload for each exact ID.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Changed retry",
+        "input": "O1,AAPL\nO2,MSFT\nO1,GOOG",
+        "expected": "O1:AAPL,O2:MSFT",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        Map<String,String> orders=new LinkedHashMap<>(); for(String row:rows(input)) {String[] f=row.split(\",\"); orders.put(f[0],f[1]);} return list(orders.entrySet().stream().map(e->e.getKey()+\":\"+e.getValue()).toList());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        Map<String,String> orders=new LinkedHashMap<>(); for(String row:rows(input)) {String[] f=row.split(\",\"); orders.putIfAbsent(f[0],f[1]);} return list(orders.entrySet().stream().map(e->e.getKey()+\":\"+e.getValue()).toList());\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Changed retry",
+        "input": "O1,AAPL\nO2,MSFT\nO1,GOOG",
+        "expected": "O1:AAPL,O2:MSFT",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Exact IDs",
+        "input": "a,X\nA,Y\na,Z",
+        "expected": "a:X,A:Y",
+        "category": "ordering",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "LinkedHashMap preserves first insertion order but put still replaces an existing value.",
+      "Use putIfAbsent to preserve the first payload as well as the first key position.",
+      "Test both a changed duplicate and different IDs with the same payload; identity and payload are distinct concepts."
+    ],
+    "transferGroup": "collections",
+    "estimatedMinutes": 25,
+    "digest": "2613b1ea116c91004bff422804f37f84caa084ef22b00d1de235486cf220c6f0"
+  },
+  {
+    "id": "banking-debug-retry-budget",
+    "version": "2.0.0",
+    "title": "Debug an API retry budget",
+    "competency": "retry-policy",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "debugging",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "A payment API retry loop makes one extra call and retries permanent client errors. Correct both defects using a deterministic response sequence.",
+    "contract": "Input: maxAttempts|comma-separated HTTP statuses. maxAttempts is 1\u201310; the sequence is nonempty and contains at least maxAttempts statuses. Retry only 429 and 500\u2013599, stopping at the attempt budget or any other status. Output: attempts:lastStatus. This simulation performs no network calls or sleeps.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Retry then succeed",
+        "input": "3|500,429,200",
+        "expected": "3:200",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Permanent failure",
+        "input": "3|400,200,200",
+        "expected": "1:400",
+        "category": "normal",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] f=input.split(\"\\\\|\",-1); int max=Integer.parseInt(f[0]); int n=0,last=0; for(String code:f[1].split(\",\")) {if(n>max) break; last=Integer.parseInt(code); n++; if(last<400) break;} return n+\":\"+last;\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] f=input.split(\"\\\\|\",-1); int max=Integer.parseInt(f[0]); String[] codes=f[1].split(\",\");\n        int attempts=0,last=0;\n        for(String text:codes) {if(attempts==max) break; last=Integer.parseInt(text); attempts++; if(!(last==429 || last>=500 && last<=599)) break;}\n        return attempts+\":\"+last;\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Retry then succeed",
+        "input": "3|500,429,200",
+        "expected": "3:200",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Permanent failure",
+        "input": "3|400,200,200",
+        "expected": "1:400",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Budget of one",
+        "input": "1|503,200",
+        "expected": "1:503",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Budget exhausted",
+        "input": "2|500,503,200",
+        "expected": "2:503",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Success first",
+        "input": "2|200,500",
+        "expected": "1:200",
+        "category": "normal",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Define maxAttempts as total calls, including the first call. Check the budget before consuming another response.",
+      "Classify retryable statuses explicitly; a broad >=400 test retries permanent failures such as 400.",
+      "Increment the counter exactly once per consumed status and stop on success or nonretryable failure.",
+      "This deterministic simulation tests policy without timing flakiness. A real client also needs idempotency, jitter, deadlines and cancellation."
+    ],
+    "transferGroup": "retry-policy",
+    "estimatedMinutes": 25,
+    "digest": "325e2258b1b0780396638ccfc2630feceae0f5c9b136bca5c5550bf7178380f3"
+  },
+  {
+    "id": "banking-debug-pagination",
+    "version": "2.0.0",
+    "title": "Debug incomplete and cyclic API pagination",
+    "competency": "api-contracts",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "debugging",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "A client fetches only the first page of trade IDs. Follow continuation tokens, including empty pages, and reject cycles or missing referenced pages.",
+    "contract": "Input: starting cursor on line 1, followed by cursor|nextCursor|comma-separated IDs records. END means no next page; - is an empty page. Cursors are unique and all referenced pages must exist. Output: IDs in page encounter order, retaining duplicates. Print ERROR for a cycle or missing page. Starting cursor END returns -.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Continue through empty page",
+        "input": "p1\np1|p2|T1\np2|p3|-\np3|END|T2",
+        "expected": "T1,T2",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Cycle",
+        "input": "p1\np1|p2|T1\np2|p1|T2",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] lines=rows(input); if(lines[0].equals(\"END\")) return \"-\"; for(int i=1;i<lines.length;i++) {String[] f=lines[i].split(\"\\\\|\",-1); if(f[0].equals(lines[0])) return f[2];} return \"-\";\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.*;\nimport java.math.*;\nimport java.nio.charset.StandardCharsets;\n\npublic class Main {\n    static String[] rows(String input) { return input.isEmpty() || input.equals(\"-\") ? new String[0] : input.split(\"\\\\R\", -1); }\n    static List<String> ids(String input) {\n        if (input.equals(\"~\")) throw new IllegalArgumentException();\n        if (input.equals(\"-\") || input.isEmpty()) return new ArrayList<>();\n        List<String> result = new ArrayList<>(Arrays.asList(input.split(\",\", -1)));\n        if (result.stream().anyMatch(s -> s.isBlank() || s.equals(\"~\"))) throw new IllegalArgumentException();\n        return result;\n    }\n    static String list(Collection<?> values) { return values.isEmpty() ? \"-\" : String.join(\",\", values.stream().map(Object::toString).toList()); }\n    static String map(Map<String,?> values) { return list(values.entrySet().stream().map(e -> e.getKey()+\"=\"+e.getValue()).toList()); }\n    static BigDecimal decimal(String value) { if (value.equals(\"~\")) throw new IllegalArgumentException(); return new BigDecimal(value); }\n    static String money(BigDecimal value) { return value.setScale(2, RoundingMode.HALF_UP).toPlainString(); }\n\n    static String solve(String input) throws Exception {\n        String[] lines=rows(input); Map<String,String[]> pages=new HashMap<>();\n        for(int i=1;i<lines.length;i++){String[] f=lines[i].split(\"\\\\|\",-1); pages.put(f[0],new String[]{f[1],f[2]});}\n        String cursor=lines[0]; Set<String> visited=new HashSet<>(); List<String> result=new ArrayList<>();\n        while(!cursor.equals(\"END\")){if(!visited.add(cursor) || !pages.containsKey(cursor)) throw new IllegalArgumentException(); String[] page=pages.get(cursor); result.addAll(ids(page[1])); cursor=page[0];}\n        return list(result);\n    }\n    public static void main(String[] args) throws Exception {\n        String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);\n        try { System.out.print(solve(input)); }\n        catch (IllegalArgumentException | ArithmeticException error) { System.out.print(\"ERROR\"); }\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Continue through empty page",
+        "input": "p1\np1|p2|T1\np2|p3|-\np3|END|T2",
+        "expected": "T1,T2",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Cycle",
+        "input": "p1\np1|p2|T1\np2|p1|T2",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      },
+      {
+        "name": "Missing page",
+        "input": "p1\np1|p2|T1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": false
+      },
+      {
+        "name": "No page",
+        "input": "END",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Retain duplicates",
+        "input": "a\na|b|T1\nb|END|T1",
+        "expected": "T1,T1",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "An empty result page does not imply the end of pagination; the continuation token controls traversal.",
+      "Record visited cursors before fetching each page. Reusing one is a cycle, even if it contains no records.",
+      "Reject a missing referenced page instead of returning a falsely complete snapshot.",
+      "The loop processes each reachable page once, O(p+n) time and O(p+n) storage including output."
+    ],
+    "transferGroup": "api-contracts",
+    "estimatedMinutes": 25,
+    "digest": "cab8ffe38d5ee21c0999dd486dd6e4561bfb5bdee28308f21309a60412ba468d"
+  },
+  {
+    "id": "banking-test-order-validation",
+    "version": "2.0.0",
+    "title": "Design tests that detect broken order validators",
+    "competency": "validation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "testing",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Write a Java program that emits a black-box test suite for the order validator. Detect each listed seeded fault while keeping every assertion correct.",
+    "contract": "Emit one input => expected pair per line, using symbol|quantity|price inputs and the validation messages from the order-validation exercise. Maximum 50 cases; integers fit signed long. The six faulty behaviours are: accepting blank symbols, accepting missing symbols, accepting zero quantity, accepting negative quantity, accepting zero price, and accepting a missing price. A correct suite must detect all six. ~ means missing. The first shown case alone is insufficient.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Case declaration",
+        "input": "AAPL|1|1",
+        "expected": "OK",
+        "category": "example",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"AAPL|1|1\",\"OK\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"AAPL|1|1\",\"OK\"},\n            new String[]{\" |1|1\",\"Symbol is required\"},\n            new String[]{\"~|1|1\",\"Symbol is required\"},\n            new String[]{\"X|0|1\",\"Quantity must be positive\"},\n            new String[]{\"X|-1|1\",\"Quantity must be positive\"},\n            new String[]{\"X|1|0\",\"Price must be positive\"},\n            new String[]{\"X|1|~\",\"Price must be positive\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Correct implementation accepts the suite",
+        "input": "",
+        "expected": "7",
+        "category": "normal",
+        "sample": true
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Write explicit input/expected-output pairs. The host first checks every expected value against the correct contract; an incorrect assertion invalidates the suite.",
+      "The host then evaluates the valid cases against separately implemented, deliberately faulty behaviours. A behaviour is detected when at least one case distinguishes it from the correct result.",
+      "Choose cases that isolate boundaries, ordering and precision. Increasing the number of similar happy-path cases is less useful than covering different failure mechanisms.",
+      "The worked suite is one sufficient set, not the only acceptable solution. These exercises evaluate black-box case design; they do not claim to execute JUnit or measure all possible bugs."
+    ],
+    "transferGroup": "validation",
+    "estimatedMinutes": 25,
+    "mutants": [
+      "blank-symbol",
+      "missing-symbol",
+      "zero-quantity",
+      "negative-quantity",
+      "zero-price",
+      "missing-price"
+    ],
+    "oracle": "validation",
+    "digest": "45a8dd5d46ed1f4f484111fcc4591a1a8e63b0566c96df4f54ef56ee55efa31c"
+  },
+  {
+    "id": "banking-test-missing-trades",
+    "version": "2.0.0",
+    "title": "Design missing-trade reconciliation tests",
+    "competency": "reconciliation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "testing",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Design a compact suite that detects ordering, direction and identifier-matching errors in missing-trade reconciliation.",
+    "contract": "Emit expectedIDs|actualIDs => missingIDs pairs; IDs are comma-separated and unique per list, - means empty. Preserve expected order and exact case. Detect five seeded behaviours: reverse comparison direction, sorting the result, case-insensitive matching, returning nothing for an empty actual list, and dropping the final missing record. Maximum 50 cases.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Case declaration",
+        "input": "A,B|B",
+        "expected": "A",
+        "category": "example",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"A,B|B\",\"A\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"A,B|B\",\"A\"},\n            new String[]{\"Z,A|-\",\"Z,A\"},\n            new String[]{\"a,A|A\",\"a\"},\n            new String[]{\"-|X\",\"-\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Correct implementation accepts the suite",
+        "input": "",
+        "expected": "4",
+        "category": "normal",
+        "sample": true
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Write explicit input/expected-output pairs. The host first checks every expected value against the correct contract; an incorrect assertion invalidates the suite.",
+      "The host then evaluates the valid cases against separately implemented, deliberately faulty behaviours. A behaviour is detected when at least one case distinguishes it from the correct result.",
+      "Choose cases that isolate boundaries, ordering and precision. Increasing the number of similar happy-path cases is less useful than covering different failure mechanisms.",
+      "The worked suite is one sufficient set, not the only acceptable solution. These exercises evaluate black-box case design; they do not claim to execute JUnit or measure all possible bugs."
+    ],
+    "transferGroup": "reconciliation",
+    "estimatedMinutes": 25,
+    "mutants": [
+      "reverse-direction",
+      "sorted-output",
+      "case-insensitive",
+      "empty-actual",
+      "drop-final"
+    ],
+    "oracle": "missing",
+    "digest": "d889ff93aea2c010bea7ff2c20789c8756e6ae9725c71e31e57002200b5a6077"
+  },
+  {
+    "id": "banking-test-retry-policy",
+    "version": "2.0.0",
+    "title": "Design deterministic retry-policy tests",
+    "competency": "retry-policy",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "testing",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Generate test cases that distinguish the documented retry policy from common boundary mistakes.",
+    "contract": "Emit maxAttempts|statuses => attempts:lastStatus pairs. maxAttempts is 1\u201310; provide at least maxAttempts statuses, each 100\u2013599. Retry only 429 and 500\u2013599. Detect five seeded behaviours: one extra attempt, retrying all 4xx errors, never retrying 429, never retrying 5xx, and stopping after the first attempt. Maximum 50 cases.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Case declaration",
+        "input": "3|500,429,200",
+        "expected": "3:200",
+        "category": "example",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"3|500,429,200\",\"3:200\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"3|500,429,200\",\"3:200\"},\n            new String[]{\"1|503,200\",\"1:503\"},\n            new String[]{\"3|400,200,200\",\"1:400\"},\n            new String[]{\"2|429,200\",\"2:200\"},\n            new String[]{\"2|500,200\",\"2:200\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Correct implementation accepts the suite",
+        "input": "",
+        "expected": "5",
+        "category": "normal",
+        "sample": true
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Write explicit input/expected-output pairs. The host first checks every expected value against the correct contract; an incorrect assertion invalidates the suite.",
+      "The host then evaluates the valid cases against separately implemented, deliberately faulty behaviours. A behaviour is detected when at least one case distinguishes it from the correct result.",
+      "Choose cases that isolate boundaries, ordering and precision. Increasing the number of similar happy-path cases is less useful than covering different failure mechanisms.",
+      "The worked suite is one sufficient set, not the only acceptable solution. These exercises evaluate black-box case design; they do not claim to execute JUnit or measure all possible bugs."
+    ],
+    "transferGroup": "retry-policy",
+    "estimatedMinutes": 25,
+    "mutants": [
+      "extra-attempt",
+      "retry-4xx",
+      "ignore-429",
+      "ignore-5xx",
+      "single-attempt"
+    ],
+    "oracle": "retry",
+    "digest": "f99a9861cc7164134c7daf81b63e8eb61c1338ab4bc39bcb644eb8956532bcca"
+  },
+  {
+    "id": "banking-test-money",
+    "version": "2.0.0",
+    "title": "Design financial precision and validation tests",
+    "competency": "financial-precision",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "testing",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Write cases that detect premature rounding and incorrect validation in an order-notional service.",
+    "contract": "Emit quantity|price => amount pairs. Quantity is an integer from -1,000,000 to 1,000,000 and price is valid decimal text with at most six fractional digits and absolute value at most 1,000,000. Require both values strictly positive; otherwise expect ERROR. Multiply exactly, then round once to two decimals HALF_UP. Detect five seeded behaviours: HALF_EVEN rounding, rounding price before multiplication, accepting zero quantity, accepting negative price, and adding quantity to price. Maximum 50 cases.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Case declaration",
+        "input": "10|100.25",
+        "expected": "1002.50",
+        "category": "example",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"10|100.25\",\"1002.50\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "solution": {
+      "Main.java": "import java.util.*;\npublic class Main {\n    static List<String[]> cases() {\n        return Arrays.asList(\n            new String[]{\"10|100.25\",\"1002.50\"},\n            new String[]{\"1|1.005\",\"1.01\"},\n            new String[]{\"3|0.335\",\"1.01\"},\n            new String[]{\"0|2\",\"ERROR\"},\n            new String[]{\"1|-2\",\"ERROR\"}\n        );\n    }\n    public static void main(String[] args) {\n        for(String[] test : cases()) System.out.println(test[0] + \" => \" + test[1]);\n    }\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Correct implementation accepts the suite",
+        "input": "",
+        "expected": "5",
+        "category": "normal",
+        "sample": true
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Write explicit input/expected-output pairs. The host first checks every expected value against the correct contract; an incorrect assertion invalidates the suite.",
+      "The host then evaluates the valid cases against separately implemented, deliberately faulty behaviours. A behaviour is detected when at least one case distinguishes it from the correct result.",
+      "Choose cases that isolate boundaries, ordering and precision. Increasing the number of similar happy-path cases is less useful than covering different failure mechanisms.",
+      "The worked suite is one sufficient set, not the only acceptable solution. These exercises evaluate black-box case design; they do not claim to execute JUnit or measure all possible bugs."
+    ],
+    "transferGroup": "financial-precision",
+    "estimatedMinutes": 25,
+    "mutants": [
+      "half-even",
+      "round-price-first",
+      "zero-quantity",
+      "negative-price",
+      "addition"
+    ],
+    "oracle": "money",
+    "digest": "25e0b28aa36062ca48b914e1b715aebc918704937c2d0df15f3d514329efd62b"
+  },
+  {
+    "id": "banking-project-reconciler",
+    "version": "2.0.0",
+    "title": "Build a snapshot reconciliation component",
+    "competency": "reconciliation",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "project",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Complete a reusable Reconciler in a three-file project. Keep the CLI adapter separate from the domain model and comparison logic.",
+    "contract": "Use the full-snapshot contract: expected|actual with semicolon-separated id,symbol,quantity,price records. Report sorted ID:MISSING, ID:UNEXPECTED and ID:CHANGED entries. Numeric prices may have different scales. Reject duplicate IDs with ERROR. Main.java is the CLI adapter; implement Reconciler.java using immutable Trade records.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Changed and extra",
+        "input": "A,X,1,1;B,Y,2,2|A,X,1,1.00;C,Z,1,3",
+        "expected": "B:MISSING,C:UNEXPECTED",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Duplicate actual",
+        "input": "-|A,X,1,1;A,X,1,1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Trade.java": "import java.math.BigDecimal;\npublic record Trade(String id,String symbol,long quantity,BigDecimal price) {}\n",
+      "Reconciler.java": "import java.util.*;\npublic final class Reconciler {\n    public static List<String> reconcile(List<Trade> expected,List<Trade> actual) {\n        throw new UnsupportedOperationException(\"Implement reconciliation\");\n    }\n}\n",
+      "Main.java": "import java.util.*;\nimport java.math.BigDecimal;\npublic class Main {\n    static List<Trade> parse(String s) {List<Trade> out=new ArrayList<>(); if(s.equals(\"-\")) return out; for(String row:s.split(\";\")){String[] f=row.split(\",\"); out.add(new Trade(f[0],f[1],Long.parseLong(f[2]),new BigDecimal(f[3])));} return out;}\n    public static void main(String[] args) throws Exception {String[] f=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(\"\\\\|\",-1); try {List<String> result=Reconciler.reconcile(parse(f[0]),parse(f[1])); System.out.print(result.isEmpty()?\"-\":String.join(\",\",result));} catch(IllegalArgumentException error){System.out.print(\"ERROR\");}}\n}\n"
+    },
+    "solution": {
+      "Trade.java": "import java.math.BigDecimal;\npublic record Trade(String id,String symbol,long quantity,BigDecimal price) {}\n",
+      "Reconciler.java": "import java.util.*;\npublic final class Reconciler {\n    public static List<String> reconcile(List<Trade> expected,List<Trade> actual) {\n        Map<String,Trade> a=index(expected),b=index(actual); Set<String> keys=new TreeSet<>(a.keySet()); keys.addAll(b.keySet()); List<String> out=new ArrayList<>();\n        for(String id:keys) {\n            if(!b.containsKey(id)) out.add(id+\":MISSING\");\n            else if(!a.containsKey(id)) out.add(id+\":UNEXPECTED\");\n            else {Trade x=a.get(id),y=b.get(id); if(!x.symbol().equals(y.symbol()) || x.quantity()!=y.quantity() || x.price().compareTo(y.price())!=0) out.add(id+\":CHANGED\");}\n        }\n        return out;\n    }\n    private static Map<String,Trade> index(List<Trade> trades) {Map<String,Trade> map=new HashMap<>(); for(Trade t:trades) if(map.putIfAbsent(t.id(),t)!=null) throw new IllegalArgumentException(); return map;}\n}\n",
+      "Main.java": "import java.util.*;\nimport java.math.BigDecimal;\npublic class Main {\n    static List<Trade> parse(String s) {List<Trade> out=new ArrayList<>(); if(s.equals(\"-\")) return out; for(String row:s.split(\";\")){String[] f=row.split(\",\"); out.add(new Trade(f[0],f[1],Long.parseLong(f[2]),new BigDecimal(f[3])));} return out;}\n    public static void main(String[] args) throws Exception {String[] f=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(\"\\\\|\",-1); try {List<String> result=Reconciler.reconcile(parse(f[0]),parse(f[1])); System.out.print(result.isEmpty()?\"-\":String.join(\",\",result));} catch(IllegalArgumentException error){System.out.print(\"ERROR\");}}\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Changed and extra",
+        "input": "A,X,1,1;B,Y,2,2|A,X,1,1.00;C,Z,1,3",
+        "expected": "B:MISSING,C:UNEXPECTED",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Duplicate actual",
+        "input": "-|A,X,1,1;A,X,1,1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      },
+      {
+        "name": "Quantity mismatch",
+        "input": "A,X,1,1|A,X,2,1",
+        "expected": "A:CHANGED",
+        "category": "normal",
+        "sample": false
+      },
+      {
+        "name": "Empty",
+        "input": "-|-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "The CLI adapter parses input and renders output; Trade holds immutable domain data; Reconciler owns comparison policy.",
+      "Build indexes with duplicate detection, then compare the sorted union of keys. Missing and unexpected records are distinct outcomes.",
+      "Compare quantities directly and prices numerically. Return a new result list so caller snapshots remain unchanged.",
+      "This separation allows unit tests to call the reconciler directly without a terminal, UI or API transport."
+    ],
+    "transferGroup": "reconciliation",
+    "estimatedMinutes": 40,
+    "digest": "be5b1e17e75962e9e37befe044e074c8445a8f0bc15e0951ff266da8ba5cf085"
+  },
+  {
+    "id": "banking-project-ledger",
+    "version": "2.0.0",
+    "title": "Build an idempotent ledger posting service",
+    "competency": "idempotency",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "project",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Implement an in-memory ledger that applies each posting once, rejects conflicting retries and preserves exact balances.",
+    "contract": "Input: postingId,accountId,amount records, or -. Amounts are signed decimal values with at most two fractional digits; zero is allowed. Output: alphabetical account=balance pairs with exactly two decimals. A consistent retry contributes once. Reusing an ID with a different account or numeric amount produces ERROR. Negative account balances are permitted in this simplified ledger; no overdraft rule is implied.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Retry and debit",
+        "input": "P1,A,10.00\nP1,A,10.0\nP2,A,-3.25",
+        "expected": "A=6.75",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Conflict",
+        "input": "P,A,1\nP,B,1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Posting.java": "import java.math.BigDecimal;\npublic record Posting(String id,String account,BigDecimal amount) {}\n",
+      "Ledger.java": "import java.util.*;\nimport java.math.BigDecimal;\npublic final class Ledger {\n    public void apply(Posting posting) { throw new UnsupportedOperationException(\"Implement posting\"); }\n    public Map<String,BigDecimal> snapshot() { throw new UnsupportedOperationException(\"Implement snapshot\"); }\n}\n",
+      "Main.java": "import java.util.*;\nimport java.math.BigDecimal;\npublic class Main {\n    public static void main(String[] args) throws Exception {String input=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8); Ledger ledger=new Ledger(); try {if(!input.equals(\"-\")&&!input.isEmpty()) for(String line:input.split(\"\\\\R\")){String[] f=line.split(\",\"); ledger.apply(new Posting(f[0],f[1],new BigDecimal(f[2])));} List<String> out=new ArrayList<>(); ledger.snapshot().forEach((key,value)->out.add(key+\"=\"+value.setScale(2).toPlainString())); System.out.print(out.isEmpty()?\"-\":String.join(\",\",out));} catch(IllegalArgumentException error){System.out.print(\"ERROR\");}}\n}\n"
+    },
+    "solution": {
+      "Posting.java": "import java.math.BigDecimal;\npublic record Posting(String id,String account,BigDecimal amount) {}\n",
+      "Ledger.java": "import java.util.*;\nimport java.math.BigDecimal;\npublic final class Ledger {\n    private final Map<String,Posting> seen=new HashMap<>();\n    private final Map<String,BigDecimal> balances=new TreeMap<>();\n    public void apply(Posting p) {Posting old=seen.get(p.id()); if(old!=null){if(!old.account().equals(p.account()) || old.amount().compareTo(p.amount())!=0) throw new IllegalArgumentException(); return;} seen.put(p.id(),p); balances.merge(p.account(),p.amount(),BigDecimal::add);}\n    public Map<String,BigDecimal> snapshot(){return new TreeMap<>(balances);}\n}\n",
+      "Main.java": "import java.util.*;\nimport java.math.BigDecimal;\npublic class Main {\n    public static void main(String[] args) throws Exception {String input=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8); Ledger ledger=new Ledger(); try {if(!input.equals(\"-\")&&!input.isEmpty()) for(String line:input.split(\"\\\\R\")){String[] f=line.split(\",\"); ledger.apply(new Posting(f[0],f[1],new BigDecimal(f[2])));} List<String> out=new ArrayList<>(); ledger.snapshot().forEach((key,value)->out.add(key+\"=\"+value.setScale(2).toPlainString())); System.out.print(out.isEmpty()?\"-\":String.join(\",\",out));} catch(IllegalArgumentException error){System.out.print(\"ERROR\");}}\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Retry and debit",
+        "input": "P1,A,10.00\nP1,A,10.0\nP2,A,-3.25",
+        "expected": "A=6.75",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Conflict",
+        "input": "P,A,1\nP,B,1",
+        "expected": "ERROR",
+        "category": "validation",
+        "sample": true
+      },
+      {
+        "name": "Exact sum",
+        "input": "P1,A,0.1\nP2,A,0.2",
+        "expected": "A=0.30",
+        "category": "precision",
+        "sample": false
+      },
+      {
+        "name": "Empty",
+        "input": "-",
+        "expected": "-",
+        "category": "boundary",
+        "sample": false
+      },
+      {
+        "name": "Zero posting",
+        "input": "Z,B,0",
+        "expected": "B=0.00",
+        "category": "boundary",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Represent a posting as immutable identity, account and amount. Treat decimal scale differences as numerically equal retries.",
+      "Keep the seen-posting map and account balances within one Ledger instance. Validate a retry before applying any new amount.",
+      "Use BigDecimal for balance arithmetic and format only at the boundary. A real ledger additionally needs durable atomicity and balanced accounting entries.",
+      "This exercise is a single-process posting component, not a complete double-entry accounting system."
+    ],
+    "transferGroup": "idempotency",
+    "estimatedMinutes": 40,
+    "digest": "26cd60771f004345d1347d522ce45fcf9e42b39d497e49f11807afaae5479591"
+  },
+  {
+    "id": "banking-project-concurrent-events",
+    "version": "2.0.0",
+    "title": "Make execution counting thread-safe",
+    "competency": "concurrency",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "project",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Multiple workers replay execution IDs concurrently. Count each distinct ID exactly once, even when retries race.",
+    "contract": "Input: workers|replays|comma-separated event IDs. workers is 1\u20138; replays 1\u2013100; at most 1,000 IDs; - means no IDs. The supplied adapter submits every ID on every replay to an ExecutorService. Output: the number of distinct exact IDs after all work finishes. Implement Counter.accept and Counter.size. Automated results check observed outcomes; they do not prove race freedom under every schedule.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Concurrent duplicates",
+        "input": "4|30|E1,E2,E1,E3",
+        "expected": "3",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "2|10|-",
+        "expected": "0",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Counter.java": "import java.util.*;\npublic final class Counter {\n    // Replace unsafe shared state with an atomic, thread-safe design.\n    private final Set<String> ids=new HashSet<>();\n    public void accept(String id){if(!ids.contains(id)) ids.add(id);}\n    public int size(){return ids.size();}\n}\n",
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\npublic class Main {\n    public static void main(String[] args) throws Exception {String[] f=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(\"\\\\|\",-1); int workers=Integer.parseInt(f[0]),replays=Integer.parseInt(f[1]); Counter counter=new Counter(); ExecutorService pool=Executors.newFixedThreadPool(workers); try {List<Future<?>> pending=new ArrayList<>(); if(!f[2].equals(\"-\")) for(int i=0;i<replays;i++) for(String id:f[2].split(\",\")) pending.add(pool.submit(()->counter.accept(id))); for(Future<?> task:pending)task.get(); System.out.print(counter.size());} finally {pool.shutdownNow();}}\n}\n"
+    },
+    "solution": {
+      "Counter.java": "import java.util.Set;\nimport java.util.concurrent.ConcurrentHashMap;\npublic final class Counter {\n    private final Set<String> ids=ConcurrentHashMap.newKeySet();\n    public void accept(String id){ids.add(id);}\n    public int size(){return ids.size();}\n}\n",
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\npublic class Main {\n    public static void main(String[] args) throws Exception {String[] f=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(\"\\\\|\",-1); int workers=Integer.parseInt(f[0]),replays=Integer.parseInt(f[1]); Counter counter=new Counter(); ExecutorService pool=Executors.newFixedThreadPool(workers); try {List<Future<?>> pending=new ArrayList<>(); if(!f[2].equals(\"-\")) for(int i=0;i<replays;i++) for(String id:f[2].split(\",\")) pending.add(pool.submit(()->counter.accept(id))); for(Future<?> task:pending)task.get(); System.out.print(counter.size());} finally {pool.shutdownNow();}}\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Concurrent duplicates",
+        "input": "4|30|E1,E2,E1,E3",
+        "expected": "3",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "Empty",
+        "input": "2|10|-",
+        "expected": "0",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "Repeated hot key",
+        "input": "8|100|X,X,X",
+        "expected": "1",
+        "category": "concurrency",
+        "sample": false
+      },
+      {
+        "name": "Exact IDs",
+        "input": "4|40|e,E,A,B,C",
+        "expected": "5",
+        "category": "concurrency",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Use one atomic collection operation to establish whether an event has already been accepted.",
+      "ConcurrentHashMap.newKeySet supplies a thread-safe set whose add operation is atomic. A separate contains followed by add on an ordinary HashSet is unsafe.",
+      "Wait for every submitted Future before inspecting the final size. Otherwise the snapshot may be observed before processing completes.",
+      "Stress cases can reveal races but cannot prove their absence. Explain the collection contract and the happens-before relationship established by Future.get."
+    ],
+    "transferGroup": "concurrency",
+    "estimatedMinutes": 40,
+    "digest": "9d6841f5cb322e1f7b8499a538948f5dd556a45495a86fbb2e91e48c30332af9"
+  },
+  {
+    "id": "banking-project-regression-runner",
+    "version": "2.0.0",
+    "title": "Build a bounded regression task runner",
+    "competency": "concurrency",
+    "domain": "Investment Banking",
+    "language": "java",
+    "runtime": "Java 17",
+    "format": "project",
+    "difficulty": "Medium",
+    "roles": [
+      "backend",
+      "sdet"
+    ],
+    "description": "Execute independent regression tasks with a bounded pool, preserve submission order and isolate individual task failures.",
+    "contract": "Input: workers on line 1 (1\u20138), then taskId,value records. value is an integer or FAIL. Output: taskId=value or taskId=ERROR in submission order; - when no tasks exist. Runner.execute receives Callable<String> tasks and must use a bounded ExecutorService, await every result, isolate failed tasks and shut down resources. Output tests check ordering/failure handling; bounded execution and cleanup require code review.",
+    "constraints": [
+      "Use Java 17 and the standard library. Do not add a package declaration.",
+      "For this terminal interface, identifiers contain no commas, pipes, equals signs or line breaks. Match identifiers exactly and case-sensitively.",
+      "Use the supplied Main entry point. Print only the required result; diagnostics belong on standard error.",
+      "Inputs contain at most 10,000 records unless a narrower limit is stated. Output must be at most 64 KiB."
+    ],
+    "examples": [
+      {
+        "name": "Order and failure isolation",
+        "input": "2\nA,10\nB,FAIL\nC,20",
+        "expected": "A=10,B=ERROR,C=20",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "No tasks",
+        "input": "1",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      }
+    ],
+    "starter": {
+      "Runner.java": "import java.util.*;\nimport java.util.concurrent.*;\npublic final class Runner {\n    public static List<String> execute(int workers,List<Callable<String>> tasks) throws InterruptedException {\n        throw new UnsupportedOperationException(\"Implement a bounded runner\");\n    }\n}\n",
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\npublic class Main {\n    public static void main(String[] args) throws Exception {String[] lines=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(\"\\\\R\"); int workers=Integer.parseInt(lines[0]); List<String> ids=new ArrayList<>(); List<Callable<String>> tasks=new ArrayList<>(); for(int i=1;i<lines.length;i++){String[] f=lines[i].split(\",\"); ids.add(f[0]); String value=f[1]; tasks.add(()->{if(value.equals(\"FAIL\"))throw new IllegalStateException(\"Seeded task failure\"); return value;});} List<String> values=Runner.execute(workers,tasks); List<String> out=new ArrayList<>(); for(int i=0;i<ids.size();i++)out.add(ids.get(i)+\"=\"+values.get(i)); System.out.print(out.isEmpty()?\"-\":String.join(\",\",out));}\n}\n"
+    },
+    "solution": {
+      "Runner.java": "import java.util.*;\nimport java.util.concurrent.*;\npublic final class Runner {\n    public static List<String> execute(int workers,List<Callable<String>> tasks) throws InterruptedException {\n        ExecutorService pool=Executors.newFixedThreadPool(workers);\n        try {List<Future<String>> futures=new ArrayList<>(); for(Callable<String> task:tasks) futures.add(pool.submit(task)); List<String> out=new ArrayList<>(); for(Future<String> future:futures) {try {out.add(future.get());} catch(ExecutionException error){out.add(\"ERROR\");}} return out;}\n        finally {pool.shutdownNow();}\n    }\n}\n",
+      "Main.java": "import java.util.*;\nimport java.util.concurrent.*;\npublic class Main {\n    public static void main(String[] args) throws Exception {String[] lines=new String(System.in.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(\"\\\\R\"); int workers=Integer.parseInt(lines[0]); List<String> ids=new ArrayList<>(); List<Callable<String>> tasks=new ArrayList<>(); for(int i=1;i<lines.length;i++){String[] f=lines[i].split(\",\"); ids.add(f[0]); String value=f[1]; tasks.add(()->{if(value.equals(\"FAIL\"))throw new IllegalStateException(\"Seeded task failure\"); return value;});} List<String> values=Runner.execute(workers,tasks); List<String> out=new ArrayList<>(); for(int i=0;i<ids.size();i++)out.add(ids.get(i)+\"=\"+values.get(i)); System.out.print(out.isEmpty()?\"-\":String.join(\",\",out));}\n}\n"
+    },
+    "tests": [
+      {
+        "name": "Order and failure isolation",
+        "input": "2\nA,10\nB,FAIL\nC,20",
+        "expected": "A=10,B=ERROR,C=20",
+        "category": "normal",
+        "sample": true
+      },
+      {
+        "name": "No tasks",
+        "input": "1",
+        "expected": "-",
+        "category": "boundary",
+        "sample": true
+      },
+      {
+        "name": "One worker",
+        "input": "1\nZ,3\nA,4",
+        "expected": "Z=3,A=4",
+        "category": "ordering",
+        "sample": false
+      },
+      {
+        "name": "All fail",
+        "input": "3\nA,FAIL\nB,FAIL",
+        "expected": "A=ERROR,B=ERROR",
+        "category": "errors",
+        "sample": false
+      }
+    ],
+    "hints": [
+      "Trace the smallest example and identify the state that must survive between records.",
+      "Choose a collection or arithmetic operation that preserves the documented ordering and precision.",
+      "Check the boundary cases in the contract before considering optimisation."
+    ],
+    "followup": "Explain your tests, time and space complexity, and one change needed for a production banking service.",
+    "explanation": [
+      "Submit work to a fixed-size executor to bound simultaneous execution.",
+      "Read Futures in submission order to preserve output order, even when tasks finish in another order.",
+      "Catch ExecutionException per task, so one failure becomes one ERROR result while remaining tasks are still observed.",
+      "Restore interruption when handling InterruptedException and always shut down the executor in finally. Review lifecycle and concurrency separately from functional output."
+    ],
+    "transferGroup": "concurrency",
+    "estimatedMinutes": 40,
+    "digest": "ea923378164796b6760fe10652753497db0ad0d3378879fba536797074b69378"
+  }
+]

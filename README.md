@@ -1,93 +1,44 @@
-# PrepSpace — Interview Preparation
+# PrepSpace — Banking Java & SDET Interview Preparation
 
-A public-facing interview preparation website organised around the full interview journey. Its landing page introduces the product and offers three independent entry paths: domain, programming language and target role. It uses top navigation and a shared preparation filter bar instead of a personal workspace dashboard.
+A public-facing interview preparation site with a working local Java assessment pilot. Start at http://127.0.0.1:8796 after launching the local server.
 
-## Preparation paths
+## Implemented
 
-Domains: Investment Banking, Core Banking, Ecommerce, AI, Cloud and Data Engineering.
+- Banking Java/backend and QA/SDET paths, with 7-, 14- and 28-day plans and five interview-round sequences.
+- 24 versioned Java exercises: 12 implementation, four debugging, four test-design and four multi-file projects. All reference implementations pass their contract checks and all 24 constant-output negative controls are rejected.
+- Exact input/output contracts, examples, constraints, progressive hints and click-to-reveal answers with detailed explanations. Answers are fetched only on request for assessed pilot exercises.
+- Compilation, runtime, timeout, output-limit, incorrect-output, cancellation and infrastructure results remain distinct. Expected outputs and grades are computed outside candidate execution.
+- Black-box test-design exercises validate assertions and detect seeded faulty behaviours. Functional checks do not certify design quality, immutability, communication or race freedom.
+- Multi-file Java editing, browser autosave, version conflicts, snapshots, source restoration, project downloads, saved explanations and private attempt history.
+- Competency evidence and later variation recommendations; assistance is explicitly browser-recorded/self-reported. No overall readiness score or hiring prediction.
+- Local SQLite persistence; hosted Worker support for native Sites identity, single-use invitations, a 30-person membership cap, revisioned cloud drafts/plans, account export/deletion, issue reports and opt-in research events.
+- Hosted E2B adapter with short-lived network-disabled sandboxes, bounded candidate processes, cancellation, daily/queue/concurrency limits and budget reservations. Cloud execution remains disabled until configured and live-verified.
 
-Programming languages: Java, Python, JavaScript and TypeScript.
+## Preserved
 
-Roles: Software Engineer, QA / SDET, Test Director / QA Lead, Engineering Manager, Data Engineer, AI / ML Engineer and Cloud / DevOps Engineer.
+The existing six-domain, four-language and seven-role study library remains accessible. The coding lab lists 35 Java coding exercises: 24 assessed pilot exercises and 11 manual-practice exercises (33 Investment Banking plus two shared exercises). Other domain filters show honest empty states for coding. Python, JavaScript and TypeScript retain existing manual runners and language-specific drafts; Java assessment results do not imply assessment parity in another language.
 
-Visitors can start with one path or combine the filters. Domain, language and role catalogue links establish a useful independent starting point. The top bar provides search; preparation choices are available through the catalogue pages.
+Practice Lab is coding-only. Ordinary practice has no focus countdown. Self-review criteria remain static tick marks. No Copy answer button is added. The original Java study pack and archived material remain available.
 
-## Interview rounds
-
-1. Introduction Round — generic questions, introductions and motivation.
-2. Live Coding Round — coding problems, input contracts and verification.
-3. Technical Round — concepts, domain scenarios and technical decisions.
-4. Manager Round — senior stakeholder communication, release decisions, investment and influence.
-5. HR Round — career motivation, development and mutual fit.
-
-Each round has concepts and methods, questions and prospective answers, and best practices with self-review criteria. The Practice Lab is exclusive to live coding. Sample experience answers are clearly illustrative structures to adapt using truthful personal examples.
-
-## Content
-
-- 27 concept lessons, 57 unique questions and 5 supporting references.
-- 45 questions with worked solutions or prospective answers; 12 remain explicitly independent practice prompts.
-- 21 new questions and 5 new round-specific concept lessons added in the public-site redesign.
-- Seven role-specific technical scenarios and role-focus profiles.
-- All original Java material and the previous language editions remain available.
-- The 33 main programming resources (10 lessons, 12 core worked exercises and 11 independent prompts) switch between Java, Python, JavaScript and TypeScript. Three optional archived HTML exercises keep their labelled original Java source.
-- Python uses Decimal for financial examples. JS/TS use exact bigint cents under a declared fixed two-decimal currency contract. TypeScript examples target ES2022.
-
-## Practice lab
-
-The Practice Lab lists only programming problems from the Live Coding Round, with progressive hints and an explicit Show answer button for worked solutions, and five self-review checks. It has a syntax-highlighted editor, line numbers, indentation, bracket matching, standard input, Run/Stop controls and an output/diagnostics console.
-
-Legacy non-coding lab URLs open the coding lab; non-coding questions and saved answer drafts remain in their question pages.
-
-The integrated runner executes code; it does not automatically grade interview answers. Self-review is explicitly labelled as self-assessment. Notes, checklists, saved questions and selected filters persist in the visitor's browser. Programming drafts and review progress are separate by language. Prior Java drafts and progress are preserved. No application accounts or shared database are implemented.
-
-## Run locally
-
-No npm installation or frontend build is required. To use all four integrated runtimes on this Mac, run from the source checkout or downloaded website folder:
+## Run and verify
 
 ```sh
-python3 server/local_server.py --port 8796
+python3 -B server/local_server.py --port 8796
+npm ci --cache /private/tmp/prepspace-npm-cache
+npm run check
+npm run verify:java
+npm run build
+node tests/browser.mjs
 ```
 
-Then open `http://127.0.0.1:8796/#/lab?round=coding`. `Run PrepSpace.command` is an equivalent macOS launcher. Python 3 and a JDK 17+ must be installed. The local service uses macOS sandbox-exec and fails closed if its self-test does not pass.
+Use macOS, Python 3, JDK 17+ and Node 24+ for the complete local verification workflow. Java/Python run through a loopback-only macOS sandbox that fails closed. JavaScript/TypeScript manual programs run in isolated browser workers. Never expose the local server as an internet-facing execution service.
 
-A static HTTP server can run the JavaScript/TypeScript browser runner, but Java/Python require the bundled local service. Opening index.html as a file is suitable for reading; compiler assets and execution require HTTP.
+Private local data is in `.runtime/`, which is ignored by Git. Environment secrets are documented by name only in `.env.example`. The hosted build uses D1 and Sites-managed identity; it is prepared but not deployed or live-verified.
 
-Main routes: `#/`, `#/rounds`, `#/round/introduction`, `#/round/coding`, `#/round/technical`, `#/round/manager`, `#/round/hr`, `#/domains`, `#/languages`, `#/roles`, `#/lab` and `#/best-practices`.
+## Status and remaining launch gates
 
-## Verification
+The source repository may be synchronised to the previously authorised git.chatgpt-team.site destination. The Site remains unpublished; no public access change is made.
 
-- JavaScript syntax and local asset checks passed.
-- All 48 domain/role combinations have concepts and questions for all five rounds.
-- Eight shared coding answer versions ran successfully across Java, Python, JavaScript and TypeScript; the two new TypeScript versions also passed strict ES2022 type checking.
-- The previous 60 added language samples and 20 strict TypeScript checks remain valid; their source is unchanged.
-- Browser checks covered the public landing page, all five round paths and their resource navigation, role-specific question filtering, independent domain/language/role paths, prospective answers, lab timer start/pause/reset, answer copying, saved notes and self-check persistence, and responsive home/lab layouts at 390 px without document-level overflow.
+Cloud credentials, provider/region review and live sandbox acceptance checks are still required. Practitioner review, candidate interviews, pilot recruitment and learning-outcome studies have not been completed or fabricated. AI coaching remains disabled until a reviewed benchmark and separate integration pass their gates.
 
-## Publication status
-
-Source synchronization to the existing Sites repository at git.chatgpt-team.site is authorized. No website deployment or public-access change is requested. Keep the Site unpublished when synchronizing this source.
-
-## Integrated editor and compiler
-
-- CodeMirror 5.65.21 provides syntax highlighting for all four languages, line numbers, indentation, bracket matching and keyboard access. Ctrl/Cmd+Enter runs code; Esc moves to Run.
-- Demo loading, worked-solution loading, earlier-draft restoration and code download are available. Drafts and standard input persist separately per question and language.
-- Java compiles with --release 17 and then runs in a temporary job directory on this computer. Python performs a syntax check before execution. The local service does not send source or input to third-party execution APIs.
-- JavaScript runs in a dedicated worker inside an opaque sandboxed iframe. Its CSP blocks networking; the worker has no page DOM or browser-local notes. TypeScript 5.7.3 performs strict ES2022 type checking before execution, using bundled definition files.
-- JavaScript/TypeScript are terminal-program browser runtimes, not a general Node.js installation. Use readAll() or readLine() for standard input. The fs.readFileSync(0, "utf8") input idiom is supported, but arbitrary packages and filesystem operations are not. SharedArrayBuffer examples require a compatible isolated runtime and are not enabled in this browser sandbox.
-- Java/Python execution is loopback-only, accepts same-origin JSON requests, blocks network access and subprocess creation in the macOS sandbox, restricts personal-file reads and writes, and uses CPU/wall/output limits. The service caps concurrency at two jobs, code at 128 KiB and standard input at 64 KiB. Stop terminates the process group, including cancellation arriving before job registration.
-- This local runner is for the local preparation site. Public Java/Python execution needs a separate hardened, container-isolated execution backend; the loopback service must not be exposed as a public multi-tenant runner.
-
-New verification covered all four demo programs returning 30 from input 10 20, and the real duplicate-ID worked solution passing in all four integrated runtimes. Browser checks also covered TypeScript type errors, worker isolation, Stop, timeouts and keyboard editing. Eleven API checks covered Java/Python execution, diagnostics, sandbox/private-file/network restrictions, cross-origin denial, code bounds, cancellation and time limits. Final checks also verified cancellation before job registration and removal of the stopped browser runner.
-
-Bundled third-party licenses are retained under dist/vendor (or vendor in the download): CodeMirror (MIT) and TypeScript (Apache 2.0, with its third-party notice).
-
-Java and Python runs use their standard libraries. External JARs, Python packages, arbitrary Node packages and page DOM APIs are not included in this single-file practice environment.
-
-Coding practice begins with one problem-specific hint. Next hint reveals the remaining guidance progressively. Worked answers and the solution-loading button are inserted only after Show answer is clicked; hiding or changing a problem resets the reveal. Saved drafts remain intact. Independent prompts have hints without a fabricated worked answer.
-
-The Practice Lab self-check criteria use static tick-mark bullets. It has no completion counter, focus countdown, Start focus/Reset controls or Copy answer button.
-
-Practice Lab has its own domain filter (All domains, Investment Banking, Core Banking, Ecommerce, AI, Cloud and Data Engineering). The selected domain strictly matches coding problems tagged with that domain and is retained in the URL and browser preferences. Shared coding exercises appear only under All domains. The lab does not inherit a hidden role filter. Domains without their own coding problems show an empty state while keeping the domain selector available.
-
-A Solution language selector in Practice Lab switches between Java, Python, JavaScript and TypeScript while preserving the selected domain and coding problem. It updates the editor syntax, starter, runtime and click-to-reveal answer. Drafts and standard input remain separate per question/language; changing language keeps the worked answer hidden. The language preference is saved and reflected in the URL.
-
-All 23 live coding problems use detailed exercise statements with difficulty/topic tags, input/return contracts, numbered input/output examples, expected-result explanations, constraints and optional follow-ups. Monetary examples adapt between exact decimal values (Java/Python) and bigint cents (JS/TS). Prompts define the expected behaviour without revealing implementation steps. Hints and click-to-reveal worked answers remain separate.
+See [operations](docs/OPERATIONS.md), [research protocol](docs/RESEARCH-PROTOCOL.md) and [implementation notes](docs/IMPLEMENTATION.md). Third-party CodeMirror/TypeScript notices remain bundled. E2B SDK and build dependencies are pinned in package-lock.json.

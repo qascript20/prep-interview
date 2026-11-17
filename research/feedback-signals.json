@@ -1,0 +1,30 @@
+{
+  "reviewDate": "2026-11-17",
+  "limitations": "No prevalence estimate, platform ranking or universal missing-feature claim is inferred. Employer configuration and product updates may change experiences.",
+  "signals": [
+    {
+      "platform": "HackerRank",
+      "source": "https://www.trustpilot.com/review/hackerrank.com",
+      "signal": "Contract clarity, crashes/lost work and mismatch with employer-configured formats",
+      "evidence": "Self-selected candidate reports, 2025\u20132026"
+    },
+    {
+      "platform": "CoderPad",
+      "source": "https://www.g2.com/products/coderpad/reviews",
+      "signal": "Strong collaboration experience alongside occasional latency/diagnostic requests",
+      "evidence": "Mixed candidate and employer reports, 2026"
+    },
+    {
+      "platform": "HackerEarth",
+      "source": "https://www.trustradius.com/products/hackerearth-assessments/reviews",
+      "signal": "Requests for diagnostics, IDE and refreshed content",
+      "evidence": "Historical employer reviews, 2022\u20132023; some incentivised; current defect status unverified"
+    },
+    {
+      "platform": "Educative",
+      "source": "https://www.trustpilot.com/review/www.educative.io",
+      "signal": "Mixed content/AI value and renewal/support experiences",
+      "evidence": "Positive and negative public reviews, 2025\u20132026; some company responses"
+    }
+  ]
+}

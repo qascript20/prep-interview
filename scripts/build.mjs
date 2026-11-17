@@ -1,0 +1,13 @@
+import {build} from 'esbuild';
+import {readdir,cp,mkdir,readFile,writeFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+execFileSync('python3',['scripts/build_catalogue.py'],{stdio:'inherit'});
+await mkdir('dist/client',{recursive:true});
+for(const file of await readdir('dist',{withFileTypes:true}))if(!['client','server','.openai'].includes(file.name))await cp('dist/'+file.name,'dist/client/'+file.name,{recursive:true});
+await build({entryPoints:['hosted/worker.mjs'],outfile:'dist/server/index.js',bundle:true,format:'esm',platform:'browser',target:'es2022',conditions:['workerd','worker','browser'],external:['node:*'],minify:true,legalComments:'external'});
+await mkdir('dist/.openai',{recursive:true});
+const original=JSON.parse(await readFile('.openai/hosting.json','utf8'));
+const hosted={project_id:original.project_id,d1:'DB',r2:null};
+await cp('drizzle','dist/.openai/drizzle',{recursive:true});
+await writeFile('dist/.openai/hosting.json',JSON.stringify(hosted,null,2)+'\n');
+console.log('Built Worker + client assets. Existing source hosting manifest remains static/unpublished. See docs/OPERATIONS.md before activating the hosted build.');

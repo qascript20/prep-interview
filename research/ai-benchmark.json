@@ -1,0 +1,357 @@
+{
+  "version": 1,
+  "requiredExpertReviews": 50,
+  "completedExpertReviews": 0,
+  "state": "blocked",
+  "description": "Original synthetic fixture index for a future feedback benchmark; no model feedback or human approval is claimed.",
+  "fixtures": [
+    {
+      "id": "reference-2-01-find-duplicate-trade-ids-in-second-occurrence-order",
+      "problemId": "2-01-find-duplicate-trade-ids-in-second-occurrence-order",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-01-find-duplicate-trade-ids-in-second-occurrence-order",
+      "problemId": "2-01-find-duplicate-trade-ids-in-second-occurrence-order",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-03-validate-a-trading-order-and-return-all-errors",
+      "problemId": "2-03-validate-a-trading-order-and-return-all-errors",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-03-validate-a-trading-order-and-return-all-errors",
+      "problemId": "2-03-validate-a-trading-order-and-return-all-errors",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-04-calculate-total-trade-quantity-by-symbol",
+      "problemId": "2-04-calculate-total-trade-quantity-by-symbol",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-04-calculate-total-trade-quantity-by-symbol",
+      "problemId": "2-04-calculate-total-trade-quantity-by-symbol",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-06-find-trades-missing-from-actual-results",
+      "problemId": "2-06-find-trades-missing-from-actual-results",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-06-find-trades-missing-from-actual-results",
+      "problemId": "2-06-find-trades-missing-from-actual-results",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-09-create-an-immutable-order-with-validation-and-notional",
+      "problemId": "2-09-create-an-immutable-order-with-validation-and-notional",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-09-create-an-immutable-order-with-validation-and-notional",
+      "problemId": "2-09-create-an-immutable-order-with-validation-and-notional",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-10-deduplicate-orders-using-equals-and-hashcode",
+      "problemId": "2-10-deduplicate-orders-using-equals-and-hashcode",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-10-deduplicate-orders-using-equals-and-hashcode",
+      "problemId": "2-10-deduplicate-orders-using-equals-and-hashcode",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-16-calculate-executed-buy-notional-by-symbol",
+      "problemId": "2-16-calculate-executed-buy-notional-by-symbol",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-16-calculate-executed-buy-notional-by-symbol",
+      "problemId": "2-16-calculate-executed-buy-notional-by-symbol",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-17-calculate-volume-weighted-average-execution-price",
+      "problemId": "2-17-calculate-volume-weighted-average-execution-price",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-17-calculate-volume-weighted-average-execution-price",
+      "problemId": "2-17-calculate-volume-weighted-average-execution-price",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-18-find-the-largest-executed-trades",
+      "problemId": "2-18-find-the-largest-executed-trades",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-18-find-the-largest-executed-trades",
+      "problemId": "2-18-find-the-largest-executed-trades",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-19-reconcile-two-complete-trade-snapshots",
+      "problemId": "2-19-reconcile-two-complete-trade-snapshots",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-19-reconcile-two-complete-trade-snapshots",
+      "problemId": "2-19-reconcile-two-complete-trade-snapshots",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-20-deduplicate-execution-events",
+      "problemId": "2-20-deduplicate-execution-events",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-20-deduplicate-execution-events",
+      "problemId": "2-20-deduplicate-execution-events",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-2-21-maintain-best-bid-and-ask",
+      "problemId": "2-21-maintain-best-bid-and-ask",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-2-21-maintain-best-bid-and-ask",
+      "problemId": "2-21-maintain-best-bid-and-ask",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-debug-price-scale",
+      "problemId": "banking-debug-price-scale",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-debug-price-scale",
+      "problemId": "banking-debug-price-scale",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-debug-first-order",
+      "problemId": "banking-debug-first-order",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-debug-first-order",
+      "problemId": "banking-debug-first-order",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-debug-retry-budget",
+      "problemId": "banking-debug-retry-budget",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-debug-retry-budget",
+      "problemId": "banking-debug-retry-budget",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-debug-pagination",
+      "problemId": "banking-debug-pagination",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-debug-pagination",
+      "problemId": "banking-debug-pagination",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-test-order-validation",
+      "problemId": "banking-test-order-validation",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-test-order-validation",
+      "problemId": "banking-test-order-validation",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-test-missing-trades",
+      "problemId": "banking-test-missing-trades",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-test-missing-trades",
+      "problemId": "banking-test-missing-trades",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-test-retry-policy",
+      "problemId": "banking-test-retry-policy",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-test-retry-policy",
+      "problemId": "banking-test-retry-policy",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-test-money",
+      "problemId": "banking-test-money",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-test-money",
+      "problemId": "banking-test-money",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-project-reconciler",
+      "problemId": "banking-project-reconciler",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-project-reconciler",
+      "problemId": "banking-project-reconciler",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-project-ledger",
+      "problemId": "banking-project-ledger",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-project-ledger",
+      "problemId": "banking-project-ledger",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-project-concurrent-events",
+      "problemId": "banking-project-concurrent-events",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-project-concurrent-events",
+      "problemId": "banking-project-concurrent-events",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "reference-banking-project-regression-runner",
+      "problemId": "banking-project-regression-runner",
+      "sourceFixture": "catalogue reference",
+      "expectedCorrectness": "completed",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "wrong-banking-project-regression-runner",
+      "problemId": "banking-project-regression-runner",
+      "sourceFixture": "constant-output negative control",
+      "expectedCorrectness": "incorrect_output",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "compile-diagnostic",
+      "sourceFixture": "invalid Java syntax",
+      "expectedCorrectness": "compile_error",
+      "expertFeedbackReview": "pending"
+    },
+    {
+      "id": "provider-interruption",
+      "sourceFixture": "execution provider unavailable",
+      "expectedCorrectness": "infrastructure_error",
+      "expertFeedbackReview": "pending"
+    }
+  ]
+}

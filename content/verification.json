@@ -1,0 +1,194 @@
+{
+  "2-01-find-duplicate-trade-ids-in-second-occurrence-order": {
+    "digest": "d364d6ff63679dd54ba6fe792610e9d89de622457012a229279dde4fb598b178",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 8,
+    "negativeControl": "rejected"
+  },
+  "2-03-validate-a-trading-order-and-return-all-errors": {
+    "digest": "f63f031ad35dae36422c694457e829eacbe765c27be32689461ec86d39f091dd",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 7,
+    "negativeControl": "rejected"
+  },
+  "2-04-calculate-total-trade-quantity-by-symbol": {
+    "digest": "a0bf401b26abaa222448ad88d8c592a363c761ba9b9288d00207e18afb051269",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 6,
+    "negativeControl": "rejected"
+  },
+  "2-06-find-trades-missing-from-actual-results": {
+    "digest": "5e4563a2acedab5678aee3445b5f6f537b26b40ec24d7a119cc309a3397f4d6d",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "2-09-create-an-immutable-order-with-validation-and-notional": {
+    "digest": "7290c889e832e4c340dca8e78c843299a17bd9603c58d8cad9ffeabc7d6ccfca",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 6,
+    "negativeControl": "rejected"
+  },
+  "2-10-deduplicate-orders-using-equals-and-hashcode": {
+    "digest": "02661a3df883336a3124c9947c4eb63fc76a36e97d266cf384f9c7602e98ffdf",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "2-16-calculate-executed-buy-notional-by-symbol": {
+    "digest": "66730478d12a9e18257eec2ccafd8b2b308abb2fe48359da3f7cd221ece0d5bf",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "2-17-calculate-volume-weighted-average-execution-price": {
+    "digest": "bf04a94441827ef9be4f0a71d38010b89cae47b6258b9d9fccbffacf53076e68",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "2-18-find-the-largest-executed-trades": {
+    "digest": "c6bc4b5479af538893bb2bd4fe01c0ef9f95143ffeb192ba1b5edd8eb07c51c7",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "2-19-reconcile-two-complete-trade-snapshots": {
+    "digest": "3124cb54ff43c95631b7425ae575f4f7e9affe95296ab9c510baeeabac794bda",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "2-20-deduplicate-execution-events": {
+    "digest": "53373bec8e6001ae53adfb601f093458e6c69c304b14cd94e78bb99a4fde6774",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 6,
+    "negativeControl": "rejected"
+  },
+  "2-21-maintain-best-bid-and-ask": {
+    "digest": "a3d4fc69c68e049981a0964b4da35144d4cc1a9f95eef5481d639d78e2e4a060",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "banking-debug-price-scale": {
+    "digest": "e8854cc86b22db9ddcfb04ef7d2c472e70011a929e4daa7bc3c215af5fc08b73",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "banking-debug-first-order": {
+    "digest": "2613b1ea116c91004bff422804f37f84caa084ef22b00d1de235486cf220c6f0",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 3,
+    "negativeControl": "rejected"
+  },
+  "banking-debug-retry-budget": {
+    "digest": "325e2258b1b0780396638ccfc2630feceae0f5c9b136bca5c5550bf7178380f3",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "banking-debug-pagination": {
+    "digest": "cab8ffe38d5ee21c0999dd486dd6e4561bfb5bdee28308f21309a60412ba468d",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "banking-test-order-validation": {
+    "digest": "45a8dd5d46ed1f4f484111fcc4591a1a8e63b0566c96df4f54ef56ee55efa31c",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 6,
+    "negativeControl": "rejected"
+  },
+  "banking-test-missing-trades": {
+    "digest": "d889ff93aea2c010bea7ff2c20789c8756e6ae9725c71e31e57002200b5a6077",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "banking-test-retry-policy": {
+    "digest": "f99a9861cc7164134c7daf81b63e8eb61c1338ab4bc39bcb644eb8956532bcca",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "banking-test-money": {
+    "digest": "25e0b28aa36062ca48b914e1b715aebc918704937c2d0df15f3d514329efd62b",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "banking-project-reconciler": {
+    "digest": "be5b1e17e75962e9e37befe044e074c8445a8f0bc15e0951ff266da8ba5cf085",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "banking-project-ledger": {
+    "digest": "26cd60771f004345d1347d522ce45fcf9e42b39d497e49f11807afaae5479591",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 5,
+    "negativeControl": "rejected"
+  },
+  "banking-project-concurrent-events": {
+    "digest": "9d6841f5cb322e1f7b8499a538948f5dd556a45495a86fbb2e91e48c30332af9",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  },
+  "banking-project-regression-runner": {
+    "digest": "ea923378164796b6760fe10652753497db0ad0d3378879fba536797074b69378",
+    "status": "verified",
+    "date": "2026-11-17",
+    "runtime": "Java --release 17",
+    "checks": 4,
+    "negativeControl": "rejected"
+  }
+}

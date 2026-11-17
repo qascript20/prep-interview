@@ -5,7 +5,8 @@ Not a multi-tenant/public code execution service. It fails closed without sandbo
 import argparse,errno,json,os,re,resource,shutil,signal,subprocess,sys,tempfile,threading,time,uuid
 from pathlib import Path
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit,unquote
+import posixpath
 
 ROOT=Path(__file__).resolve().parents[1]
 DIST=ROOT/'dist' if (ROOT/'dist/index.html').is_file() else ROOT
@@ -99,6 +100,33 @@ def run_code(language,code,input_text,run_id):
     finally:
         with JOB_LOCK:JOBS.pop(run_id,None)
 
+def run_project(files,inputs,run_id):
+    """Compile once; compare every process result in the trusted host, never in Java."""
+    from grading import validate_files
+    validate_files(files)
+    job={'cancelled':threading.Event(),'process':None}
+    with JOB_LOCK:
+        if run_id in JOBS:raise ValueError('This run ID is already active.')
+        JOBS[run_id]=job
+        if CANCELLED.pop(run_id,None) is not None:job['cancelled'].set()
+    try:
+        with tempfile.TemporaryDirectory(prefix='prepspace-project-',dir='/private/tmp') as directory:
+            work=Path(directory);(work/'classes').mkdir();(work/'stdin.txt').write_text('')
+            for name,source in files.items():(work/name).write_text(source)
+            compiled=execute([JAVAC,'-J-Xmx192m','-J-XX:-UsePerfData','-J-XX:ActiveProcessorCount=2','-proc:none','--release','17','-d',work/'classes',*[work/name for name in files]],work,job,'compile',10)
+            if compiled['status']!='completed':return [compiled]
+            results=[];deadline=time.monotonic()+25
+            for text in inputs:
+                if time.monotonic()>deadline:return [{'status':'timeout','stdout':'','stderr':'The complete check exceeded its execution budget.'}]
+                (work/'stdin.txt').write_text(text)
+                result=execute([JAVA,'-Xint','-Xms16m','-Xmx128m','-Xss256k','-XX:MaxMetaspaceSize=96m','-XX:MaxDirectMemorySize=32m','-XX:ActiveProcessorCount=2','-XX:-UsePerfData','-XX:+DisableAttachMechanism','-XX:ErrorFile=/dev/null','-Djava.io.tmpdir='+str(work),'-cp',work/'classes','Main'],work,job,'run',min(7,max(.1,deadline-time.monotonic())))
+                for field in ('stdout','stderr'):result[field]=result[field].replace(str(work)+'/','')
+                results.append(result)
+                if result['status']!='completed':break
+            return results
+    finally:
+        with JOB_LOCK:JOBS.pop(run_id,None)
+
 def self_test():
     if sys.platform!='darwin' or not SANDBOX.is_file() or not PYTHON.is_file():return False
     # Try only our own sentinel, not a real user file.
@@ -133,6 +161,7 @@ class Handler(SimpleHTTPRequestHandler):
         # Log routes/status, never source, standard input or output.
         if len(args)>=2:sys.stdout.write('HTTP '+str(args[1])+' '+self.path.split('?')[0]+'\n');sys.stdout.flush()
     def end_headers(self):
+        if getattr(self,'pilot_cookie',None):self.send_header('Set-Cookie',self.pilot_cookie)
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Referrer-Policy','same-origin')
         self.send_header('Cache-Control','no-store' if self.path.endswith(('.html','.js','.css')) or self.path.startswith('/api/') else 'max-age=3600')
@@ -148,6 +177,11 @@ class Handler(SimpleHTTPRequestHandler):
         body=json.dumps(value).encode();self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
     def do_GET(self):
         if not self.local_request():self.send_error(403);return
+        path=posixpath.normpath(unquote(urlsplit(self.path).path))
+        if path in ('/server','/.openai') or path.startswith(('/server/','/.openai/')):
+            self.send_error(404);return
+        from pilot_api import handle_get
+        if handle_get(self):return
         if self.path=='/api/runtimes':
             self.json_response({'local':True,'sandbox':READY,'python':READY,'java':READY and JAVA.is_file() and JAVAC.is_file(),'javaRelease':17,'limitSeconds':7});return
         super().do_GET()
@@ -158,6 +192,8 @@ class Handler(SimpleHTTPRequestHandler):
             if length<=0 or length>256*1024:raise ValueError('Request too large or empty.')
             body=json.loads(self.rfile.read(length))
             if not isinstance(body,dict):raise ValueError('Expected a JSON object.')
+            from pilot_api import handle_post
+            if handle_post(self,body):return
             run_id=body.get('runId','')
             if not re.fullmatch(r'[A-Za-z0-9-]{1,64}',run_id):raise ValueError('Invalid run ID.')
             if self.path=='/api/cancel':
@@ -181,6 +217,15 @@ class Handler(SimpleHTTPRequestHandler):
         except (ValueError,json.JSONDecodeError) as error:self.json_response({'error':str(error)},400)
         except (BrokenPipeError,ConnectionResetError):pass
         except Exception:self.json_response({'error':'The local run could not be completed.'},500)
+    def do_DELETE(self):
+        if not self.local_request() or self.path!='/api/pilot/account' or not self.headers.get('Content-Type','').startswith('application/json'):
+            self.json_response({'error':'Same-origin account deletion only.'},403);return
+        from pilot_api import instance
+        pilot=instance();user=pilot.identity(self)
+        if self.headers.get('X-PrepSpace-Workspace') not in (None,user):self.json_response({'error':'Your workspace changed. Reload before deleting data.','code':'workspace_changed'},409);return
+        data,status=pilot.delete(user)
+        self.pilot_cookie='prepspace_local=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'
+        self.json_response(data,status)
 
 def main():
     global READY

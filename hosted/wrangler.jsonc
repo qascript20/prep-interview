@@ -1,0 +1,9 @@
+{
+  "name": "prepspace-pilot-staging",
+  "main": "../dist/server/index.js",
+  "compatibility_date": "2026-11-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {"directory": "../dist/client", "binding": "ASSETS", "run_worker_first": ["/api/*"]},
+  "d1_databases": [{"binding": "DB", "database_name": "prepspace-pilot", "database_id": "REPLACE_WITH_PROVISIONED_DATABASE_ID", "migrations_dir": "../drizzle"}],
+  "vars": {"PILOT_IDENTITY_BOUNDARY": "unconfigured", "PILOT_EXECUTION_ENABLED": "false", "PILOT_PROCESSING_REGION": "Not configured", "PILOT_DAILY_RUN_LIMIT": "20", "PILOT_EXECUTION_BUDGET_PENCE": "6000", "PILOT_JOB_RESERVATION_PENCE": "5"}
+}
