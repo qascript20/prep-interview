@@ -41,4 +41,8 @@ try{
  await page.emulateMedia({media:'print'});assert.equal(await page.locator('.concept-print-source').isVisible(),true);assert.equal(await page.locator('.concept-layout').isVisible(),false);await page.emulateMedia({media:'screen'});
  console.log('PASS all 30 alternate-language editions and complete print reference');
  assert.deepEqual(errors,[]);console.log('PASS all 27 concept pages render with learning checks and no browser errors');
-}finally{await browser.close();}
+}finally{
+ // Bound temporary-browser cleanup; assertion failures still propagate and exit nonzero.
+ await Promise.race([browser.close(),new Promise(resolve=>setTimeout(resolve,5000))]);
+}
+process.exit(0);
