@@ -16,7 +16,7 @@ A public-facing interview preparation site with a working local Java assessment 
 
 ## Interactive concepts
 
-All 27 concept pages use Learn, Try it and Quick check modes, with short explanations, explorable method cards, searchable methods, input/output predictions and explanations revealed on demand. The ten core Java lessons include step-through teaching models for construction, null guards, exact arithmetic, collections, map updates, stream stages, grouping, executors, atomic updates and context cleanup. Python, JavaScript and TypeScript use their own existing code scenarios and language-specific learning checks. Models are illustrative, not code execution or automatic certification. Predictions are saved in this browser; complete original references remain printable.
+All 27 concept pages use Learn, Try it and Quick check modes, with short explanations, explorable method cards, searchable methods, input/output predictions and explanations revealed on demand. The ten core Java lessons include step-through teaching models for construction, null guards, exact arithmetic, collections, map updates, stream stages, grouping, executors, atomic updates and context cleanup. Concepts support Java and Python only; Python uses its own code scenarios and language-specific learning checks. Legacy JavaScript/TypeScript concept links fall back to Java. The concept language is saved separately from the Practice Lab language, where all four languages remain available. Models are illustrative, not code execution or automatic certification. Predictions are saved in this browser; complete original references remain printable.
 
 Verify with `node tests/browser-concepts.mjs`.
 
