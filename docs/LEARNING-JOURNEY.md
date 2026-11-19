@@ -16,7 +16,7 @@ All stages stay accessible. Choosing an advanced entry point changes the recomme
 
 - Concept progress uses the existing explicit Mark as reviewed action. Programming editions retain separate Java/Python review keys.
 - Assessed coding requires a full successful check in the current Java problem version, with the expected test count. Sample runs, older versions, other languages and partial checks do not count.
-- Independent assessed tasks additionally require explicit records of zero hints, no viewed/loaded answer and no reported external help.
+- Independent assessed tasks additionally require explicit records of zero hints, no viewed/loaded answer and no reported external help. An assisted pass keeps its label and remains incomplete for this milestone; recommendations offer other tasks before suggesting a revisit.
 - Manual-language coding and interview rehearsals require a deliberate self-review and a reflection of at least 20 characters. These remain labelled self-reviewed; the text length is a recording requirement, not an assessment of answer quality.
 - The page records steps rather than an overall readiness percentage or expertise certificate. Coding evidence uses up to 200 recent saved attempts.
 

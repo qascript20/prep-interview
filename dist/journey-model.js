@@ -27,13 +27,13 @@ window.PrepJourneyModel=(()=>{
         const passed=(evidence.attempts||[]).filter(a=>a.problem_id===task.id&&a.language==='java'&&String(a.problem_version)===String(spec.version)&&a.mode==='check'&&a.status==='completed'&&a.result?.total>0&&a.result.total===spec.testCount&&a.result.passed===a.result.total);
         const clean=a=>a.assistance&&a.assistance.hints===0&&a.assistance.answerViewed===false&&a.assistance.solutionLoaded===false&&a.assistance.externalHelp===false;
         const done=passed.some(a=>!task.independent||clean(a));
-        return {done,source:'checks',label:done?(task.independent?'Checks passed · no assistance recorded':'Contract checks passed'):passed.length?'Try again without recorded assistance':'Contract check to complete'};
+        return {done,attempted:passed.length>0,source:'checks',label:done?(task.independent?'Checks passed · no assistance recorded':'Contract checks passed'):passed.length?'Checks passed with assistance':'Contract check to complete'};
       }
     }
     const reflection=evidence.reflections?.[reflectionKey(p,task)],done=reflection?.reviewed===true&&reflection.note?.trim().length>=20;
     return {done:!!done,source:'reflection',label:done?(task.kind==='coding'?'Self-reviewed practice':'Rehearsal recorded'):(task.kind==='coding'?'Manual practice':'Rehearsal to try')};
   }
-  function recommend(stages,p,evidence){const entry=stages.findIndex(stage=>stage.id===levels[p.level].stage),ordered=[...stages.slice(Math.max(0,entry)),...stages.slice(0,Math.max(0,entry))];for(const stage of ordered){const task=stage.tasks.find(t=>!taskStatus(t,p,evidence).done);if(task)return {stage,task};}return null;}
+  function recommend(stages,p,evidence){const entry=stages.findIndex(stage=>stage.id===levels[p.level].stage),ordered=[...stages.slice(Math.max(0,entry)),...stages.slice(0,Math.max(0,entry))];for(const revisit of [false,true])for(const stage of ordered){const task=stage.tasks.find(t=>{const result=taskStatus(t,p,evidence);return !result.done&&(revisit||!result.attempted);});if(task)return {stage,task};}return null;}
   function session(minutes){const learn=Math.round(minutes/4),practise=Math.round(minutes/2);return {learn,practise,reflect:minutes-learn-practise};}
   return {levels,domains,roles,profile,curriculum,reflectionKey,taskStatus,recommend,session};
 })();
