@@ -2,6 +2,14 @@
 
 A public-facing interview preparation site with a working local Java assessment pilot. Start at http://127.0.0.1:8796 after launching the local server.
 
+## Guided learning journey
+
+The public overview introduces a five-stage route from foundations through guided practice, independent coding, technical depth and complete interview rehearsal. Start at `#/learn` and choose a starting level, Java/Python, one of seven roles, a domain and a typical session length. Earlier stages remain available; a later starting level never awards earlier progress.
+
+Recommendations use the selected starting point and actual records: self-reviewed concept editions, deliberate rehearsal reflections, and full current-version Java contract checks. Independent coding additionally requires no recorded assistance. Manual-language practice is labelled self-reviewed. Every lesson and linked coding task offers a return to the learning path. Existing drafts, explicit answer reveal, progressive hints and the five interview rounds are preserved.
+
+Path preferences and reflections are stored in this browser and isolated with the existing workspace identity. They are included in browser-data export and deletion. Removing a path preserves drafts and learning records. Java coding evidence is loaded from the existing preparation service and is never converted into an overall readiness or expertise score.
+
 ## Implemented
 
 - Banking Java/backend and QA/SDET paths, with 7-, 14- and 28-day plans and five interview-round sequences.
