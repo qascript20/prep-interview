@@ -35,5 +35,24 @@ window.PrepJourneyModel=(()=>{
   }
   function recommend(stages,p,evidence){const entry=stages.findIndex(stage=>stage.id===levels[p.level].stage),ordered=[...stages.slice(Math.max(0,entry)),...stages.slice(0,Math.max(0,entry))];for(const revisit of [false,true])for(const stage of ordered){const task=stage.tasks.find(t=>{const result=taskStatus(t,p,evidence);return !result.done&&(revisit||!result.attempted);});if(task)return {stage,task};}return null;}
   function session(minutes){const learn=Math.round(minutes/4),practise=Math.round(minutes/2);return {learn,practise,reflect:minutes-learn-practise};}
-  return {levels,domains,roles,profile,curriculum,reflectionKey,taskStatus,recommend,session};
+  const mockChecks=['introduction','coding','technical','manager','hr'];
+  function readinessKey(input,catalogue=[]){const p=profile(input),tasks=curriculum(p).flatMap(stage=>stage.tasks);return JSON.stringify(['interview-checkpoint-v1',p.language,p.role,p.domain,...tasks.map(task=>[task.id,task.kind==='coding'&&p.language==='java'?catalogue.find(item=>item.id===task.id)?.version||'unavailable':'learning-v1'])]);}
+  function validMock(record){return record?.confirmed===true&&Array.isArray(record.checks)&&mockChecks.every(id=>record.checks.includes(id))&&typeof record.strengths==='string'&&record.strengths.trim().length>=40&&typeof record.improvements==='string'&&record.improvements.trim().length>=40&&Number.isFinite(Date.parse(record.recordedAt));}
+  function progress(input,availableStages,evidence={}){
+    const p=profile(input),expected=curriculum(p),available=new Set(availableStages.flatMap(stage=>stage.tasks.map(task=>task.id))),catalogue=evidence.catalogue||[];
+    const milestones=expected.map(stage=>{const tasks=stage.tasks.map(task=>({...task,available:available.has(task.id),status:available.has(task.id)?taskStatus(task,p,evidence):{done:false,source:'unavailable',label:'Reviewed material unavailable'}})),done=tasks.filter(task=>task.status.done).length;return {...stage,tasks,done,total:tasks.length,complete:tasks.length>0&&done===tasks.length};});
+    const tasks=milestones.flatMap(stage=>stage.tasks),done=tasks.filter(task=>task.status.done).length,firstGap=milestones.find(stage=>!stage.complete),missing=tasks.filter(task=>!task.available);
+    const gradingAvailable=p.language!=='java'||tasks.filter(task=>task.kind==='coding').every(task=>catalogue.some(item=>item.id===task.id));
+    const historyKnown=p.language!=='java'||evidence.historyState==='ready';
+    const key=readinessKey(p,catalogue),record=evidence.readiness?.[key],mockComplete=validMock(record),practiceComplete=!firstGap&&missing.length===0&&gradingAvailable;
+    let state=done?'in_progress':'not_started';
+    if(practiceComplete)state=mockComplete?'ready':'mock_ready';
+    if(!historyKnown)state=evidence.historyState==='unavailable'?'unverified':'checking';
+    if(missing.length||!gradingAvailable)state='review_needed';
+    const labels={not_started:'Start your preparation',in_progress:'Preparing for your interview',mock_ready:'Ready for a full mock interview',ready:p.language==='python'?'Interview-ready · self-assessed':'Interview-ready for this path',unverified:'Coding evidence needs a refresh',checking:'Checking your coding evidence',review_needed:'Some preparation evidence is unavailable'};
+    const current=firstGap?.id||'interview',remainingMinutes=tasks.filter(task=>!task.status.done).reduce((sum,task)=>sum+task.minutes,0)+(mockComplete?0:45);
+    return {milestones,tasks,done,total:tasks.length,current,currentName:firstGap?.short||'Interview readiness',state,label:labels[state],ready:state==='ready',practiceComplete,mockComplete,key,record,missing,historyKnown,gradingAvailable,remainingMinutes,sessions:Math.ceil(remainingMinutes/p.minutes),gaps:milestones.filter(stage=>!stage.complete),criteriaMet:milestones.filter(stage=>stage.complete).length+(mockComplete?1:0),criteriaTotal:milestones.length+1,checked:tasks.filter(task=>task.status.done&&task.status.source==='checks').length,selfReviewed:tasks.filter(task=>task.status.done&&task.status.source==='review').length,rehearsed:tasks.filter(task=>task.kind==='rehearsal'&&task.status.done).length};
+  }
+  function roadPosition(result){const found=result.milestones.findIndex(stage=>stage.id===result.current),index=found<0?result.milestones.length:found,stage=result.milestones[index],fraction=stage?stage.done/stage.total:result.ready?1:0;return {index,fraction,segments:Array.from({length:result.milestones.length+1},(_,n)=>n<index?1:n===index?fraction:0)};}
+  return {levels,domains,roles,profile,curriculum,reflectionKey,taskStatus,recommend,session,mockChecks,readinessKey,validMock,progress,roadPosition};
 })();

@@ -10,6 +10,12 @@ Recommendations use the selected starting point and actual records: self-reviewe
 
 Path preferences and reflections are stored in this browser and isolated with the existing workspace identity. They are included in browser-data export and deletion. Removing a path preserves drafts and learning records. Java coding evidence is loaded from the existing preparation service and is never converted into an overall readiness or expertise score.
 
+## Visual progress road
+
+Open `#/progress` for a winding road from Start to the Interview-ready target. A car follows recorded progress through five clickable milestones. Desktop uses a horizontal road; mobile uses a vertical road. The current milestone is the earliest incomplete stage, regardless of the chosen starting level or the page being viewed. The public overview shows a compact progress summary for returning learners.
+
+Readiness requires all five learning stages plus an explicit full-mock self-assessment covering all five interview rounds. Java coding requires current full contract checks; independent tasks also require no recorded assistance. Python readiness is explicitly labelled self-assessed. Missing material or unavailable Java execution history keeps readiness pending. These are transparent preparation checkpoints, not a hiring prediction. See [progress and readiness](docs/PROGRESS-READINESS.md).
+
 ## Implemented
 
 - Banking Java/backend and QA/SDET paths, with 7-, 14- and 28-day plans and five interview-round sequences.
