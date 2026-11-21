@@ -38,6 +38,8 @@ Verify availability and published Python examples with `npm run check`; verify t
 
 ## Preserved
 
+The Technical Round includes seven Java collections interview questions covering List/Set/Map, Queue versus LinkedList, List versus HashMap, HashMap versus TreeMap, Map interfaces, custom-key equality and HashMap performance. Answers stay behind an explicit reveal and include operation-specific comparisons, scenarios, runnable Java 17 programs, expected output, common mistakes, follow-ups and official API references reviewed on 21 November 2026. All seven programs were compiled with `javac --release 17` and their outputs verified. These oral questions are available only in Java and do not enter the Live Coding Lab.
+
 The existing six-domain, four-language and seven-role study library remains accessible. The coding lab lists 35 Java coding exercises: 24 assessed pilot exercises and 11 manual-practice exercises (33 Investment Banking plus two shared exercises). Other domain filters show honest empty states for coding. Python, JavaScript and TypeScript retain existing manual runners and language-specific drafts; Java assessment results do not imply assessment parity in another language.
 
 Practice Lab is coding-only. Ordinary practice has no focus countdown. Self-review criteria remain static tick marks. No Copy answer button is added. The original Java study pack and archived material remain available.
