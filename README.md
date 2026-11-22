@@ -32,11 +32,11 @@ Readiness requires all five learning stages plus an explicit full-mock self-asse
 
 Learn replaces the standalone Concepts catalogue. It contains 23 sequential Java 17 lessons in six groups: Foundations, Linear structures, Sets, Maps, Concurrent structures and Custom structures. The course includes arrays, strings, lists, stacks/deques, queues, priority heaps, set variants, map variants, identity and equality, copies/views, concurrent collections, blocking queues, binary search trees, graphs/BFS, tries, union–find and prefix/Fenwick/segment-tree trade-offs. Specialized and legacy JDK types are compared where relevant.
 
-Every lesson contains goals, explanations and operation costs, a runnable example with input/setup, an explicit output reveal, an interactive recall check with feedback, mistakes, interview rehearsal and source links. JDK APIs and custom implementations are labelled separately. All 23 programs were compiled with `javac --release 17 -encoding UTF-8` and their documented outputs verified. Tutorial pages show teaching examples; runnable coding remains in the Practice Lab.
+Every lesson contains goals, explanations and operation costs, a runnable example with input/setup, an explicit output reveal, an interactive recall check with feedback, mistakes, interview rehearsal and source links. JDK APIs and custom implementations are labelled separately. All 23 programs were compiled with `javac --release 17 -encoding UTF-8` and their documented outputs verified. Tutorial pages show teaching examples; runnable coding remains in the Practice.
 
 Tutorial reviews are explicit self-assessments and never awarded by a quiz answer. Review state and versioned check choices are scoped to the active browser workspace and participate in existing browser export/deletion. Previous interview answer drafts remain keyed by the original lesson IDs. The original seven Java technical question URLs now open their tutorial chapters. `#/concepts` remains a compatibility alias for Learn, and earlier tutorial URLs still work. Legacy study data remains for saved links and the existing guided path; it is not presented as a separate lesson library in Learn.
 
-Java is the available tutorial language. Non-Java tutorial URLs show a clear availability state; Python, JavaScript and TypeScript coding remain in the Practice Lab. No concept-library tab is added. Desktop has a scrollable course sidebar; mobile has a compact, expandable contents menu.
+Java is the available tutorial language. Non-Java tutorial URLs show a clear availability state; Python, JavaScript and TypeScript coding remain in the Practice. No concept-library tab is added. Desktop has a scrollable course sidebar; mobile has a compact, expandable contents menu.
 
 ## Preserved
 
@@ -44,7 +44,7 @@ The original Technical Round questions are retained as tutorial interview practi
 
 The existing six-domain, four-language and seven-role study library remains accessible. The coding lab lists 35 Java coding exercises: 24 assessed pilot exercises and 11 manual-practice exercises (33 Investment Banking plus two shared exercises). Other domain filters show honest empty states for coding. Python, JavaScript and TypeScript retain existing manual runners and language-specific drafts; Java assessment results do not imply assessment parity in another language.
 
-Practice Lab is coding-only. Ordinary practice has no focus countdown. Self-review criteria remain static tick marks. No Copy answer button is added. The original Java study pack and archived material remain available.
+Practice is coding-only. Ordinary practice has no focus countdown. Self-review criteria remain static tick marks. No Copy answer button is added. The original Java study pack and archived material remain available.
 
 ## Run and verify
 
