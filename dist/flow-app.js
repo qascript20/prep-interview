@@ -1,0 +1,17 @@
+'use strict';
+const $=selector=>document.querySelector(selector);
+const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state={studioSetup:{},language:'java'};try{state={...state,...JSON.parse(localStorage.getItem('prepspace-v1')||'{}')};}catch{}
+const roleConfig=window.INTERVIEW_OPTIONS.roles,roundConfig=window.INTERVIEW_OPTIONS.rounds,domains=window.INTERVIEW_OPTIONS.domains;
+const languageConfig={java:{name:'Java'},python:{name:'Python'},javascript:{name:'JavaScript'},typescript:{name:'TypeScript'}};
+let currentLanguage=Object.hasOwn(languageConfig,state.language)?state.language:'java',workspacePromise=null,toastTimer;
+function route(){const raw=location.hash.replace(/^#\/?/,''),[path,query='']=raw.split('?');return {path:path||'home',query:new URLSearchParams(query)};}
+function go(path){location.hash='#/'+path;}
+function persist(){try{localStorage.setItem('prepspace-v1',JSON.stringify(state));return true;}catch{return false;}}
+function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4000);}
+function scopeWorkspace(profile){const key=profile.workspaceKey||'anonymous',previous=state.pilotWorkspaceKey;if(previous&&previous!==key){const fields=['pilotDrafts','pilotAssistance','pilotPlan','pilotPlanRevision','pilotPlanDirty','pilotPlanConflict','pilotPlanBackup','pilotResults','pilotSummaryAttempts','learningJourney','journeyReflections','journeyReadiness','javaTutorialChecks','javaTutorialProgress','studioSetup','workflowAI'];try{localStorage.setItem('prepspace-workspace::'+previous,JSON.stringify(Object.fromEntries(fields.map(field=>[field,state[field]]))));let restored=JSON.parse(localStorage.getItem('prepspace-workspace::'+key)||'{}');for(const field of fields){delete state[field];if(restored[field]!==undefined)state[field]=restored[field];}}catch{for(const field of fields)delete state[field];}}state.pilotWorkspaceKey=key;state.pilotWorkspaceKind=profile.mode;persist();}
+async function ensureWorkspace(force=false){if(force)workspacePromise=null;if(!workspacePromise)workspacePromise=fetch('/api/pilot/state',{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('Workspace unavailable');const value=await response.json();scopeWorkspace(value);return value;}).catch(()=>{workspacePromise=null;return null;});return workspacePromise;}
+window.PrepPilotUI={ensureWorkspace,workspaceReady:()=>!!state.pilotWorkspaceKey};
+function render(){const r=route();if(['lab','learning','concepts'].includes(r.path)||r.path.startsWith('lesson/')){location.assign('/library.html'+location.hash);return;}if(!['home','studio','checkout'].includes(r.path)){history.replaceState(null,'','#/');}window.InterviewStudio.beforeRender();const checkout=route().path==='checkout';document.body.dataset.page=checkout?'checkout':'home';document.title=(checkout?'Continue your interview':'Practise your next interview')+' · PrepSpace';$('#main').innerHTML=checkout?window.PrepCheckout.page():window.InterviewStudio.page();window.InterviewStudio.mount();window.PrepCheckout.mount();}
+window.addEventListener('hashchange',()=>{render();window.scrollTo({top:0});});
+render();

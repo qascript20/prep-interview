@@ -1,3 +1,4 @@
+import {hasSubscription} from './billing.mjs';
 import {GoogleGenAI} from '@google/genai';
 import catalogue from '../content/interview-studio.json' with {type:'json'};
 
@@ -6,13 +7,13 @@ export const bounded=(value,fallback,min,max)=>{const n=Number(value??fallback);
 export function studioSettings(env){
   const key=env.GEMINI_API_KEY||'',model=env.GEMINI_LIVE_MODEL||'gemini-3.8-live';
   return {configured:!!key,enabled:env.GEMINI_STUDIO_ENABLED==='true'&&!!key,model,
-    weeklyLimit:bounded(env.GEMINI_STUDIO_WEEKLY_LIMIT,2,1,2),
+    weeklyLimit:1,freeMinutes:5,
     budgetPence:bounded(env.GEMINI_STUDIO_BUDGET_PENCE,1500,0,1500),
     reservationPence:bounded(env.GEMINI_STUDIO_RESERVATION_PENCE,100,100,500)};
 }
 export function validateStudioSelection(body){
   if(!body||typeof body!=='object'||Array.isArray(body))throw new Error('Choose your interview settings.');
-  const selection={role:body.role,round:body.round,domain:body.domain,language:body.language,level:body.level,minutes:Number(body.minutes),mode:body.mode,focus:body.focus??'',company:body.company??''};
+  const selection={role:body.role,round:body.round,domain:body.domain,language:body.language,level:body.level,minutes:5,mode:body.mode,focus:body.focus??'',company:body.company??''};
   if(!catalogue.roles.some(x=>x.id===selection.role)||!catalogue.rounds.some(x=>x.id===selection.round)||!catalogue.domains.includes(selection.domain)||!catalogue.languages.includes(selection.language)||!catalogue.levels.includes(selection.level)||!catalogue.minutes.includes(selection.minutes)||!['text','voice'].includes(selection.mode))throw new Error('Choose valid role, round, language and interview settings.');
   if(typeof selection.focus!=='string'||selection.focus.length>400)throw new Error('Choose a focus of at most 400 characters.');
   selection.focus=selection.focus.trim();
@@ -63,9 +64,10 @@ const statement=(db,sql,...values)=>db.prepare(sql).bind(...values);
 const response=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
 export async function studioStatus(env,user){
   const settings=studioSettings(env),now=new Date(),month=now.toISOString().slice(0,7),week=new Date(now.getTime()-7*86400000).toISOString();
-  const own=user?await statement(env.DB,"SELECT count(*) AS used FROM studio_sessions WHERE user_id=? AND created_at>=? AND status NOT IN ('failed','cancelled')",user,week).first():null;
-  const spent=await statement(env.DB,'SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=?)+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?) AS spent',month,month).first();
-  return {...settings,configured:settings.configured,eligible:!!user,remaining:user?Math.max(0,settings.weeklyLimit-(own?.used||0)):null,capacityAvailable:(spent?.spent||0)+settings.reservationPence<=settings.budgetPence,provider:'Google Gemini',recording:'No audio or transcript is stored on this server.'};
+  const own=user?await statement(env.DB,'SELECT session_id FROM studio_trials WHERE user_id=?',user).first():null;
+  const spent=await statement(env.DB,'SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=? AND id IN (SELECT session_id FROM studio_trials))+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?) AS spent',month,month).first();
+  const subscribed=await hasSubscription(env,user);
+  return {...settings,subscribed,configured:settings.configured,eligible:!!user,remaining:subscribed?null:user?own?0:1:null,capacityAvailable:subscribed||(spent?.spent||0)+settings.reservationPence<=settings.budgetPence,provider:'Google Gemini',recording:'No audio or transcript is stored on this server.'};
 }
 export async function studioRoute(request,env,user,readBody,provider=mintStudioToken){
   const path=new URL(request.url).pathname;
@@ -76,22 +78,28 @@ export async function studioRoute(request,env,user,readBody,provider=mintStudioT
     if(typeof body.sessionId!=='string'||!/^[a-zA-Z0-9-]{16,80}$/.test(body.sessionId))return response({error:'Invalid interview session.'},400);
     const stamp=new Date().toISOString();
     const result=await statement(env.DB,"INSERT INTO studio_sessions(id,user_id,month,created_at,expires_at,status,reserved_pence) VALUES (?,?,?,?,?,'cancelled',0) ON CONFLICT(id) DO UPDATE SET reserved_pence=CASE WHEN studio_sessions.status='provisioning' THEN 0 ELSE studio_sessions.reserved_pence END,status=CASE WHEN studio_sessions.status='provisioning' THEN 'cancelled' WHEN studio_sessions.status='issued' THEN 'ended' ELSE studio_sessions.status END WHERE studio_sessions.user_id=excluded.user_id RETURNING id",body.sessionId,user,stamp.slice(0,7),stamp,stamp).first();
+    await statement(env.DB,"DELETE FROM studio_trials WHERE user_id=? AND session_id=? AND EXISTS(SELECT 1 FROM studio_sessions WHERE id=? AND status IN ('failed','cancelled'))",user,body.sessionId,body.sessionId).run();
     return result?response({ended:true}):response({error:'Interview session not found.'},404);
   }
   if(path!=='/api/studio/session')return response({error:'Unknown interview route.'},404);
   let selection;try{selection=validateStudioSelection(body);}catch(error){return response({error:error.message},400);}
-  const settings=studioSettings(env);
+  const settings=studioSettings(env),subscribed=await hasSubscription(env,user);
   if(!settings.enabled)return response({error:'Interview Studio is not connected to Gemini yet.'},503);
   const now=new Date(),created=now.toISOString(),month=created.slice(0,7),week=new Date(now.getTime()-7*86400000).toISOString(),expires=new Date(now.getTime()+selection.minutes*60000).toISOString();
-  const admitted=await statement(env.DB,"INSERT OR IGNORE INTO studio_sessions(id,user_id,month,created_at,expires_at,status,reserved_pence) SELECT ?,?,?,?,?,'provisioning',? WHERE (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=?)+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)+?<=? AND (SELECT count(*) FROM studio_sessions WHERE user_id=? AND created_at>=? AND status NOT IN ('failed','cancelled'))<? AND NOT EXISTS(SELECT 1 FROM studio_sessions WHERE user_id=? AND status IN ('provisioning','issued') AND expires_at>?) RETURNING id",selection.requestId,user,month,created,expires,settings.reservationPence,month,month,settings.reservationPence,settings.budgetPence,user,week,settings.weeklyLimit,user,created).first();
-  if(!admitted)return response({error:'The interview allowance or capacity is unavailable, or another session is still active. End that session or try after its expiry.'},429);
+  const recent=await statement(env.DB,'SELECT count(*) AS n FROM studio_sessions WHERE user_id=? AND created_at>?',user,new Date(Date.now()-60000).toISOString()).first();
+  if(recent.n>=5)return response({error:'Too many connection attempts. Please wait a minute and try again.'},429);
+  const trial=subscribed?{user_id:user}:await statement(env.DB,"INSERT OR IGNORE INTO studio_trials(user_id,session_id,claimed_at) VALUES (?,?,?) RETURNING user_id",user,selection.requestId,created).first();
+  if(!trial)return response({error:'Your five-minute free interview has been used. Continue from the payment page.',code:'payment_required'},402);
+  const admitted=await statement(env.DB,"INSERT OR IGNORE INTO studio_sessions(id,user_id,month,created_at,expires_at,status,reserved_pence) SELECT ?,?,?,?,?,'provisioning',? WHERE (?=1 OR (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=? AND id IN (SELECT session_id FROM studio_trials))+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)+?<=?) AND NOT EXISTS(SELECT 1 FROM studio_sessions WHERE user_id=? AND status IN ('provisioning','issued') AND expires_at>?) RETURNING id",selection.requestId,user,month,created,expires,settings.reservationPence,subscribed?1:0,month,month,settings.reservationPence,settings.budgetPence,user,created).first();
+  if(!admitted){await statement(env.DB,'DELETE FROM studio_trials WHERE user_id=? AND session_id=?',user,selection.requestId).run();return response({error:'Interview capacity is unavailable or another session is active. Please try again.'},429);}
   try{
     const result=await provider(env,selection);
-    const issued=await statement(env.DB,"UPDATE studio_sessions SET status='issued' WHERE id=? AND status='provisioning' RETURNING id",selection.requestId).first();
-    if(!issued)return response({error:'This interview was cancelled before connecting.'},409);
-    return response({...result,sessionId:selection.requestId},201);
+    const issued=await statement(env.DB,"UPDATE studio_sessions SET status='issued' WHERE id=? AND user_id=? AND status='provisioning' RETURNING id",selection.requestId,user).first();
+    if(!issued){await statement(env.DB,'DELETE FROM studio_trials WHERE user_id=? AND session_id=?',user,selection.requestId).run();return response({error:'This interview was cancelled before connecting.'},409);}
+    return response({...result,sessionId:selection.requestId,subscribed},201);
   }catch{
     await statement(env.DB,"UPDATE studio_sessions SET status='failed',reserved_pence=0 WHERE id=?",selection.requestId).run();
+    await statement(env.DB,'DELETE FROM studio_trials WHERE user_id=? AND session_id=?',user,selection.requestId).run();
     return response({error:'Gemini could not start the interview. Check provider setup or retry. No practice answer was graded.'},502);
   }
 }

@@ -1,74 +1,57 @@
-# PrepSpace — Banking Java & SDET Interview Preparation
+# PrepSpace — AI interview practice
 
-A public-facing interview preparation site with a working local Java assessment pilot. Start at http://127.0.0.1:8796 after launching the local server.
+A simple interview workflow starts on the homepage at http://127.0.0.1:8796:
 
-## Connected preparation workflow
+1. Choose a role, business domain, programming language and target company.
+2. Practise with a Gemini interviewer by text or push-to-talk voice.
+3. After the five-minute free preview, choose whether to subscribe and continue.
 
-The overview, goal onboarding and track dashboard connect Learn, Practice, Interview Studio and progress. The site asks for role, domain, language and company. The curated track works without an AI connection; optional Gemini suggestions select only real resources, and do not award evidence points or invent employer-specific questions. The score explains six equally weighted areas and retains the visual progress road.
+My track, Progress, roadmaps and broad catalogue navigation are removed from the public interface. Previous study data and code drafts are preserved. Old dashboard routes return to the interview homepage.
 
-## Guided learning journey
+## Subscription
 
-The public overview introduces a five-stage route from foundations through guided practice, independent coding, technical depth and complete interview rehearsal. Start at `#/learn` and choose a starting level, language, one of seven roles, a domain, target company and a typical session length. Java has automated assessment; other languages have manual practice with honest availability. Earlier stages remain available; a later starting level never awards earlier progress.
+**PrepSpace Unlimited: £9.99 GBP per month**, renewing until cancelled. Stripe hosted Checkout collects payment details. The application collects name, email and explicit agreement to monthly renewal; it never accepts card numbers or CVC.
 
-Recommendations use the selected starting point and actual records: self-reviewed concept editions, deliberate rehearsal reflections, and full current-version Java contract checks. Independent coding additionally requires no recorded assistance. Manual-language practice is labelled self-reviewed. Every lesson and linked coding task offers a return to the learning path. Existing drafts, explicit answer reveal, progressive hints and the five interview rounds are preserved.
+A verified active subscription unlocks unlimited AI interview practice and the learning/coding library. AI connections renew in five-minute segments using recent context, without a per-user weekly quota. One conversation is admitted at a time; rapid reconnection attempts and shared execution capacity remain bounded. Free preview allocation is one five-minute connection per authenticated account (one browser workspace on the local preview); changing the browser timer or requesting longer input cannot extend the server-issued token.
 
-Path preferences and reflections are stored in this browser and isolated with the existing workspace identity. They are included in browser-data export and deletion. Removing a path preserves drafts and learning records. Java coding evidence is loaded from the existing preparation service and contributes to a transparent preparation evidence score; it is not an expertise or hiring prediction.
+`/library.html` and its lesson/question payloads require an active subscription on the server. The library contains the existing 23 Java data-structures lessons, 24 assessed Java exercises and existing manual practice in the other languages. Content coverage varies by domain/language and is labelled. No My track or Progress navigation is added to the subscriber library.
 
-## Visual progress road
+Stripe returns and signed webhooks verify the customer, order, configured recurring price, payment and subscription status. A success URL alone grants nothing. Repeated fulfillment is idempotent. Pending verification suppresses another subscription form, and an open checkout is reused to reduce duplicate subscriptions. Cancellation at period end keeps access through the paid period; cancelled, paused or overdue subscriptions lose access when verified. Subscription management uses Stripe's billing portal.
 
-Open `#/progress` for a winding road from Start to the Interview-ready target. A candidate follows recorded progress through five clickable milestones. The road reveals in a short sequence, and the candidate walks between recorded positions. Replay animation repeats the route only up to the recorded position. Device reduced-motion preferences show the final state without animation. Desktop uses a horizontal road; mobile uses a vertical road. The current milestone is the earliest incomplete stage, regardless of the chosen starting level or the page being viewed. The public overview shows a compact progress summary for returning learners.
-
-Readiness requires all five learning stages plus an explicit full-mock self-assessment covering all five interview rounds. Java coding requires current full contract checks; independent tasks also require no recorded assistance. Python readiness is explicitly labelled self-assessed. Missing material or unavailable Java execution history keeps readiness pending. These are transparent preparation checkpoints, not a hiring prediction. See [progress and readiness](docs/PROGRESS-READINESS.md).
-
-## Implemented
-
-- Banking Java/backend and QA/SDET paths, with 7-, 14- and 28-day plans and five interview-round sequences.
-- 24 versioned Java exercises: 12 implementation, four debugging, four test-design and four multi-file projects. All reference implementations pass their contract checks and all 24 constant-output negative controls are rejected.
-- Exact input/output contracts, examples, constraints, progressive hints and click-to-reveal answers with detailed explanations. Answers are fetched only on request for assessed pilot exercises.
-- Compilation, runtime, timeout, output-limit, incorrect-output, cancellation and infrastructure results remain distinct. Expected outputs and grades are computed outside candidate execution.
-- Black-box test-design exercises validate assertions and detect seeded faulty behaviours. Functional checks do not certify design quality, immutability, communication or race freedom.
-- Multi-file Java editing, browser autosave, version conflicts, snapshots, source restoration, project downloads, saved explanations and private attempt history.
-- Competency evidence and later variation recommendations; assistance is explicitly browser-recorded/self-reported. An explainable evidence score accompanies the original checkpoints, with no hiring prediction.
-- Local SQLite persistence; hosted Worker support for native Sites identity, single-use invitations, a 30-person membership cap, revisioned cloud drafts/plans, account export/deletion, issue reports and opt-in research events.
-- Hosted E2B adapter with short-lived network-disabled sandboxes, bounded candidate processes, cancellation, daily/queue/concurrency limits and budget reservations. Cloud execution remains disabled until configured and live-verified.
-
-## Learn: Java data-structures tutorial
-
-Learn replaces the standalone Concepts catalogue. It contains 23 sequential Java 17 lessons in six groups: Foundations, Linear structures, Sets, Maps, Concurrent structures and Custom structures. The course includes arrays, strings, lists, stacks/deques, queues, priority heaps, set variants, map variants, identity and equality, copies/views, concurrent collections, blocking queues, binary search trees, graphs/BFS, tries, union–find and prefix/Fenwick/segment-tree trade-offs. Specialized and legacy JDK types are compared where relevant.
-
-Every lesson contains goals, explanations and operation costs, a runnable example with input/setup, an explicit output reveal, an interactive recall check with feedback, mistakes, interview rehearsal and source links. JDK APIs and custom implementations are labelled separately. All 23 programs were compiled with `javac --release 17 -encoding UTF-8` and their documented outputs verified. Tutorial pages show teaching examples; runnable coding remains in the Practice.
-
-Tutorial reviews are explicit self-assessments and never awarded by a quiz answer. Review state and versioned check choices are scoped to the active browser workspace and participate in existing browser export/deletion. Previous interview answer drafts remain keyed by the original lesson IDs. The original seven Java technical question URLs now open their tutorial chapters. `#/concepts` remains a compatibility alias for Learn, and earlier tutorial URLs still work. Legacy study data remains for saved links and the existing guided path; it is not presented as a separate lesson library in Learn.
-
-Java is the available tutorial language. Non-Java tutorial URLs show a clear availability state; Python, JavaScript and TypeScript coding remain in the Practice. No concept-library tab is added. Desktop has a scrollable course sidebar; mobile has a compact, expandable contents menu.
-
-## Preserved
-
-The original Technical Round questions are retained as tutorial interview practice covering List/Set/Map, Queue versus LinkedList, List versus HashMap, HashMap versus TreeMap, Map interfaces, custom-key equality and HashMap performance. Answers stay behind an explicit reveal and include operation-specific comparisons, scenarios, runnable Java 17 programs, expected output, common mistakes, follow-ups and official API references reviewed on 21 November 2026. All seven programs were compiled with `javac --release 17` and their outputs verified. These oral questions are available only in Java and do not enter the Live Coding Lab.
-
-The existing six-domain, four-language and seven-role study library remains accessible. The coding lab lists 35 Java coding exercises: 24 assessed pilot exercises and 11 manual-practice exercises (33 Investment Banking plus two shared exercises). Other domain filters show honest empty states for coding. Python, JavaScript and TypeScript retain existing manual runners and language-specific drafts; Java assessment results do not imply assessment parity in another language.
-
-Practice is coding-only. Ordinary practice has no focus countdown. Self-review criteria remain static tick marks. No Copy answer button is added. The original Java study pack and archived material remain available.
-
-## Run and verify
+## Local setup
 
 ```sh
-python3 -B server/local_server.py --port 8796
 npm ci --cache /private/tmp/prepspace-npm-cache
-npm run check
-npm run verify:java
 npm run build
-node tests/browser.mjs
+python3 -B server/local_server.py --port 8796
 ```
 
-Use macOS, Python 3, JDK 17+ and Node 24+ for the complete local verification workflow. Java/Python run through a loopback-only macOS sandbox that fails closed. JavaScript/TypeScript manual programs run in isolated browser workers. Never expose the local server as an internet-facing execution service.
+Set server configuration only in the ignored project `.env`:
 
-Private local data is in `.runtime/`, which is ignored by Git. Environment secrets are documented by name only in `.env.example`. The server-backed hosting configuration uses D1 and Sites-managed identity; it is prepared but not deployed or live-verified.
+```dotenv
+GEMINI_API_KEY=<server key>
+GEMINI_STUDIO_ENABLED=true
+GEMINI_LIVE_MODEL=gemini-3.8-live
+STRIPE_SECRET_KEY=<Stripe test secret key>
+STRIPE_PRICE_ID=<active GBP 9.99 monthly recurring Price ID>
+STRIPE_WEBHOOK_SECRET=<Stripe signing secret>
+BILLING_ENABLED=true
+PUBLIC_BASE_URL=http://127.0.0.1:8796
+```
 
-## Status and remaining launch gates
+Create the recurring Price and enable Stripe's customer portal in the Stripe Dashboard. For local test webhook delivery, run `stripe listen --forward-to http://127.0.0.1:8796/api/billing/webhook` and use its signing secret. Restart PrepSpace after configuration changes. Live Stripe keys are deliberately disabled for loopback previews. A future live deployment needs its own HTTPS base URL, runtime secrets, database migrations and working webhook endpoint.
 
-The source repository may be synchronised to the previously authorised git.chatgpt-team.site destination. The Site remains unpublished; no public access change is made.
+**Stripe is not yet configured in the local environment, so checkout is currently disabled and no payment has been taken.** The source and hosted Worker are prepared, not published or deployed. Never expose the loopback Mac code runner publicly.
 
-Cloud credentials, provider/region review and live sandbox acceptance checks are still required. Practitioner review, candidate interviews, pilot recruitment and learning-outcome studies have not been completed or fabricated. Automated AI code grading remains disabled pending its expert benchmark. The separate, user-requested Gemini Interview Studio and optional track suggestions are implemented; see docs/INTERVIEW-STUDIO.md for their verification and limits.
+## Privacy and verification
 
-See [operations](docs/OPERATIONS.md), [research protocol](docs/RESEARCH-PROTOCOL.md) and [implementation notes](docs/IMPLEMENTATION.md). Third-party CodeMirror/TypeScript notices remain bundled. E2B SDK and build dependencies are pinned in package-lock.json.
+The permanent Gemini and Stripe keys remain server-side. Gemini receives answers/audio only after consent. Audio is never recorded by the application. Transcript remains in page memory; when going to checkout, recent context can be kept temporarily in tab-scoped session storage for up to one hour, with an explicit notice, to resume after returning from Stripe. It is cleared on resume/discard. Name/email are private billing records and are not sent to Gemini. Private exports are owner-scoped; active subscriptions must be cancelled before account deletion can remove billing contact details.
+
+```sh
+npm run check
+npm run build
+```
+
+Tests cover payment ownership, exact price, signed webhooks, cancellation, repeat fulfillment, private resource access, free-session timing, paid reconnection, account switching and compiler boundaries. A real synthetic Gemini check received a question and turn-complete event through the new five-minute lease. Live Stripe checkout, webhook delivery and the customer portal await test credentials; no simulated result is presented as a real payment. Hardware microphone/speaker and hosted identity still require hands-on verification.
+
+See [subscription operations](docs/SUBSCRIPTIONS.md). Earlier learning/progress design documents are historical; they do not describe the current public navigation. CodeMirror/TypeScript and SDK licenses remain bundled.

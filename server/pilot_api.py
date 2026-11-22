@@ -26,7 +26,7 @@ class Pilot:
         except Exception:pass
         token=cookie.get('prepspace_local')
         value=token.value if token and re.fullmatch(r'[a-f0-9]{64}',token.value) else secrets.token_hex(32)
-        handler.pilot_cookie='prepspace_local='+value+'; HttpOnly; SameSite=Strict; Path=/; Max-Age=31536000'
+        handler.pilot_cookie='prepspace_local='+value+'; HttpOnly; SameSite=Lax; Path=/; Max-Age=31536000'
         user='local-'+hashlib.sha256(value.encode()).hexdigest()
         with self.db() as db:db.execute('INSERT OR IGNORE INTO pilot_members(user_id,joined_at) VALUES (?,?)',(user,now()))
         return user
@@ -35,7 +35,9 @@ class Pilot:
         with self.db() as db:
             used=db.execute('SELECT count(*) FROM pilot_attempts WHERE user_id=? AND day=?',(user,day)).fetchone()[0]
             spent=db.execute('SELECT COALESCE(sum(reserved_pence+charged_pence),0) FROM pilot_attempts WHERE month=?',(month,)).fetchone()[0]
-        return {'limit':20,'used':used,'remaining':max(0,20-used),'resetAt':(dt.datetime.now(dt.timezone.utc).replace(hour=0,minute=0,second=0,microsecond=0)+dt.timedelta(days=1)).isoformat(),'executionBudgetPence':6000,'accountedPence':spent,'accounting':'Conservative capacity accounting; local execution has no provider invoice.'}
+        from billing import Billing
+        subscribed=Billing(self).subscribed(user)
+        return {'limit':None if subscribed else 20,'used':used,'remaining':None if subscribed else max(0,20-used),'resetAt':(dt.datetime.now(dt.timezone.utc).replace(hour=0,minute=0,second=0,microsecond=0)+dt.timedelta(days=1)).isoformat(),'executionBudgetPence':6000,'accountedPence':spent,'accounting':'Conservative capacity accounting; local execution has no provider invoice.'}
     def record(self,row,include_source=False):
         if row is None:return None
         item=dict(row)
@@ -62,7 +64,8 @@ class Pilot:
             queued=db.execute("SELECT count(*) FROM pilot_attempts WHERE status IN ('queued','running')").fetchone()[0]
             spent=db.execute('SELECT COALESCE(sum(reserved_pence+charged_pence),0) FROM pilot_attempts WHERE month=?',(stamp[:7],)).fetchone()[0]
             if db.execute('SELECT job_id FROM pilot_cancellations WHERE user_id=? AND job_id=?',(user,run_id)).fetchone():return {'id':run_id,'status':'stopped'},200
-            if used>=20:return {'error':'Your 20 daily jobs are used. Drafts and downloads remain available.','quota':self.quota(user)},429
+            from billing import Billing
+            if used>=20 and not Billing(self).subscribed(user):return {'error':'Your 20 daily jobs are used. Drafts and downloads remain available.','quota':self.quota(user)},429
             if spent+5>6000:return {'error':'The pilot execution allocation is paused for this month. Your work remains available.'},429
             if queued>=30:return {'error':'The queue is full. Your draft is saved; retry shortly.'},429
             db.execute('INSERT INTO pilot_attempts(id,user_id,problem_id,problem_version,language,mode,status,files,assistance,explanation,created_at,updated_at,day,month,reserved_pence) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(run_id,user,problem['id'],problem['version'],'java',mode,'queued',json.dumps(files),json.dumps(assistance),explanation,stamp,stamp,stamp[:10],stamp[:7],5))
@@ -107,7 +110,7 @@ class Pilot:
             return {'document':json.loads(row['document']) if row else None,'revision':row['revision'] if row else 0},200
         if path=='/api/pilot/export':
             with self.db() as db:
-                export={table:[dict(row) for row in db.execute('SELECT * FROM '+table+' WHERE user_id=?',(user,)).fetchall()] for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','studio_sessions','studio_plans')}
+                export={table:[dict(row) for row in db.execute('SELECT * FROM '+table+' WHERE user_id=?',(user,)).fetchall()] for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','studio_sessions','studio_plans','studio_trials','billing_orders','billing_subscriptions')}
             return {'schemaVersion':1,'exportedAt':now(),'scope':'This local browser workspace','data':export},200
         return {'error':'Unknown pilot route.'},404
     def post(self,user,path,body):
@@ -164,9 +167,16 @@ class Pilot:
         if path=='/api/pilot/ai-feedback':return {'error':'AI feedback is disabled until its expert benchmark and provider setup pass the release gate.'},503
         return {'error':'Unknown pilot route.'},404
     def delete(self,user):
+        from billing import Billing
+        with self.db() as db:billing_row=db.execute('SELECT cancel_at_period_end FROM billing_subscriptions WHERE user_id=?',(user,)).fetchone()
+        if Billing(self).subscribed(user) and not billing_row['cancel_at_period_end']:return {'error':'Cancel your subscription in the billing portal before deleting this account.'},409
         with self.db() as db:running=db.execute("SELECT id FROM pilot_attempts WHERE user_id=? AND status IN ('queued','running')",(user,)).fetchall()
         for row in running:self.cancel(row['id'])
         with self.lock,self.db() as db:
+            deleted='deleted-'+uuid.uuid4().hex
+            db.execute("UPDATE billing_orders SET user_id=?,full_name='',email='' WHERE user_id=?",(deleted,user))
+            db.execute('UPDATE billing_subscriptions SET user_id=? WHERE user_id=?',(deleted,user))
+            db.execute('UPDATE studio_trials SET user_id=? WHERE user_id=?',(deleted,user))
             db.execute('UPDATE studio_plans SET user_id=? WHERE user_id=?',('deleted-'+uuid.uuid4().hex,user))
             db.execute('UPDATE studio_sessions SET user_id=? WHERE user_id=?',('deleted-'+uuid.uuid4().hex,user))
             for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','pilot_cancellations','pilot_members'):db.execute('DELETE FROM '+table+' WHERE user_id=?',(user,))
@@ -198,6 +208,9 @@ def handle_get(handler):
     path=urlsplit(handler.path).path
     if not path.startswith('/api/pilot/'):return False
     if path.startswith('/api/pilot/problems/') and path.endswith('/answer'):
+        from billing import Billing
+        pilot=instance();user=pilot.identity(handler)
+        if not Billing(pilot).subscribed(user):handler.json_response({'error':'Subscribe to access worked answers.'},402);return True
         id=path.split('/')[-2];problem=catalogue().get(id)
         handler.json_response({'files':problem['solution'],'explanation':problem['explanation'],'version':problem['version']} if problem else {'error':'Problem not found.'},200 if problem else 404);return True
     pilot=instance();user=pilot.identity(handler)
@@ -216,4 +229,7 @@ def handle_post(handler,body):
         data=output.getvalue();handler.send_response(200);handler.send_header('Content-Type','application/zip');handler.send_header('Content-Length',str(len(data)));handler.end_headers();handler.wfile.write(data);return True
     pilot=instance();user=pilot.identity(handler)
     if handler.headers.get('X-PrepSpace-Workspace') not in (None,user):handler.json_response({'error':'Your browser workspace changed. Reload before syncing private work.','code':'workspace_changed'},409);return True
+    if path=='/api/pilot/evaluate':
+        from billing import Billing
+        if not Billing(pilot).subscribed(user):handler.json_response({'error':'Subscribe to use coding practice.'},402);return True
     data,status=pilot.post(user,path,body);handler.json_response(data,status);return True

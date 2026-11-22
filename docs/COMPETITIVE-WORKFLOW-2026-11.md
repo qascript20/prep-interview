@@ -1,3 +1,5 @@
+> Historical design note: My track and Progress were removed from the public interface on 22 November 2026. The current experience is documented in SUBSCRIPTIONS.md. Saved study data remains intact.
+
 # Competitive findings applied to the preparation workflow
 
 Rechecked 22 November 2026. This is a focused update to the earlier broad research, not a claim to audit every product or establish market leadership.

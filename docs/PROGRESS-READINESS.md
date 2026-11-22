@@ -1,3 +1,5 @@
+> Historical design note: My track and Progress were removed from the public interface on 22 November 2026. The current experience is documented in SUBSCRIPTIONS.md. Saved study data remains intact.
+
 # Visual road and preparation checkpoints
 
 The Progress navigation opens `#/progress`. The road runs from Start through Foundations, Guided practice, Independent coding, Technical depth and Interview rehearsal to an Interview-ready target. Each milestone links to its learning stage. Find my position scrolls to the current candidate. The road becomes vertical on small screens, with the same links, counts and accessible names.

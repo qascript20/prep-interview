@@ -5,9 +5,9 @@ from urllib.parse import urlsplit
 
 ROOT=Path(__file__).resolve().parents[1]
 CATALOGUE=json.loads((ROOT/'content/interview-studio.json').read_text())
-KEYS={'GEMINI_API_KEY','GEMINI_STUDIO_ENABLED','GEMINI_LIVE_MODEL','GEMINI_STUDIO_WEEKLY_LIMIT','GEMINI_STUDIO_BUDGET_PENCE','GEMINI_STUDIO_RESERVATION_PENCE'}
+KEYS={'STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_PRICE_ID','PUBLIC_BASE_URL','BILLING_ENABLED','GEMINI_API_KEY','GEMINI_STUDIO_ENABLED','GEMINI_LIVE_MODEL','GEMINI_STUDIO_WEEKLY_LIMIT','GEMINI_STUDIO_BUDGET_PENCE','GEMINI_STUDIO_RESERVATION_PENCE'}
 def load_environment(path):
-    """Read only declared Gemini values from the ignored local file; no eval."""
+    """Read only declared server configuration values from the ignored local file; no eval."""
     if not Path(path).is_file():return
     for line in Path(path).read_text().splitlines():
         if not line.strip() or line.lstrip().startswith('#') or '=' not in line:continue
@@ -20,24 +20,24 @@ def bounded(value,default,low,high):
     except (ValueError,TypeError):return default
 def settings(env):
     configured=bool(env.get('GEMINI_API_KEY'))
-    return {'configured':configured,'enabled':configured and env.get('GEMINI_STUDIO_ENABLED')=='true','model':env.get('GEMINI_LIVE_MODEL','gemini-3.8-live'),'weeklyLimit':bounded(env.get('GEMINI_STUDIO_WEEKLY_LIMIT'),2,1,2),'budgetPence':bounded(env.get('GEMINI_STUDIO_BUDGET_PENCE'),1500,0,1500),'reservationPence':bounded(env.get('GEMINI_STUDIO_RESERVATION_PENCE'),100,100,500)}
+    return {'configured':configured,'enabled':configured and env.get('GEMINI_STUDIO_ENABLED')=='true','model':env.get('GEMINI_LIVE_MODEL','gemini-3.8-live'),'weeklyLimit':1,'freeMinutes':5,'budgetPence':bounded(env.get('GEMINI_STUDIO_BUDGET_PENCE'),1500,0,1500),'reservationPence':bounded(env.get('GEMINI_STUDIO_RESERVATION_PENCE'),100,100,500)}
 def validate(body):
     if not isinstance(body,dict):raise ValueError('Choose your interview settings.')
     if body.get('role') not in [x['id'] for x in CATALOGUE['roles']] or body.get('round') not in [x['id'] for x in CATALOGUE['rounds']]:raise ValueError('Choose a valid role and interview round.')
     for name in ('domain','language','level'):
         if body.get(name) not in CATALOGUE[name+'s']:raise ValueError('Choose valid interview settings.')
-    if body.get('minutes') not in CATALOGUE['minutes'] or body.get('mode') not in ('text','voice'):raise ValueError('Choose valid interview duration and mode.')
+    if body.get('mode') not in ('text','voice'):raise ValueError('Choose valid interview duration and mode.')
     if not isinstance(body.get('focus',''),str) or len(body.get('focus',''))>400:raise ValueError('Choose a focus of at most 400 characters.')
     if not isinstance(body.get('company',''),str) or len(body.get('company',''))>120:raise ValueError('Enter a company of at most 120 characters.')
     if body.get('consent') is not True:raise ValueError('Confirm that your answers will be processed by Google Gemini.')
     if not isinstance(body.get('requestId'),str) or not re.fullmatch(r'[a-zA-Z0-9-]{16,80}',body['requestId']):raise ValueError('Choose a new interview session request.')
-    return {key:body.get(key,'') for key in ('role','round','domain','language','level','minutes','mode','focus','company','consent','requestId')}
+    return {**{key:body.get(key,'') for key in ('role','round','domain','language','level','mode','focus','company','consent','requestId')},'minutes':5}
 class Studio:
     def __init__(self,pilot,env=None,mint=None):self.pilot=pilot;self.env=os.environ if env is None else env;self.mint=mint or self.provider
     def provider(self,body):
         command=shutil.which('node')
         if not command:raise RuntimeError('Node is unavailable.')
-        env={key:value for key,value in self.env.items() if key in KEYS}
+        env={key:value for key,value in self.env.items() if key.startswith('GEMINI_')}
         env['PATH']=os.environ.get('PATH','/usr/bin:/bin')
         result=subprocess.run([command,str(ROOT/'hosted/studio-token-cli.mjs')],input=json.dumps(body),capture_output=True,text=True,cwd=ROOT,env=env,timeout=32)
         if result.returncode!=0 or len(result.stdout)>40000:raise RuntimeError('Provider unavailable.')
@@ -47,9 +47,11 @@ class Studio:
     def status(self,user):
         cfg=settings(self.env);now=dt.datetime.now(dt.timezone.utc);stamp=now.isoformat();week=(now-dt.timedelta(days=7)).isoformat()
         with self.pilot.db() as db:
-            used=db.execute("SELECT count(*) FROM studio_sessions WHERE user_id=? AND created_at>=? AND status NOT IN ('failed','cancelled')",(user,week)).fetchone()[0]
-            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=?)+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
-        return {**cfg,'eligible':True,'remaining':max(0,cfg['weeklyLimit']-used),'capacityAvailable':spent+cfg['reservationPence']<=cfg['budgetPence'],'provider':'Google Gemini','recording':'No audio or transcript is stored on this server.'}
+            used=db.execute('SELECT count(*) FROM studio_trials WHERE user_id=?',(user,)).fetchone()[0]
+            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=? AND id IN (SELECT session_id FROM studio_trials))+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
+        from billing import Billing
+        subscribed=Billing(self.pilot,self.env).subscribed(user)
+        return {**cfg,'subscribed':subscribed,'eligible':True,'remaining':None if subscribed else max(0,cfg['weeklyLimit']-used),'capacityAvailable':subscribed or spent+cfg['reservationPence']<=cfg['budgetPence'],'provider':'Google Gemini','recording':'No audio or transcript is stored on this server.'}
     def plan(self,user,body):
         try:
             selection=validate({**body,'round':'technical','minutes':5,'mode':'text'})
@@ -62,7 +64,7 @@ class Studio:
         stamp=dt.datetime.now(dt.timezone.utc).isoformat();week=(dt.datetime.now(dt.timezone.utc)-dt.timedelta(days=7)).isoformat()
         with self.pilot.lock,self.pilot.db() as db:
             db.execute('BEGIN IMMEDIATE')
-            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=?)+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
+            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=? AND id IN (SELECT session_id FROM studio_trials))+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
             used=db.execute("SELECT count(*) FROM studio_plans WHERE user_id=? AND created_at>=? AND status!='failed'",(user,week)).fetchone()[0]
             if spent+10>cfg['budgetPence'] or used>=2 or db.execute('SELECT id FROM studio_plans WHERE id=?',(selection['requestId'],)).fetchone():return {'error':'AI planning allowance reached. Your curated track remains available.'},429
             db.execute('INSERT INTO studio_plans VALUES (?,?,?,?,?,?)',(selection['requestId'],user,stamp[:7],stamp,'pending',10))
@@ -82,27 +84,38 @@ class Studio:
             with self.pilot.lock,self.pilot.db() as db:
                 db.execute("INSERT OR IGNORE INTO studio_sessions VALUES (?,?,?,?,?,'cancelled',0)",(session,user,stamp[:7],stamp,stamp))
                 changed=db.execute("UPDATE studio_sessions SET reserved_pence=CASE WHEN status='provisioning' THEN 0 ELSE reserved_pence END,status=CASE WHEN status='provisioning' THEN 'cancelled' WHEN status='issued' THEN 'ended' ELSE status END WHERE id=? AND user_id=?",(session,user)).rowcount
+                db.execute("DELETE FROM studio_trials WHERE user_id=? AND session_id=? AND EXISTS(SELECT 1 FROM studio_sessions WHERE id=? AND status IN ('failed','cancelled'))",(user,session,session))
             return ({'ended':True},200) if changed else ({'error':'Interview session not found.'},404)
         if path!='/api/studio/session':return {'error':'Unknown interview route.'},404
         try:selection=validate(body)
         except ValueError as error:return {'error':str(error)},400
+        from billing import Billing
+        subscribed=Billing(self.pilot,self.env).subscribed(user)
         cfg=settings(self.env)
         if not cfg['enabled']:return {'error':'Interview Studio is not connected to Gemini yet.'},503
         now=dt.datetime.now(dt.timezone.utc);stamp=now.isoformat();week=(now-dt.timedelta(days=7)).isoformat();expires=(now+dt.timedelta(minutes=selection['minutes'])).isoformat();id=selection['requestId']
         with self.pilot.lock,self.pilot.db() as db:
             db.execute('BEGIN IMMEDIATE')
-            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=?)+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
-            used=db.execute("SELECT count(*) FROM studio_sessions WHERE user_id=? AND created_at>=? AND status NOT IN ('failed','cancelled')",(user,week)).fetchone()[0]
+            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=? AND id IN (SELECT session_id FROM studio_trials))+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
+            recent=db.execute('SELECT count(*) FROM studio_sessions WHERE user_id=? AND created_at>?',(user,(now-dt.timedelta(minutes=1)).isoformat())).fetchone()[0]
+            if recent>=5:return {'error':'Too many connection attempts. Please wait a minute and try again.'},429
+            used=db.execute('SELECT count(*) FROM studio_trials WHERE user_id=?',(user,)).fetchone()[0]
             active=db.execute("SELECT id FROM studio_sessions WHERE user_id=? AND status IN ('provisioning','issued') AND expires_at>?",(user,stamp)).fetchone()
-            if db.execute('SELECT id FROM studio_sessions WHERE id=?',(id,)).fetchone() or active or used>=cfg['weeklyLimit'] or spent+cfg['reservationPence']>cfg['budgetPence']:return {'error':'The interview allowance or capacity is unavailable, or another session is still active. End that session or try after its expiry.'},429
+            if used and not subscribed:return {'error':'Your five-minute free interview has been used. Continue from the payment page.','code':'payment_required'},402
+            if db.execute('SELECT id FROM studio_sessions WHERE id=?',(id,)).fetchone() or active or (not subscribed and spent+cfg['reservationPence']>cfg['budgetPence']):return {'error':'The interview allowance or capacity is unavailable, or another session is still active. End that session or try after its expiry.'},429
+            if not subscribed:db.execute('INSERT INTO studio_trials VALUES (?,?,?)',(user,id,stamp))
             db.execute('INSERT INTO studio_sessions VALUES (?,?,?,?,?,?,?)',(id,user,stamp[:7],stamp,expires,'provisioning',cfg['reservationPence']))
         try:
             result=self.mint(selection)
-            with self.pilot.db() as db:issued=db.execute("UPDATE studio_sessions SET status='issued' WHERE id=? AND status='provisioning'",(id,)).rowcount
-            if not issued:return {'error':'This interview was cancelled before connecting.'},409
-            return {**result,'sessionId':id},201
+            with self.pilot.db() as db:issued=db.execute("UPDATE studio_sessions SET status='issued' WHERE id=? AND user_id=? AND status='provisioning'",(id,user)).rowcount
+            if not issued:
+                with self.pilot.db() as db:db.execute('DELETE FROM studio_trials WHERE user_id=? AND session_id=?',(user,id))
+                return {'error':'This interview was cancelled before connecting.'},409
+            return {**result,'sessionId':id,'subscribed':subscribed},201
         except Exception:
-            with self.pilot.db() as db:db.execute("UPDATE studio_sessions SET status='failed',reserved_pence=0 WHERE id=?",(id,))
+            with self.pilot.db() as db:
+                db.execute("UPDATE studio_sessions SET status='failed',reserved_pence=0 WHERE id=?",(id,))
+                db.execute('DELETE FROM studio_trials WHERE user_id=? AND session_id=?',(user,id))
             return {'error':'Gemini could not start the interview. Check provider setup or retry. No practice answer was graded.'},502
 
 def handle_get(handler):

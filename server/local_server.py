@@ -182,6 +182,8 @@ class Handler(SimpleHTTPRequestHandler):
         path=posixpath.normpath(unquote(urlsplit(self.path).path))
         if path in ('/server','/.openai') or path.startswith(('/server/','/.openai/')):
             self.send_error(404);return
+        from billing import handle_get as billing_get
+        if billing_get(self):return
         from interview_studio import handle_get as studio_get
         if studio_get(self):return
         from pilot_api import handle_get
@@ -190,12 +192,24 @@ class Handler(SimpleHTTPRequestHandler):
             self.json_response({'local':True,'sandbox':READY,'python':READY,'java':READY and JAVA.is_file() and JAVAC.is_file(),'javaRelease':17,'limitSeconds':7});return
         super().do_GET()
     def do_POST(self):
+        if urlsplit(self.path).path=='/api/billing/webhook':
+            try:
+                length=int(self.headers.get('Content-Length','0'))
+                if length<=0 or length>262144:raise ValueError()
+                from billing import Billing
+                from pilot_api import instance
+                value,status=Billing(instance()).webhook(self.rfile.read(length),self.headers.get('Stripe-Signature',''))
+                self.json_response(value,status)
+            except Exception:self.json_response({'error':'Invalid webhook request.'},400)
+            return
         if not self.local_request() or not self.headers.get('Content-Type','').startswith('application/json'):self.json_response({'error':'Same-origin JSON requests only.'},403);return
         try:
             length=int(self.headers.get('Content-Length','0'))
             if length<=0 or length>256*1024:raise ValueError('Request too large or empty.')
             body=json.loads(self.rfile.read(length))
             if not isinstance(body,dict):raise ValueError('Expected a JSON object.')
+            from billing import handle_post as billing_post
+            if billing_post(self,body):return
             from interview_studio import handle_post as studio_post
             if studio_post(self,body):return
             from pilot_api import handle_post
