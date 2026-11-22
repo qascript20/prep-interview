@@ -18,7 +18,7 @@ Hosted: Worker ESM + D1 + Sites-managed identity + membership, bounded queue and
 
 Daily admission, queue limits and monthly capacity reservations are enforced before execution. An unlinked cost ledger survives account deletion so deleting private records cannot reset shared capacity. Provider failures are excluded from correctness conclusions while possible compute cost remains conservatively accounted for. Budgets are estimates rather than invoice reconciliation.
 
-AI model calls, voice/video mocks, paid coaching, employer assessment/proctoring, additional assessed languages and new domain catalogues are outside this release. The AI route fails closed, including if someone accidentally enables its flag. Full live execution and institutional data-residency claims require separate acceptance checks.
+Gemini Interview Studio provides role-based text/voice practice and optional resource-grounded planning. Automated AI grading remains gated off, including if its old flag is enabled. Paid coaching, employer assessment/proctoring, video capture, additional assessed languages and new domain catalogues are outside this release. See INTERVIEW-STUDIO.md. Full live execution and institutional data-residency claims require separate acceptance checks.
 
 ## Verification performed
 

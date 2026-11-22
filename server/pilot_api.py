@@ -107,7 +107,7 @@ class Pilot:
             return {'document':json.loads(row['document']) if row else None,'revision':row['revision'] if row else 0},200
         if path=='/api/pilot/export':
             with self.db() as db:
-                export={table:[dict(row) for row in db.execute('SELECT * FROM '+table+' WHERE user_id=?',(user,)).fetchall()] for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events')}
+                export={table:[dict(row) for row in db.execute('SELECT * FROM '+table+' WHERE user_id=?',(user,)).fetchall()] for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','studio_sessions','studio_plans')}
             return {'schemaVersion':1,'exportedAt':now(),'scope':'This local browser workspace','data':export},200
         return {'error':'Unknown pilot route.'},404
     def post(self,user,path,body):
@@ -167,6 +167,8 @@ class Pilot:
         with self.db() as db:running=db.execute("SELECT id FROM pilot_attempts WHERE user_id=? AND status IN ('queued','running')",(user,)).fetchall()
         for row in running:self.cancel(row['id'])
         with self.lock,self.db() as db:
+            db.execute('UPDATE studio_plans SET user_id=? WHERE user_id=?',('deleted-'+uuid.uuid4().hex,user))
+            db.execute('UPDATE studio_sessions SET user_id=? WHERE user_id=?',('deleted-'+uuid.uuid4().hex,user))
             for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','pilot_cancellations','pilot_members'):db.execute('DELETE FROM '+table+' WHERE user_id=?',(user,))
         return {'deleted':True,'scope':'Local server workspace; use the browser clear button to remove device copies.'},200
 

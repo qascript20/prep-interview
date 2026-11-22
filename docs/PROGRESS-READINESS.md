@@ -44,3 +44,7 @@ The remaining-session figure adds the listed durations of unfinished tasks and 4
 `tests/readiness.test.mjs` covers actual position versus entry level, incomplete earlier stages, full-check/version/assistance requirements, missing history and content, mock validation, profile isolation, Python self-assessment, workload estimates, all role/domain/language combinations and road geometry. Browser verification covers milestone navigation, required mock fields, desktop layout and the 390px mobile road without horizontal overflow. No fabricated positive learning records are added to the browser workspace.
 
 `tests/road-motion.test.mjs` verifies both responsive positions, progress movement, replay boundaries, reduced motion, hidden-tab cancellation, route cleanup and profile isolation.
+
+## Evidence score added 22 November 2026
+
+The connected track now displays a transparent 0–100 preparation evidence score. It averages the five stage completion fractions and the full mock’s 0/1 fraction with equal weights, floors the result, and caps it at 99 unless every readiness gate is met. Unavailable history makes the result provisional. It is a study coverage indicator, not a calibrated ability score or a probability of getting hired. AI suggestions never award points. Company context scopes the final mock; older generic study records remain reusable. See INTERVIEW-STUDIO.md.

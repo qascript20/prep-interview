@@ -1,0 +1,1329 @@
+[
+  {
+    "id": "1-01-objects-constructors-and-immutability",
+    "title": "Objects constructors and immutability",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-02-equality-null-handling-and-object-utility-methods",
+    "title": "Equality null handling and Object utility methods",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-03-bigdecimal-financial-arithmetic-and-rounding",
+    "title": "BigDecimal financial arithmetic and rounding",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-04-collections-lists-sets-queues-and-copies",
+    "title": "Collections lists sets queues and copies",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-05-maps-sorted-maps-and-comparators",
+    "title": "Maps sorted maps and comparators",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-06-streams-pipelines-filtering-mapping-and-ordering",
+    "title": "Streams pipelines filtering mapping and ordering",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-07-collectors-grouping-and-financial-reductions",
+    "title": "Collectors grouping and financial reductions",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-08-threads-executors-futures-and-lifecycle-management",
+    "title": "Threads executors futures and lifecycle management",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-09-atomic-updates-concurrent-maps-and-bounded-queues",
+    "title": "Atomic updates concurrent maps and bounded queues",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "1-10-threadlocal-context-and-completablefuture-composition",
+    "title": "ThreadLocal context and CompletableFuture composition",
+    "domain": "Investment Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python"
+    ]
+  },
+  {
+    "id": "2-01-find-duplicate-trade-ids-in-second-occurrence-order",
+    "title": "Find duplicate trade IDs in second-occurrence order",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-02-duplicate-ids-using-streams",
+    "title": "Duplicate IDs using Streams",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-03-validate-a-trading-order-and-return-all-errors",
+    "title": "Validate an order and report every error",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-04-calculate-total-trade-quantity-by-symbol",
+    "title": "Aggregate trade quantities safely",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-05-find-the-trade-with-the-highest-quantity",
+    "title": "Find the trade with the highest quantity",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-06-find-trades-missing-from-actual-results",
+    "title": "Reconcile missing trades without changing inputs",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-07-check-a-palindrome-after-cleaning-the-string",
+    "title": "Check a palindrome after cleaning the string",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-08-check-a-palindrome-with-constant-extra-space",
+    "title": "Check a palindrome with constant extra space",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-09-create-an-immutable-order-with-validation-and-notional",
+    "title": "Model an immutable financial order",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-10-deduplicate-orders-using-equals-and-hashcode",
+    "title": "Deduplicate orders using business identity",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-11-parse-an-html-blotter-and-calculate-executed-buy-notional",
+    "title": "Parse an HTML blotter and calculate executed BUY notional",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-12-reusable-html-parser-with-header-mapping",
+    "title": "Reusable HTML parser with header mapping",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-13-quantity-mismatches-between-maps",
+    "title": "Quantity mismatches between maps",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-14-reconcile-prices-and-quantities-between-ui-and-api-objects",
+    "title": "Reconcile prices and quantities between UI and API objects",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-15-find-a-cell-when-table-columns-move",
+    "title": "Find a cell when table columns move",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-16-calculate-executed-buy-notional-by-symbol",
+    "title": "Aggregate executed BUY notional by symbol",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-17-calculate-volume-weighted-average-execution-price",
+    "title": "Calculate a volume-weighted execution price",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-18-find-the-largest-executed-trades",
+    "title": "Rank the largest executed trades",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-19-reconcile-two-complete-trade-snapshots",
+    "title": "Reconcile complete trade snapshots",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-20-deduplicate-execution-events",
+    "title": "Apply execution events idempotently",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-21-maintain-best-bid-and-ask",
+    "title": "Maintain the best bid and ask",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "2-22-fix-a-concurrent-trade-counter",
+    "title": "Fix a concurrent trade counter",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-23-prevent-stale-market-data-updates",
+    "title": "Prevent stale market data updates",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "2-24-run-trading-risk-checks-concurrently",
+    "title": "Run trading risk checks concurrently",
+    "domain": "Investment Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "3-01-running-the-examples-and-using-the-study-pack",
+    "title": "Running the examples and using the study pack",
+    "domain": "Investment Banking",
+    "type": "reference",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "3-02-compiler-errors-and-collection-pitfalls",
+    "title": "Compiler errors and collection pitfalls",
+    "domain": "Investment Banking",
+    "type": "reference",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "3-03-oral-interview-questions-and-short-answers",
+    "title": "Oral interview questions and short answers",
+    "domain": "Investment Banking",
+    "type": "reference",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "3-04-other-prompts-preparation-plan-and-role-context",
+    "title": "Other prompts preparation plan and role context",
+    "domain": "Investment Banking",
+    "type": "reference",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "3-05-reference-links",
+    "title": "Reference links",
+    "domain": "Investment Banking",
+    "type": "reference",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "shared-structured-answers",
+    "title": "Structure a clear interview answer",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "shared-problem-solving",
+    "title": "Clarify, solve and verify a technical problem",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "shared-delivery-story",
+    "title": "Explain a difficult delivery decision",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "shared-live-exercise",
+    "title": "Talk through an unfamiliar technical exercise",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "core-ledger",
+    "title": "Ledger entries, balances and reconciliation",
+    "domain": "Core Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "core-idempotency",
+    "title": "Idempotent payments and retry-safe APIs",
+    "domain": "Core Banking",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "core-retry-payment",
+    "title": "Design a payment API that handles retries",
+    "domain": "Core Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "core-reconcile-ledger",
+    "title": "Investigate a balance reconciliation difference",
+    "domain": "Core Banking",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ecommerce-inventory",
+    "title": "Inventory reservations and overselling",
+    "domain": "Ecommerce",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ecommerce-checkout",
+    "title": "Checkout state machines and failure recovery",
+    "domain": "Ecommerce",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ecommerce-last-item",
+    "title": "Prevent two buyers purchasing the last item",
+    "domain": "Ecommerce",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ecommerce-payment-callback",
+    "title": "Handle duplicate payment success events",
+    "domain": "Ecommerce",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ai-evaluation",
+    "title": "Evaluate AI quality with a useful test set",
+    "domain": "AI",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ai-rag",
+    "title": "Retrieval-augmented generation and grounded answers",
+    "domain": "AI",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ai-model-regression",
+    "title": "Investigate a model release that scores better but behaves worse",
+    "domain": "AI",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "ai-grounded-answer",
+    "title": "Design tests for a document question-answering assistant",
+    "domain": "AI",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "cloud-reliability",
+    "title": "Availability, timeouts and retry budgets",
+    "domain": "Cloud",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "cloud-access",
+    "title": "Least privilege and service identity",
+    "domain": "Cloud",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "cloud-retry-storm",
+    "title": "Stop retries making a cloud outage worse",
+    "domain": "Cloud",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "cloud-worker-permissions",
+    "title": "Review permissions for a file-processing worker",
+    "domain": "Cloud",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "data-replay",
+    "title": "Replayable pipelines and event deduplication",
+    "domain": "Data Engineering",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "data-quality",
+    "title": "Data contracts, quality checks and reconciliation",
+    "domain": "Data Engineering",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "data-restart",
+    "title": "Make a batch load safe to restart",
+    "domain": "Data Engineering",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "data-late-events",
+    "title": "Handle late events in a daily aggregate",
+    "domain": "Data Engineering",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "java-technical-common-data-structures",
+    "title": "Three commonly used Java data structures: List, Set and Map",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-technical-queue-versus-linked-list",
+    "title": "Queue versus LinkedList: what is the difference, and which is faster?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-technical-list-versus-hashmap",
+    "title": "List versus HashMap: which operations are faster, and why?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-technical-hashmap-versus-treemap",
+    "title": "HashMap versus TreeMap: performance, ordering and use cases",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-technical-map-interface",
+    "title": "Which interface do Java map implementations implement?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-technical-custom-hashmap-key",
+    "title": "Which methods should a custom HashMap key override?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-technical-hashmap-performance",
+    "title": "When can HashMap performance degrade? Explain a realistic scenario",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "intro-concept",
+    "title": "Build a relevant introduction",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "coding-concept",
+    "title": "From coding prompt to verified solution",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "technical-concept",
+    "title": "Explain a technical decision",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "manager-concept",
+    "title": "Communicate with senior stakeholders",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "hr-concept",
+    "title": "Prepare for a mutual-fit conversation",
+    "domain": "Shared",
+    "type": "concept",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "intro-about-yourself",
+    "title": "Tell me about yourself",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "intro-role-motivation",
+    "title": "Why this role and domain?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "intro-project",
+    "title": "Walk me through a relevant project",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "technical-failure",
+    "title": "Reason about a partial failure",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "technical-verification",
+    "title": "How would you verify this design?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "manager-release",
+    "title": "Recommend a release decision with known risk",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "manager-investment",
+    "title": "Defend an automation investment",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "manager-conflict",
+    "title": "Influence a stakeholder without formal authority",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "manager-incident",
+    "title": "Give a senior-stakeholder incident update",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "hr-career-move",
+    "title": "Why are you considering a move?",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "hr-development",
+    "title": "Describe a development area",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "hr-expectations",
+    "title": "Discuss expectations and ask useful questions",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-software-engineer-technical",
+    "title": "Design a maintainable API",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-qa-sdet-technical",
+    "title": "Design a trustworthy automation suite",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-test-director-technical",
+    "title": "Build a risk-based test strategy",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-engineering-manager-technical",
+    "title": "Balance technical debt and delivery",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-data-engineer-technical",
+    "title": "Design a recoverable data pipeline",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-ai-ml-engineer-technical",
+    "title": "Evaluate an AI release responsibly",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "role-cloud-devops-technical",
+    "title": "Design resilience under dependency failure",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "coding-duplicate-records",
+    "title": "Find duplicate record IDs",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "coding-missing-records",
+    "title": "Reconcile missing record IDs",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java",
+      "python",
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "id": "java-ds-arrays",
+    "title": "Store indexed data in arrays",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-strings",
+    "title": "Work with strings and character sequences",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-lists",
+    "title": "Compare array-backed and linked lists",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-stack-deque",
+    "title": "Use a deque as a stack or double-ended queue",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-priority-heap",
+    "title": "Select the next priority with a heap",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-sets",
+    "title": "Choose unique, ordered or sorted membership",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-enum-bitset",
+    "title": "Represent enum flags and compact bit membership",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-specialized-maps",
+    "title": "Choose ordered and specialized maps",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-copies-views",
+    "title": "Separate mutable data, views and snapshots",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-concurrent-collections",
+    "title": "Choose collections for concurrent access",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-blocking-queues",
+    "title": "Bound work with blocking queues",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-binary-trees",
+    "title": "Build and traverse a binary search tree",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-graphs",
+    "title": "Represent a graph and explore it with BFS",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-tries",
+    "title": "Index word prefixes with a trie",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-disjoint-sets",
+    "title": "Track connected groups with union–find",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "java-ds-range-queries",
+    "title": "Answer range sums with prefix and Fenwick trees",
+    "domain": "Shared",
+    "type": "problem",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-debug-price-scale",
+    "title": "Debug false price mismatches",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-debug-first-order",
+    "title": "Debug overwritten order records",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-debug-retry-budget",
+    "title": "Debug an API retry budget",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-debug-pagination",
+    "title": "Debug incomplete and cyclic API pagination",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-test-order-validation",
+    "title": "Design tests that detect broken order validators",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-test-missing-trades",
+    "title": "Design missing-trade reconciliation tests",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-test-retry-policy",
+    "title": "Design deterministic retry-policy tests",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-test-money",
+    "title": "Design financial precision and validation tests",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-project-reconciler",
+    "title": "Build a snapshot reconciliation component",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-project-ledger",
+    "title": "Build an idempotent ledger posting service",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-project-concurrent-events",
+    "title": "Make execution counting thread-safe",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  },
+  {
+    "id": "banking-project-regression-runner",
+    "title": "Build a bounded regression task runner",
+    "domain": "Investment Banking",
+    "type": "coding",
+    "languages": [
+      "java"
+    ]
+  }
+]

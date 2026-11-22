@@ -13,3 +13,20 @@ CREATE TABLE IF NOT EXISTS pilot_costs (job_id TEXT PRIMARY KEY, month TEXT NOT 
 CREATE TABLE IF NOT EXISTS pilot_events (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, kind TEXT NOT NULL, attempt_id TEXT, created_at TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS pilot_events_owner ON pilot_events(user_id,created_at);
 CREATE TABLE IF NOT EXISTS pilot_cancellations (user_id TEXT NOT NULL, job_id TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(user_id,job_id));
+
+CREATE TABLE IF NOT EXISTS studio_sessions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  month TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  status TEXT NOT NULL,
+  reserved_pence INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS studio_sessions_owner ON studio_sessions(user_id, created_at);
+CREATE INDEX IF NOT EXISTS studio_sessions_budget ON studio_sessions(month);
+CREATE TABLE IF NOT EXISTS studio_plans (
+ id TEXT PRIMARY KEY,user_id TEXT NOT NULL,month TEXT NOT NULL,created_at TEXT NOT NULL,status TEXT NOT NULL,reserved_pence INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS studio_plans_owner ON studio_plans(user_id,created_at);
+CREATE INDEX IF NOT EXISTS studio_plans_month ON studio_plans(month);

@@ -1,0 +1,60 @@
+'use strict';
+window.PrepStudioAudio=class {
+  constructor(){this.closed=false;this.generation=0;this.capture=null;this.output=null;this.sources=new Set();this.nextPlayback=0;}
+  async preparePlayback(){
+    if(this.closed)return;
+    const Context=window.AudioContext||window.webkitAudioContext;
+    if(!Context)throw new Error('Voice playback is unavailable in this browser. You can still use text.');
+    this.output??=new Context();await this.output.resume();
+  }
+  async startCapture(send){
+    if(this.closed||this.capture)throw new Error('The microphone is already in use.');
+    if(!navigator.mediaDevices?.getUserMedia)throw new Error('Microphone access is unavailable. Use text or a secure supported browser.');
+    const epoch=++this.generation;
+    const stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+    if(this.closed||epoch!==this.generation){stream.getTracks().forEach(track=>track.stop());return false;}
+    const capture={stream,context:null,node:null,source:null,sink:null,flushed:null};this.capture=capture;
+    try{
+      const Context=window.AudioContext||window.webkitAudioContext;
+      if(!Context)throw new Error('Live voice capture is unavailable. Use text instead.');
+      const context=new Context({sampleRate:16000});capture.context=context;
+      if(!context.audioWorklet)throw new Error('Live voice capture is unavailable. Use text instead.');
+      await context.audioWorklet.addModule('studio-audio-worklet.js');
+      if(this.closed||this.capture!==capture){stream.getTracks().forEach(track=>track.stop());await context.close();return false;}
+      const node=new AudioWorkletNode(context,'prepspace-studio-recorder');capture.node=node;
+      node.port.onmessage=event=>{
+        if(event.data.flushed){capture.flushed?.();return;}
+        if(!event.data.audio||this.closed||this.capture!==capture)return;
+        const bytes=new Uint8Array(event.data.audio);
+        send(btoa(String.fromCharCode(...bytes)));
+      };
+      capture.source=context.createMediaStreamSource(stream);capture.sink=context.createGain();capture.sink.gain.value=0;
+      capture.source.connect(node);node.connect(capture.sink);capture.sink.connect(context.destination);
+      await context.resume();return true;
+    }catch(error){if(this.capture===capture)await this.stopCapture(false);throw error;}
+  }
+  async stopCapture(flush=true){
+    const capture=this.capture;
+    if(!capture){this.generation++;return;}
+    if(flush&&capture.node)await Promise.race([new Promise(resolve=>{capture.flushed=resolve;capture.node.port.postMessage('flush');}),new Promise(resolve=>setTimeout(resolve,200))]);
+    if(this.capture!==capture)return;
+    this.capture=null;this.generation++;
+    capture.stream.getTracks().forEach(track=>track.stop());
+    for(const node of [capture.source,capture.node,capture.sink])try{node?.disconnect();}catch{}
+    if(capture.context&&capture.context.state!=='closed')await capture.context.close();
+  }
+  play(base64,mime='audio/pcm;rate=24000'){
+    if(this.closed||!this.output||this.output.state!=='running'||!mime.startsWith('audio/pcm'))return;
+    const decoded=atob(base64);if(decoded.length>1048576||decoded.length%2)return;
+    const bytes=Uint8Array.from(decoded,char=>char.charCodeAt(0)),view=new DataView(bytes.buffer);
+    const rate=Number(/rate=(\d+)/.exec(mime)?.[1]||24000);if(rate<8000||rate>96000)return;
+    if(this.nextPlayback-this.output.currentTime>20){this.stopPlayback();return;}
+    const buffer=this.output.createBuffer(1,bytes.length/2,rate),channel=buffer.getChannelData(0);
+    for(let i=0;i<channel.length;i++)channel[i]=view.getInt16(i*2,true)/32768;
+    const source=this.output.createBufferSource();source.buffer=buffer;source.connect(this.output.destination);this.sources.add(source);
+    source.onended=()=>{this.sources.delete(source);source.disconnect();};
+    this.nextPlayback=Math.max(this.output.currentTime+.025,this.nextPlayback);source.start(this.nextPlayback);this.nextPlayback+=buffer.duration;
+  }
+  stopPlayback(){for(const source of this.sources)try{source.stop();}catch{}this.sources.clear();this.nextPlayback=this.output?.currentTime||0;}
+  async close(){this.closed=true;this.generation++;await this.stopCapture(false);this.stopPlayback();if(this.output&&this.output.state!=='closed')await this.output.close();}
+};

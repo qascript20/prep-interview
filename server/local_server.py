@@ -9,6 +9,8 @@ from urllib.parse import urlsplit,unquote
 import posixpath
 
 ROOT=Path(__file__).resolve().parents[1]
+from interview_studio import load_environment
+load_environment(ROOT/'.env')
 DIST=ROOT/'dist' if (ROOT/'dist/index.html').is_file() else ROOT
 SANDBOX=Path('/usr/bin/sandbox-exec')
 PYTHON=Path(sys.executable).resolve()
@@ -180,6 +182,8 @@ class Handler(SimpleHTTPRequestHandler):
         path=posixpath.normpath(unquote(urlsplit(self.path).path))
         if path in ('/server','/.openai') or path.startswith(('/server/','/.openai/')):
             self.send_error(404);return
+        from interview_studio import handle_get as studio_get
+        if studio_get(self):return
         from pilot_api import handle_get
         if handle_get(self):return
         if self.path=='/api/runtimes':
@@ -192,6 +196,8 @@ class Handler(SimpleHTTPRequestHandler):
             if length<=0 or length>256*1024:raise ValueError('Request too large or empty.')
             body=json.loads(self.rfile.read(length))
             if not isinstance(body,dict):raise ValueError('Expected a JSON object.')
+            from interview_studio import handle_post as studio_post
+            if studio_post(self,body):return
             from pilot_api import handle_post
             if handle_post(self,body):return
             run_id=body.get('runId','')

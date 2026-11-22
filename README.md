@@ -2,13 +2,17 @@
 
 A public-facing interview preparation site with a working local Java assessment pilot. Start at http://127.0.0.1:8796 after launching the local server.
 
+## Connected preparation workflow
+
+The overview, goal onboarding and track dashboard connect Learn, Practice, Interview Studio and progress. The site asks for role, domain, language and company. The curated track works without an AI connection; optional Gemini suggestions select only real resources, and do not award evidence points or invent employer-specific questions. The score explains six equally weighted areas and retains the visual progress road.
+
 ## Guided learning journey
 
-The public overview introduces a five-stage route from foundations through guided practice, independent coding, technical depth and complete interview rehearsal. Start at `#/learn` and choose a starting level, Java/Python, one of seven roles, a domain and a typical session length. Earlier stages remain available; a later starting level never awards earlier progress.
+The public overview introduces a five-stage route from foundations through guided practice, independent coding, technical depth and complete interview rehearsal. Start at `#/learn` and choose a starting level, language, one of seven roles, a domain, target company and a typical session length. Java has automated assessment; other languages have manual practice with honest availability. Earlier stages remain available; a later starting level never awards earlier progress.
 
 Recommendations use the selected starting point and actual records: self-reviewed concept editions, deliberate rehearsal reflections, and full current-version Java contract checks. Independent coding additionally requires no recorded assistance. Manual-language practice is labelled self-reviewed. Every lesson and linked coding task offers a return to the learning path. Existing drafts, explicit answer reveal, progressive hints and the five interview rounds are preserved.
 
-Path preferences and reflections are stored in this browser and isolated with the existing workspace identity. They are included in browser-data export and deletion. Removing a path preserves drafts and learning records. Java coding evidence is loaded from the existing preparation service and is never converted into an overall readiness or expertise score.
+Path preferences and reflections are stored in this browser and isolated with the existing workspace identity. They are included in browser-data export and deletion. Removing a path preserves drafts and learning records. Java coding evidence is loaded from the existing preparation service and contributes to a transparent preparation evidence score; it is not an expertise or hiring prediction.
 
 ## Visual progress road
 
@@ -24,7 +28,7 @@ Readiness requires all five learning stages plus an explicit full-mock self-asse
 - Compilation, runtime, timeout, output-limit, incorrect-output, cancellation and infrastructure results remain distinct. Expected outputs and grades are computed outside candidate execution.
 - Black-box test-design exercises validate assertions and detect seeded faulty behaviours. Functional checks do not certify design quality, immutability, communication or race freedom.
 - Multi-file Java editing, browser autosave, version conflicts, snapshots, source restoration, project downloads, saved explanations and private attempt history.
-- Competency evidence and later variation recommendations; assistance is explicitly browser-recorded/self-reported. No overall readiness score or hiring prediction.
+- Competency evidence and later variation recommendations; assistance is explicitly browser-recorded/self-reported. An explainable evidence score accompanies the original checkpoints, with no hiring prediction.
 - Local SQLite persistence; hosted Worker support for native Sites identity, single-use invitations, a 30-person membership cap, revisioned cloud drafts/plans, account export/deletion, issue reports and opt-in research events.
 - Hosted E2B adapter with short-lived network-disabled sandboxes, bounded candidate processes, cancellation, daily/queue/concurrency limits and budget reservations. Cloud execution remains disabled until configured and live-verified.
 
@@ -65,6 +69,6 @@ Private local data is in `.runtime/`, which is ignored by Git. Environment secre
 
 The source repository may be synchronised to the previously authorised git.chatgpt-team.site destination. The Site remains unpublished; no public access change is made.
 
-Cloud credentials, provider/region review and live sandbox acceptance checks are still required. Practitioner review, candidate interviews, pilot recruitment and learning-outcome studies have not been completed or fabricated. AI coaching remains disabled until a reviewed benchmark and separate integration pass their gates.
+Cloud credentials, provider/region review and live sandbox acceptance checks are still required. Practitioner review, candidate interviews, pilot recruitment and learning-outcome studies have not been completed or fabricated. Automated AI code grading remains disabled pending its expert benchmark. The separate, user-requested Gemini Interview Studio and optional track suggestions are implemented; see docs/INTERVIEW-STUDIO.md for their verification and limits.
 
 See [operations](docs/OPERATIONS.md), [research protocol](docs/RESEARCH-PROTOCOL.md) and [implementation notes](docs/IMPLEMENTATION.md). Third-party CodeMirror/TypeScript notices remain bundled. E2B SDK and build dependencies are pinned in package-lock.json.

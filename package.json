@@ -10,6 +10,7 @@
     "build": "node scripts/build.mjs"
   },
   "dependencies": {
+    "@google/genai": "3.6.1",
     "e2b": "2.64.0"
   },
   "devDependencies": {
