@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import {readFileSync} from 'node:fs';
-import {billingSettings,providerOperation,validPrice,subscriptionView,verifySignature,fulfill,webhook,billingRoute,hasSubscription,protectedResource} from '../hosted/billing.mjs';
+import {billingSettings,providerOperation,stripe,validPrice,subscriptionView,verifySignature,fulfill,webhook,billingRoute,hasSubscription,protectedResource} from '../hosted/billing.mjs';
 import {createWorker} from '../hosted/worker.mjs';
 class D1{constructor(){this.db=new DatabaseSync(':memory:');this.db.exec(readFileSync(new URL('../server/schema.sql',import.meta.url),'utf8'));}prepare(query){const db=this.db;return {args:[],bind(...args){this.args=args;return this;},async first(){return db.prepare(query).get(...this.args)||null;},async run(){const r=db.prepare(query).run(...this.args);return {meta:{changes:Number(r.changes)}};},async all(){return {results:db.prepare(query).all(...this.args)};}};}}
 const env=()=>({DB:new D1(),STRIPE_SECRET_KEY:'sk_test_testonly',STRIPE_PRICE_ID:'price_test',STRIPE_WEBHOOK_SECRET:'whsec_test',PUBLIC_BASE_URL:'http://127.0.0.1:8796',BILLING_ENABLED:'true',GEMINI_API_KEY:'test-only',GEMINI_STUDIO_ENABLED:'true',PILOT_IDENTITY_BOUNDARY:'sites'});
@@ -8,6 +8,29 @@ const sub=(patch={})=>({id:'sub_test',customer:'cus_test',status:'active',cancel
 const value=()=>({paid:true,orderId:'order-test-123456789',...subscriptionView(sub(),env())});
 const addOrder=e=>e.DB.db.prepare("INSERT INTO billing_orders VALUES ('order-test-123456789','alice','Test User','test@example.com','cs_test_example','cus_test','open',?)").run(new Date().toISOString());
 test('approved subscription is exactly GBP 9.99 monthly and cannot be altered by the browser',async()=>{const e=env(),requests=[];const result=await providerOperation(e,{operation:'create',fullName:'Test User',email:'TEST@example.com',requestId:'order-test-123456789',consent:true,amount:1,currency:'usd'},async(_e,path,request)=>{requests.push({path,request});if(path.startsWith('prices/'))return price;if(path==='customers')return {id:'cus_test'};return {id:'cs_test_example',url:'https://checkout.stripe.com/c/pay/test'};});assert.equal(result.checkoutId,'cs_test_example');const checkout=requests.find(r=>r.path==='checkout/sessions').request;assert.equal(checkout.data.mode,'subscription');assert.equal(checkout.data['line_items[0][price]'],'price_test');assert(!('amount' in checkout.data));assert.equal(requests[1].request.data.email,'test@example.com');assert.equal(billingSettings({...e,PUBLIC_BASE_URL:'http://evil.test'}).enabled,false);});
+test('Checkout HTTP contract uses Endive-compatible card filtering and encoded return URLs',async()=>{
+  const requests=[];
+  const fetcher=async(url,options)=>{
+    const path=new URL(url).pathname,form=new URLSearchParams(options.body);
+    requests.push({path,options,form});
+    assert.equal(options.headers['Stripe-Version'],'2026-11-18.endive');
+    assert.equal(options.headers.Authorization,'Bearer sk_test_testonly');
+    if(path==='/v1/prices/price_test')return Response.json(price);
+    if(path==='/v1/customers')return Response.json({id:'cus_test'});
+    assert.equal(path,'/v1/checkout/sessions');
+    // Endive rejects the removed payment_method_types request parameter.
+    if([...form.keys()].some(key=>/^payment_method_types(?:\[|$)/.test(key)))return Response.json({error:{message:'Unknown parameter: payment_method_types'}},{status:400});
+    assert.equal(form.get('allowed_payment_method_types[0]'),'card');
+    assert.equal(form.get('mode'),'subscription');
+    assert.equal(form.get('line_items[0][price]'),'price_test');
+    assert.equal(form.get('success_url'),'http://127.0.0.1:8796/#/checkout?session_id={CHECKOUT_SESSION_ID}');
+    return Response.json({id:'cs_test_contract',url:'https://checkout.stripe.com/c/pay/contract'});
+  };
+  const result=await providerOperation(env(),{operation:'create',fullName:'Test User',email:'test@example.com',consent:true,requestId:'order-contract-123456789'},(e,path,options)=>stripe(e,path,{...options,fetcher}));
+  assert.equal(result.checkoutId,'cs_test_contract');
+  assert.equal(requests.length,3);
+  assert.match(requests[2].options.headers['Idempotency-Key'],/^prepspace-subscription-/);
+});
 test('wrong price, currency, interval, mode and payment status cannot unlock access',async()=>{const e=env();for(const patch of [{unit_amount:1},{currency:'usd'},{recurring:{interval:'year',interval_count:1}},{livemode:true}])assert.equal(validPrice({...price,...patch},e),false);assert.throws(()=>subscriptionView(sub({items:{data:[{quantity:2,price,current_period_end:Date.now()/1000+1000}]}}),e));const result=await providerOperation(e,{operation:'retrieve',checkoutId:'cs_test_example'},async()=>({mode:'subscription',status:'complete',payment_status:'unpaid'}));assert.equal(result.paid,false);});
 test('successful return is verified with Stripe, scoped to the owner, and idempotent',async()=>{const e=env();addOrder(e);await assert.rejects(fulfill(e,'cs_test_example','bob',async()=>value()));assert.equal(await hasSubscription(e,'alice'),false);await fulfill(e,'cs_test_example','alice',async()=>value());await fulfill(e,'cs_test_example','alice',async()=>value());assert.equal(await hasSubscription(e,'alice'),true);assert.equal(e.DB.db.prepare('SELECT count(*) AS n FROM billing_subscriptions').get().n,1);assert.equal(e.DB.db.prepare('SELECT count(*) AS n FROM pilot_members').get().n,1);});
 test('forged checkout ownership cannot grant a subscription',async()=>{const e=env();addOrder(e);for(const patch of [{customerId:'cus_other'},{orderId:'other-order'}])await assert.rejects(fulfill(e,'cs_test_example','alice',async()=>({...value(),...patch})));assert.equal(await hasSubscription(e,'alice'),false);});
