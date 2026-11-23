@@ -23,6 +23,8 @@ def settings(env):
     return {'configured':configured,'enabled':configured and env.get('GEMINI_STUDIO_ENABLED')=='true','model':env.get('GEMINI_LIVE_MODEL','gemini-3.8-live'),'weeklyLimit':1,'freeMinutes':5,'budgetPence':bounded(env.get('GEMINI_STUDIO_BUDGET_PENCE'),1500,0,1500),'reservationPence':bounded(env.get('GEMINI_STUDIO_RESERVATION_PENCE'),100,100,500)}
 def validate(body):
     if not isinstance(body,dict):raise ValueError('Choose your interview settings.')
+    body=dict(body)
+    if isinstance(body.get('domain'),str):body['domain']=CATALOGUE.get('legacyDomainAliases',{}).get(body['domain'],body['domain'])
     if body.get('role') not in [x['id'] for x in CATALOGUE['roles']] or body.get('round') not in [x['id'] for x in CATALOGUE['rounds']]:raise ValueError('Choose a valid role and interview round.')
     for name in ('domain','language','level'):
         if body.get(name) not in CATALOGUE[name+'s']:raise ValueError('Choose valid interview settings.')

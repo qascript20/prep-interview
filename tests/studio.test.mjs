@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createWorker} from '../hosted/worker.mjs';
-import {mintStudioToken,validateStudioSelection,studioSettings} from '../hosted/interview-studio.mjs';
+import {mintStudioToken,validateStudioSelection,studioSettings,studioCatalogue,interviewerPrompt} from '../hosted/interview-studio.mjs';
 import {generatePlan,validatePlan} from '../hosted/preparation-planner.mjs';
 class D1{
  constructor(){this.db=new DatabaseSync(':memory:');this.db.exec(readFileSync(new URL('../server/schema.sql',import.meta.url),'utf8'));}
@@ -15,6 +15,23 @@ const selection=(patch={})=>({role:'qa-sdet',round:'technical',domain:'Investmen
 function setup(overrides={}){const DB=new D1();DB.db.prepare('INSERT INTO pilot_members(user_id,joined_at) VALUES (?,?)').run('alice',new Date().toISOString());const env={DB,PILOT_IDENTITY_BOUNDARY:'sites',GEMINI_API_KEY:'test-server-secret',GEMINI_STUDIO_ENABLED:'true'};const worker=createWorker({studioProvider:async(_env,s)=>({token:'auth_tokens/test-only',model:'gemini-3.8-live',expiresAt:new Date(Date.now()+300000).toISOString(),selection:s}),planProvider:async()=>({summary:'A grounded plan.',priorities:[]}),...overrides});return {DB,env,async request(path,{user='alice',method='POST',data=selection(),workspace,origin}={}){const own=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(user||''))),x=>x.toString(16).padStart(2,'0')).join('');const headers={'Content-Type':'application/json','X-PrepSpace-Workspace':workspace??own};if(user)headers['oai-authenticated-user-id']=user;if(origin)headers.origin=origin;const r=await worker.fetch(new Request('https://prep.test/api/'+path,{method,headers,...(method!=='GET'&&method!=='DELETE'?{body:JSON.stringify(data)}:{})}),env,{waitUntil(){}});return {status:r.status,body:await r.json()};}};}
 test('ephemeral token pins one use, duration, interviewer instructions and tool-free setup',async()=>{let request;const p=validateStudioSelection(selection());const result=await mintStudioToken({GEMINI_API_KEY:'permanent-secret',GEMINI_STUDIO_ENABLED:'true'},p,{now:Date.parse('2026-11-22T12:00:00Z'),createToken:async body=>{request=body;return {name:'auth_tokens/temporary'};}});assert.equal(request.config.uses,1);assert.equal(request.config.expireTime,'2026-11-22T12:05:00.000Z');assert.equal(request.config.newSessionExpireTime,'2026-11-22T12:01:00.000Z');assert(!Object.hasOwn(request.config,'lockAdditionalFields'));assert.deepEqual(request.config.liveConnectConstraints.config.tools,[]);assert(request.config.liveConnectConstraints.config.systemInstruction.includes('SMBC'));assert(request.config.liveConnectConstraints.config.systemInstruction.includes('ONE relevant question'));assert(!JSON.stringify(result).includes('permanent-secret'));assert(!Object.hasOwn(result.config,'systemInstruction'));});
 test('interview input needs explicit consent and bounded known settings',()=>{for(const patch of [{consent:false},{role:'invented'},{company:'x'.repeat(121)},{focus:'x'.repeat(401)},{requestId:'short'}])assert.throws(()=>validateStudioSelection(selection(patch)));assert.equal(studioSettings({GEMINI_API_KEY:'x',GEMINI_STUDIO_ENABLED:'false'}).enabled,false);});
+test('every published IT role and business sector is accepted and provides relevant interviewer context',()=>{
+ const c=studioCatalogue;
+ assert.equal(c.interviewer.name,'Nova');assert(interviewerPrompt(validateStudioSelection(selection())).includes('Introduce yourself as Nova, an AI interviewer'));
+ assert.equal(new Set(c.roles.map(role=>role.id)).size,c.roles.length);
+ assert.deepEqual(c.domainGroups.flatMap(group=>group.domains),c.domains);
+ for(const role of c.roles)for(const domain of c.domains){
+  const p=validateStudioSelection(selection({role:role.id,domain})),prompt=interviewerPrompt(p);
+  assert(prompt.includes(role.name));assert(prompt.includes(role.focus[0]));assert(prompt.includes(c.domainFocus[domain][0]));
+ }
+ const nonCoding=interviewerPrompt(validateStudioSelection(selection({role:'product-manager',domain:'Healthcare & Life Sciences',round:'coding'})));
+ assert(nonCoding.includes('Do not force algorithmic coding'));
+ assert(interviewerPrompt(validateStudioSelection(selection({role:'data-analyst',domain:'Insurance'}))).includes('SQL'));
+});
+test('saved technology-domain selections migrate to a business sector without accepting unknown sectors',()=>{
+ for(const [old,current] of Object.entries(studioCatalogue.legacyDomainAliases))assert.equal(validateStudioSelection(selection({domain:old})).domain,current);
+ for(const domain of ['Invented sector',[],{}])assert.throws(()=>validateStudioSelection(selection({domain})));
+});
 test('interview endpoints enforce native identity, workspace and same origin',async()=>{const s=setup();for(const [options,status] of [[{user:null},401],[{workspace:'stale'},409],[{origin:'https://other.test'},403]])assert.equal((await s.request('studio/session',options)).status,status);assert.equal(s.DB.db.prepare('SELECT count(*) AS n FROM studio_sessions').get().n,0);});
 test('status is readable without membership but carries no key or transcript',async()=>{const s=setup();const r=await s.request('studio/status',{method:'GET',user:null});assert.equal(r.status,200);assert.equal(r.body.eligible,false);assert(!JSON.stringify(r.body).includes('test-server-secret'));});
 test('the free preview is one five-minute session and further sessions require payment',async()=>{const s=setup();const first=await s.request('studio/session',{data:selection({minutes:60})});assert.equal(first.status,201);assert.equal(first.body.selection.minutes,5);assert.equal((await s.request('studio/session')).status,402);await s.request('studio/end',{data:{sessionId:first.body.sessionId}});const second=await s.request('studio/session');assert.equal(second.status,402);assert.equal(second.body.code,'payment_required');});

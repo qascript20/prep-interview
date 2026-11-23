@@ -2,7 +2,7 @@ import json,sys,tempfile,threading,unittest,uuid
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'server'))
 from pilot_api import Pilot
-from interview_studio import Studio,validate,load_environment
+from interview_studio import Studio,validate,load_environment,CATALOGUE
 class StudioTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.pilot=Pilot(Path(self.temp.name)/'db.sqlite',lambda *args:[],lambda id:None,threading.BoundedSemaphore(2));self.env={'GEMINI_API_KEY':'test-only','GEMINI_STUDIO_ENABLED':'true'};self.studio=Studio(self.pilot,self.env,lambda s:{'token':'auth_tokens/test'})
@@ -28,6 +28,17 @@ class StudioTests(unittest.TestCase):
     def test_consent_and_company_bounds(self):
         for patch in ({'company':'x'*121},{'consent':False}):
             body=self.body();body.update(patch)
+            with self.assertRaises(ValueError):validate(body)
+    def test_it_roles_business_sectors_and_saved_domain_migration(self):
+        for role in CATALOGUE['roles']:
+            for domain in CATALOGUE['domains']:
+                body=self.body();body.update(role=role['id'],domain=domain)
+                self.assertEqual(validate(body)['domain'],domain)
+        for previous,current in CATALOGUE['legacyDomainAliases'].items():
+            body=self.body();body['domain']=previous
+            self.assertEqual(validate(body)['domain'],current)
+        for domain in ('Invented sector',[],{}):
+            body=self.body();body['domain']=domain
             with self.assertRaises(ValueError):validate(body)
     def test_cancel_before_admission_and_end_after_failure_do_not_use_allowance(self):
         body=self.body();self.studio.post('alice','/api/studio/end',{'sessionId':body['requestId']});self.assertEqual(self.studio.post('alice','/api/studio/session',body)[1],429)
