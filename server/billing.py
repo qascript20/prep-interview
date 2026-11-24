@@ -108,7 +108,7 @@ class Billing:
                 if row and not row['user_id'].startswith('deleted-'):self.save(row['user_id'],self.provider({'operation':'subscription','subscriptionId':id}))
             return {'received':True},200
         except Exception:return {'error':'Billing event could not be processed. Retry delivery.'},503
-PUBLIC_ASSETS={'/','/index.html','/styles.css','/public.css','/interview-studio.css','/flow-options.js','/studio-gemini-client.js','/studio-gemini-client.js.LEGAL.txt','/studio-audio.js','/studio-audio-worklet.js','/interview-studio.js','/checkout.js','/flow-app.js','/favicon.svg','/nova-avatar.svg','/robots.txt'}
+PUBLIC_ASSETS={'/','/index.html','/styles.css','/public.css','/interview-studio.css','/flow-options.js','/studio-gemini-client.js','/studio-gemini-client.js.LEGAL.txt','/studio-audio.js','/studio-audio-worklet.js','/interview-studio.js','/checkout.js','/flow-app.js','/favicon.svg','/nova-avatar.svg','/nova-digital-interviewer.jpg','/robots.txt'}
 def handle_get(handler):
     path=posixpath.normpath(unquote(urlsplit(handler.path).path));path=path[7:] if path.startswith('/client/') else path
     if path!='/api/billing/status' and (path.startswith('/api/') or path in PUBLIC_ASSETS):return False

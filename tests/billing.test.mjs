@@ -42,12 +42,12 @@ test('checkout is disabled without credentials and card details never reach the 
 test('paid learning assets cannot be reached through encoded or copied paths',async()=>{for(const path of ['/data.js','/%64ata.js','/client/data.js','/client/../data.js','/library.html'])assert.equal(protectedResource(path),true,path);const e=env(),worker=createWorker();for(const path of ['/data.js','/%64ata.js','/client/data.js'])assert.equal((await worker.fetch(new Request('https://prep.test'+path),e,{})).status,402);assert.equal((await worker.fetch(new Request('https://prep.test/library.html'),e,{})).status,303);});
 test('homepage has one workflow and no track/progress navigation or public study payload',()=>{const source=readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');assert(!/My track|>Progress<|Learning path/.test(source));assert(!/src="(?:data|prep-content|pilot-catalogue)\.js/.test(source));assert(source.includes('flow-app.js'));});
 test('Nova portrait is available before subscribing while learning assets remain private',async()=>{
- const e=env(),portrait=readFileSync(new URL('../dist/nova-avatar.svg',import.meta.url),'utf8');
- e.ASSETS={fetch:async()=>new Response(portrait,{headers:{'Content-Type':'image/svg+xml'}})};
- assert.equal(protectedResource('/nova-avatar.svg'),false);assert.equal(protectedResource('/data.js'),true);
- const response=await createWorker().fetch(new Request('https://prep.test/nova-avatar.svg'),e,{});
- assert.equal(response.status,200);assert.equal(response.headers.get('Content-Type'),'image/svg+xml');
- assert((await response.text()).includes('viewBox="0 0 240 240"'));
+ const e=env(),portrait=readFileSync(new URL('../dist/nova-digital-interviewer.jpg',import.meta.url));
+ e.ASSETS={fetch:async()=>new Response(portrait,{headers:{'Content-Type':'image/jpeg'}})};
+ assert.equal(protectedResource('/nova-digital-interviewer.jpg'),false);assert.equal(protectedResource('/data.js'),true);
+ const response=await createWorker().fetch(new Request('https://prep.test/nova-digital-interviewer.jpg'),e,{});
+ assert.equal(response.status,200);assert.equal(response.headers.get('Content-Type'),'image/jpeg');
+ assert.deepEqual(Buffer.from(await response.arrayBuffer()),portrait);assert.equal(portrait.readUInt16BE(0),0xffd8);
 });
 test('live Stripe keys cannot enable real charges on a loopback preview',()=>{assert.equal(billingSettings({...env(),STRIPE_SECRET_KEY:'sk_live_testonly'}).enabled,false);});
 test('an active subscriber cannot delete the account while leaving billing running',async()=>{const e=env();addOrder(e);await fulfill(e,'cs_test_example','alice',async()=>value());const response=await createWorker().fetch(new Request('https://prep.test/api/pilot/account',{method:'DELETE',headers:{'oai-authenticated-user-id':'alice'}}),e,{waitUntil(){}});assert.equal(response.status,409);assert.equal(await hasSubscription(e,'alice'),true);});

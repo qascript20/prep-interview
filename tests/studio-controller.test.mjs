@@ -21,5 +21,5 @@ test('setup groups IT roles and business sectors and preserves older saved selec
  assert(page.includes('value="Healthcare & Life Sciences"'));
  assert(page.includes('value="Technology & SaaS" selected'));
  assert(!page.includes('<option value="Cloud"'));
- assert(page.includes('Meet Nova.'));assert(page.includes('src="/nova-avatar.svg"'));assert(page.includes('alt="Nova, your AI interviewer"'));
+ assert(page.includes('Meet Nova.'));assert(page.includes('src="/nova-digital-interviewer.jpg"'));assert(page.includes('alt="Nova, your AI interviewer"'));
 });

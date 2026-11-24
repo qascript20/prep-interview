@@ -7,7 +7,7 @@ window.InterviewStudio=(()=>{
   const catalogue=window.INTERVIEW_OPTIONS||{roles:roleConfig,domains};
   const normaliseDomain=value=>typeof value==='string'?(catalogue.legacyDomainAliases?.[value]??value):value;
   const interviewerName=catalogue.interviewer?.name||'Nova';
-  const portrait=variant=>`<img class="nova-avatar ${variant}" src="/nova-avatar.svg" width="160" height="160" alt="${esc(interviewerName)}, your AI interviewer">`;
+  const portrait=variant=>`<img class="nova-avatar ${variant}" src="/nova-digital-interviewer.jpg" width="160" height="160" alt="${esc(interviewerName)}, your AI interviewer">`;
 
   function roleOptions(selected){return [...new Set(roleConfig.map(role=>role.group||'IT roles'))].map(group=>`<optgroup label="${esc(group)}">${options(roleConfig.filter(role=>(role.group||'IT roles')===group).map(role=>[role.id,role.name]),selected)}</optgroup>`).join('');}
   function domainOptions(selected){return catalogue.domainGroups?.length?catalogue.domainGroups.map(group=>`<optgroup label="${esc(group.name)}">${options(group.domains.map(domain=>[domain,domain]),selected)}</optgroup>`).join(''):options(domains.map(domain=>[domain,domain]),selected);}
