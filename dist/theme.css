@@ -183,6 +183,7 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .cm-s-default .cm-variable, .cm-s-default .cm-variable-2,
 .cm-s-default .cm-property, .cm-s-default .cm-operator { color: #e5edf8; }
 #toast { color: #fff; background: var(--navy); border-color: #506e97; }
+.flow-setup-layout { align-items:stretch; }
 .session-options { display:grid; grid-template-columns:1fr; gap:12px; margin-top:22px; }
 .session-option { display:flex; flex-direction:column; gap:8px; padding:17px; border:1px solid var(--silver); border-radius:10px; min-width:0; }
 .session-option-free { background:#edf3fc; border-color:#a9bfdd; }
