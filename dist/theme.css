@@ -220,3 +220,14 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .flow-what-to-expect .nova-avatar-hero { width:112px; height:112px; }
 .flow-footer a, .studio-data-note a, .studio-consent a, .checkout-privacy a { color:var(--navy); text-decoration:underline; text-underline-offset:3px; }
 @media(max-width:720px) { .flow-what-to-expect { display:block; padding:26px 22px; } .flow-what-to-expect .nova-profile { margin-bottom:18px; } .nova-avatar-mobile { display:none; } }
+.company-field { position:relative; display:flex; flex-direction:column; gap:9px; min-width:0; }
+.company-field>small { font-size:12px; line-height:1.5; color:var(--muted); }
+.company-field a { color:var(--navy); text-underline-offset:3px; }
+.company-search-status { font-size:12px; line-height:1.5; color:var(--muted); }
+.company-search-status:empty { display:none; }
+.company-results { position:absolute; top:78px; left:0; right:0; z-index:5; max-height:290px; overflow:auto; border:1px solid #819cbf; border-radius:8px; background:#fff; box-shadow:0 12px 30px #203a5f25; }
+.company-results[hidden] { display:none; }
+.company-results [role=option] { padding:12px; cursor:pointer; border-bottom:1px solid var(--line); }
+.company-results [role=option]:hover,.company-results [aria-selected=true] { background:#e9eff8; }
+.company-results strong { display:block; font-size:14px; line-height:1.5; }
+.company-results small { display:block; font-size:12px; line-height:1.5; color:var(--muted); }

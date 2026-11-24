@@ -4,6 +4,7 @@ import {readdir,cp,mkdir,readFile,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 execFileSync('python3',['scripts/build_catalogue.py'],{stdio:'inherit'});
 await writeFile('dist/flow-options.js',"'use strict';\nwindow.INTERVIEW_OPTIONS="+JSON.stringify(JSON.parse(await readFile('content/interview-studio.json','utf8')))+';\n');
+await build({entryPoints:['studio/company-search.mjs'],outfile:'dist/company-search.js',bundle:true,format:'iife',platform:'browser',target:'es2022',minify:true});
 await build({entryPoints:['studio/gemini-client.mjs'],outfile:'dist/studio-gemini-client.js',bundle:true,format:'iife',platform:'browser',target:'es2022',minify:true,legalComments:'external'});
 let index=await readFile('dist/index.html','utf8');
 for(const file of await readdir('dist',{withFileTypes:true}))if(file.isFile()&&/\.(?:js|css)$/.test(file.name)){

@@ -63,3 +63,5 @@ Tests cover payment ownership, exact price, signed webhooks, cancellation, repea
 See [subscription operations](docs/SUBSCRIPTIONS.md). Earlier learning/progress design documents are historical; they do not describe the current public navigation. CodeMirror/TypeScript and SDK licenses remain bundled.
 
 The homepage offers free and paid AI mock session cards inside Meet Nova. The free button is associated with the settings form, including its required consent. The public `/privacy.html` page describes the current local data handling and links to provider notices; it does not assert a configured public operator/contact or production retention policy.
+
+Target company offers optional, debounced Wikidata suggestions after three characters. Searches run directly from the browser with no credentials or interview answers, use an identifying API user agent, and keep bounded caches only in page memory. Suggestions use English business descriptions plus bounded company-class ancestry checks; incomplete classifications can omit companies. Manual entry always remains available, including during provider outages. The public Privacy page describes this processing.

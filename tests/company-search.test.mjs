@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {searchCompanies} from '../studio/company-search.mjs';
+const claims=(prop,ids)=>({claims:{[prop]:ids.map(id=>({mainsnak:{datavalue:{value:{id}}}}))}});
+test('company search verifies business ancestry and excludes people and places',async()=>{
+ const calls=[],fetcher=async url=>{const p=new URL(url).searchParams;calls.push(p);const data=p.get('action')==='wbsearchentities'?{search:[{id:'Q1',label:'Example Bank',description:'bank'},{id:'Q2',label:'Example Person'},{id:'Q3',label:'Example City'}]}:p.get('ids')==='Q1'?{entities:{Q1:claims('P31',['Q10']),Q2:claims('P31',['Q5']),Q3:claims('P31',['Q20'])}}:{entities:{Q10:claims('P279',['Q783794']),Q5:claims('P279',[]),Q20:claims('P279',[])}};return{ok:true,json:async()=>data};};
+ const result=await searchCompanies('Example',{fetcher});assert.deepEqual(result,[{id:'Q1',name:'Example Bank',description:'bank'}]);assert(calls.every(c=>c.get('origin')==='*'));assert.equal(calls.length,3);
+});
+test('search rejects short queries without traffic and surfaces outages instead of false no matches',async()=>{let calls=0;const fetcher=async()=>{calls++;return{ok:false};};assert.deepEqual(await searchCompanies('ab',{fetcher}),[]);assert.equal(calls,0);await assert.rejects(searchCompanies('Example',{fetcher}));});
+test('unsafe entity identifiers never become entity requests',async()=>{let calls=0;assert.deepEqual(await searchCompanies('Example',{fetcher:async()=>{calls++;return{ok:true,json:async()=>({search:[{id:'Q1|malicious',label:'Injected'}]})};}}),[]);assert.equal(calls,1);});
+test('cyclic classification is bounded and does not turn unrelated entities into companies',async()=>{let calls=0;const fetcher=async url=>{calls++;const p=new URL(url).searchParams;return{ok:true,json:async()=>p.get('action')==='wbsearchentities'?{search:[{id:'Q1',label:'Example',description:'company'}]}:{entities:{Q1:claims('P31',['Q10']),Q10:claims('P279',['Q10'])}}};};assert.deepEqual(await searchCompanies('Example',{fetcher}),[]);assert.equal(calls,3);});
