@@ -6,6 +6,8 @@ A simple interview workflow starts on the homepage at http://127.0.0.1:8796:
 2. Practise with a Gemini interviewer by text or push-to-talk voice.
 3. After the five-minute free preview, choose whether to subscribe and continue.
 
+The interface uses a shared navy, blue-grey and silver theme matching Nova’s portrait, across interview setup, conversation, checkout and subscriber resources. The theme is defined in `dist/theme.css`.
+
 Nova is the named AI interviewer, with a bundled photorealistic AI portrait on setup and conversation screens. Both its label and interviewer instructions identify it as AI. The portrait is served locally without an external image request.
 
 Interview setup offers 35 IT roles grouped into software engineering, architecture/leadership, quality engineering, data/AI, cloud/operations, cybersecurity, and product/design/delivery. Its 18 business domains describe industries such as banking, insurance, healthcare, retail, telecoms, manufacturing and public services. Technical specialisms are represented by roles. Each choice supplies relevant context to the AI interviewer; the separate learning/coding catalogue retains its stated content coverage. Older Ecommerce, AI, Cloud and Data Engineering domain selections are mapped to the matching current business sector.
