@@ -69,7 +69,7 @@ select, .studio-setup select, .lab-controls select, .toolbar select,
 .studio-mode small { color: var(--muted); }
 .flow-extra-settings { border-color: var(--line); }
 .flow-extra-settings summary { color: #415f87; }
-.flow-what-to-expect {
+.flow-setup-layout .studio-setup, .flow-what-to-expect {
   background: radial-gradient(ellipse at 50% 10%, #d9e5f6, transparent 75%), #eaf0f8;
   border-color: #cbd8e9;
 }
@@ -185,6 +185,7 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 #toast { color: #fff; background: var(--navy); border-color: #506e97; }
 .flow-setup-layout { align-items:stretch; }
 .flow-setup-layout .studio-setup { display:flex; flex-direction:column; justify-content:space-between; gap:24px; padding:28px; }
+.flow-setup-layout .studio-setup>h2 { margin:0; font-size:24px; line-height:1.3; letter-spacing:-.6px; font-weight:650; color:var(--ink); }
 .flow-setup-layout .studio-fields { gap:26px 20px; }
 .flow-setup-layout .studio-setup label:not(.studio-consent) { font-size:14px; line-height:1.5; gap:9px; }
 .flow-setup-layout .studio-setup select,
