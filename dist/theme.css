@@ -233,3 +233,12 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .company-results small { display:block; font-size:12px; line-height:1.5; color:var(--muted); }
 
 #studio-setup { scroll-margin-top:24px; }
+.studio-voice-signal { display:flex; align-items:center; gap:14px; padding:14px 18px; margin:16px 0 4px; background:#e7effa; border:1px solid #b7cae3; border-radius:10px; color:var(--navy); font-size:14px; font-weight:600; }
+.studio-voice-signal[hidden] { display:none; }
+.voice-signal-bars { display:flex; align-items:center; justify-content:center; gap:4px; width:88px; height:36px; }
+.voice-signal-bars i { display:block; width:5px; height:4px; border-radius:4px; background:#486b9a; transition:height 90ms linear; transform-origin:center; }
+.studio-voice-signal[data-speaking=true] .voice-signal-bars i { animation:voice-signal-wave .55s ease-in-out infinite alternate; }
+.voice-signal-bars i:nth-child(3n+1) { animation-delay:-.2s; }
+.voice-signal-bars i:nth-child(3n+2) { animation-delay:-.4s; }
+@keyframes voice-signal-wave { from { transform:scaleY(.65); } to { transform:scaleY(1); } }
+@media(prefers-reduced-motion:reduce) { .studio-voice-signal .voice-signal-bars i { animation:none; transition:none; } }

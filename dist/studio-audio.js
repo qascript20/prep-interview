@@ -7,13 +7,13 @@ window.PrepStudioAudio=class {
     if(!Context)throw new Error('Voice playback is unavailable in this browser. You can still use text.');
     this.output??=new Context();await this.output.resume();
   }
-  async startCapture(send){
+  async startCapture(send,onLevel=()=>{}){
     if(this.closed||this.capture)throw new Error('The microphone is already in use.');
     if(!navigator.mediaDevices?.getUserMedia)throw new Error('Microphone access is unavailable. Use text or a secure supported browser.');
     const epoch=++this.generation;
     const stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
     if(this.closed||epoch!==this.generation){stream.getTracks().forEach(track=>track.stop());return false;}
-    const capture={stream,context:null,node:null,source:null,sink:null,flushed:null};this.capture=capture;
+    const capture={stream,context:null,node:null,source:null,sink:null,flushed:null,onLevel};this.capture=capture;
     try{
       const Context=window.AudioContext||window.webkitAudioContext;
       if(!Context)throw new Error('Live voice capture is unavailable. Use text instead.');
@@ -26,6 +26,7 @@ window.PrepStudioAudio=class {
         if(event.data.flushed){capture.flushed?.();return;}
         if(!event.data.audio||this.closed||this.capture!==capture)return;
         const bytes=new Uint8Array(event.data.audio);
+        capture.onLevel(window.PrepStudioAudio.inputLevel(bytes));
         send(btoa(String.fromCharCode(...bytes)));
       };
       capture.source=context.createMediaStreamSource(stream);capture.sink=context.createGain();capture.sink.gain.value=0;
@@ -38,7 +39,7 @@ window.PrepStudioAudio=class {
     if(!capture){this.generation++;return;}
     if(flush&&capture.node)await Promise.race([new Promise(resolve=>{capture.flushed=resolve;capture.node.port.postMessage('flush');}),new Promise(resolve=>setTimeout(resolve,200))]);
     if(this.capture!==capture)return;
-    this.capture=null;this.generation++;
+    this.capture=null;this.generation++;capture.onLevel(0);
     capture.stream.getTracks().forEach(track=>track.stop());
     for(const node of [capture.source,capture.node,capture.sink])try{node?.disconnect();}catch{}
     if(capture.context&&capture.context.state!=='closed')await capture.context.close();
@@ -61,6 +62,12 @@ window.PrepStudioAudio=class {
     if(!voice)return false;
     this.stopPlayback();const utterance=new window.SpeechSynthesisUtterance(text);utterance.voice=voice;utterance.rate=.97;
     this.utterance=utterance;utterance.onend=()=>{if(this.utterance===utterance)this.utterance=null;};window.speechSynthesis.speak(utterance);return true;
+  }
+  static inputLevel(bytes){
+    if(!bytes?.byteLength||bytes.byteLength%2)return 0;
+    const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);let sum=0;
+    for(let i=0;i<bytes.byteLength;i+=2){const sample=view.getInt16(i,true)/32768;sum+=sample*sample;}
+    return Math.min(1,Math.max(0,Math.sqrt(sum/(bytes.byteLength/2))-.008)*6);
   }
   static toWav(chunks){
     const pieces=chunks.map(chunk=>Uint8Array.from(atob(chunk),c=>c.charCodeAt(0))),length=Math.min(pieces.reduce((n,c)=>n+c.length,0),16000*2*90),bytes=new Uint8Array(44+length),view=new DataView(bytes.buffer);
