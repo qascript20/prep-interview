@@ -55,6 +55,21 @@ window.PrepStudioAudio=class {
     source.onended=()=>{this.sources.delete(source);source.disconnect();};
     this.nextPlayback=Math.max(this.output.currentTime+.025,this.nextPlayback);source.start(this.nextPlayback);this.nextPlayback+=buffer.duration;
   }
-  stopPlayback(){for(const source of this.sources)try{source.stop();}catch{}this.sources.clear();this.nextPlayback=this.output?.currentTime||0;}
+  speak(text){
+    if(this.closed||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return false;
+    const voice=window.speechSynthesis.getVoices().find(v=>v.localService&&/^en\b/i.test(v.lang));
+    if(!voice)return false;
+    this.stopPlayback();const utterance=new window.SpeechSynthesisUtterance(text);utterance.voice=voice;utterance.rate=.97;
+    this.utterance=utterance;utterance.onend=()=>{if(this.utterance===utterance)this.utterance=null;};window.speechSynthesis.speak(utterance);return true;
+  }
+  static toWav(chunks){
+    const pieces=chunks.map(chunk=>Uint8Array.from(atob(chunk),c=>c.charCodeAt(0))),length=Math.min(pieces.reduce((n,c)=>n+c.length,0),16000*2*90),bytes=new Uint8Array(44+length),view=new DataView(bytes.buffer);
+    const text=(offset,value)=>{for(let i=0;i<value.length;i++)bytes[offset+i]=value.charCodeAt(i);};
+    text(0,'RIFF');view.setUint32(4,36+length,true);text(8,'WAVE');text(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,16000,true);view.setUint32(28,32000,true);view.setUint16(32,2,true);view.setUint16(34,16,true);text(36,'data');view.setUint32(40,length,true);
+    let offset=44;for(const piece of pieces){const part=piece.subarray(0,bytes.length-offset);bytes.set(part,offset);offset+=part.length;if(offset===bytes.length)break;}
+    const encoded=[];for(let i=0;i<bytes.length;i+=8192)encoded.push(String.fromCharCode(...bytes.subarray(i,i+8192)));
+    return {mimeType:'audio/wav',data:btoa(encoded.join(''))};
+  }
+  stopPlayback(){if(this.utterance){window.speechSynthesis?.cancel();this.utterance=null;}for(const source of this.sources)try{source.stop();}catch{}this.sources.clear();this.nextPlayback=this.output?.currentTime||0;}
   async close(){this.closed=true;this.generation++;await this.stopCapture(false);this.stopPlayback();if(this.output&&this.output.state!=='closed')await this.output.close();}
 };

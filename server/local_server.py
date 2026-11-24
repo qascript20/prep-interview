@@ -205,7 +205,8 @@ class Handler(SimpleHTTPRequestHandler):
         if not self.local_request() or not self.headers.get('Content-Type','').startswith('application/json'):self.json_response({'error':'Same-origin JSON requests only.'},403);return
         try:
             length=int(self.headers.get('Content-Length','0'))
-            if length<=0 or length>256*1024:raise ValueError('Request too large or empty.')
+            limit=4*1024*1024 if urlsplit(self.path).path=='/api/studio/preview/answer' else 256*1024
+            if length<=0 or length>limit:raise ValueError('Request too large or empty.')
             body=json.loads(self.rfile.read(length))
             if not isinstance(body,dict):raise ValueError('Expected a JSON object.')
             from billing import handle_post as billing_post

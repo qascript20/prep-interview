@@ -1,0 +1,26 @@
+.privacy-shell { max-width:1172px; margin:0 auto; }
+.privacy-intro { padding:64px 0 34px; max-width:720px; }
+.privacy-intro h1 { font-size:clamp(38px,5vw,60px); line-height:1.08; letter-spacing:-2px; margin:14px 0 22px; }
+.privacy-intro h1 em { font-style:normal; color:var(--blue); }
+.privacy-intro>p { font-size:18px; line-height:1.65; color:var(--muted); margin:0 0 18px; }
+.privacy-version { font-size:13px; color:var(--muted); }
+.privacy-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:0 0 50px; }
+.privacy-summary article { padding:24px; border:1px solid var(--line); background:var(--paper); border-radius:12px; }
+.privacy-summary article>span { font-size:12px; letter-spacing:1px; font-weight:650; color:var(--blue); }
+.privacy-summary h2 { font-size:20px; line-height:1.4; margin:12px 0 10px; letter-spacing:-.4px; }
+.privacy-summary p { font-size:16px; line-height:1.7; color:var(--muted); margin:0; }
+.privacy-layout { display:grid; grid-template-columns:220px minmax(0,1fr); gap:52px; align-items:start; }
+.privacy-contents { position:sticky; top:26px; display:flex; flex-direction:column; gap:16px; padding:23px 0; border-top:1px solid var(--line); }
+.privacy-contents>span { font-size:12px; letter-spacing:1px; font-weight:650; color:var(--muted); margin-bottom:4px; }
+.privacy-contents a { font-size:14px; line-height:1.5; }
+.privacy-shell a:not(.brand) { color:var(--navy); text-underline-offset:4px; }
+.privacy-sections section { border-top:1px solid var(--line); padding:24px 0 28px; scroll-margin-top:24px; }
+.privacy-sections h2 { font-size:26px; line-height:1.35; margin:0 0 20px; letter-spacing:-.6px; }
+.privacy-sections p, .privacy-sections li { font-size:16px; line-height:1.8; color:var(--muted); }
+.privacy-sections p { margin:0 0 18px; }
+.privacy-sections strong { font-weight:650; color:var(--ink); }
+.privacy-sections ul { margin:0; padding-left:22px; }
+.privacy-sections li { padding-left:5px; margin-bottom:20px; }
+.privacy-note { font-size:16px; line-height:1.8; padding:20px 22px; border-left:3px solid var(--blue); border-radius:0 8px 8px 0; background:var(--surface-blue); }
+.privacy-shell .flow-footer { font-size:13px; margin-left:36px; margin-right:36px; }
+@media(max-width:760px) { .privacy-summary { grid-template-columns:1fr; gap:12px; margin-bottom:32px; } .privacy-layout { grid-template-columns:1fr; gap:24px; } .privacy-contents { position:static; flex-direction:row; flex-wrap:wrap; gap:14px 22px; } .privacy-contents>span { flex-basis:100%; } .privacy-intro { padding-top:38px; } }

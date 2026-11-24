@@ -4,7 +4,7 @@ A simple interview workflow starts on the homepage at http://127.0.0.1:8796:
 
 1. Choose a role, business domain, programming language and target company.
 2. Practise with a Gemini interviewer by text or push-to-talk voice.
-3. After the five-minute free preview, choose whether to subscribe and continue.
+3. After the five-question free AI mock, choose whether to subscribe and continue.
 
 The interface uses a shared navy, blue-grey and silver theme matching Nova’s portrait, across interview setup, conversation, checkout and subscriber resources. The theme is defined in `dist/theme.css`.
 
@@ -18,7 +18,7 @@ My track, Progress, roadmaps and broad catalogue navigation are removed from the
 
 **PrepSpace Unlimited: £9.99 GBP per month**, renewing until cancelled. Stripe hosted Checkout collects payment details. The application collects name, email and explicit agreement to monthly renewal; it never accepts card numbers or CVC.
 
-A verified active subscription unlocks unlimited AI interview practice and the learning/coding library. AI connections renew in five-minute segments using recent context, without a per-user weekly quota. One conversation is admitted at a time; rapid reconnection attempts and shared execution capacity remain bounded. Free preview allocation is one five-minute connection per authenticated account (one browser workspace on the local preview); changing the browser timer or requesting longer input cannot extend the server-issued token.
+A verified active subscription unlocks unlimited AI interview practice and the learning/coding library. AI connections renew in five-minute segments using recent context, without a per-user weekly quota. One conversation is admitted at a time; rapid reconnection attempts and shared execution capacity remain bounded. Free access is five server-counted questions per authenticated account (one browser workspace locally), rather than a timed connection. Free users receive no reusable Live API token. Repeating a question, pausing, resuming and retrying an already accepted answer do not consume another question. The fifth answer returns practice feedback before the optional subscription action. Existing five-minute trial records remain as historical cost accounting; they do not consume the new question allowance.
 
 `/library.html` and its lesson/question payloads require an active subscription on the server. The library contains the existing 23 Java data-structures lessons, 24 assessed Java exercises and existing manual practice in the other languages. Content coverage varies by domain/language and is labelled. No My track or Progress navigation is added to the subscriber library.
 
@@ -51,13 +51,15 @@ Create the recurring Price and enable Stripe's customer portal in the Stripe Das
 
 ## Privacy and verification
 
-The permanent Gemini and Stripe keys remain server-side. Gemini receives answers/audio only after consent. Audio is never recorded by the application. Transcript remains in page memory; when going to checkout, recent context can be kept temporarily in tab-scoped session storage for up to one hour, with an explicit notice, to resume after returning from Stripe. It is cleared on resume/discard. Name/email are private billing records and are not sent to Gemini. Private exports are owner-scoped; active subscriptions must be cancelled before account deletion can remove billing contact details.
+The permanent Gemini and Stripe keys remain server-side. Gemini receives answers/audio only after consent. Free answers use Gemini 3.5 Flash-Lite with structured responses; paid sessions retain Gemini Live. Voice answers are uploaded as bounded mono WAV recordings of up to 90 seconds, processed and discarded. Spoken free questions use an available local browser voice; written questions remain available when local speech is unavailable. Interview settings, question counters, the current question and latest AI feedback are saved privately for resumption; submitted answer text and audio are not stored as records. Transcript remains in page memory; when going to checkout, recent context can be kept temporarily in tab-scoped session storage for up to one hour, with an explicit notice, to resume after returning from Stripe. It is cleared on resume/discard. Name/email are private billing records and are not sent to Gemini. Private exports are owner-scoped; active subscriptions must be cancelled before account deletion can remove billing contact details.
 
 ```sh
 npm run check
 npm run build
 ```
 
-Tests cover payment ownership, exact price, signed webhooks, cancellation, repeat fulfillment, private resource access, free-session timing, paid reconnection, account switching and compiler boundaries. A real synthetic Gemini check received a question and turn-complete event through the new five-minute lease. Live Stripe checkout, webhook delivery and the customer portal await test credentials; no simulated result is presented as a real payment. Hardware microphone/speaker and hosted identity still require hands-on verification.
+Tests cover payment ownership, exact price, signed webhooks, cancellation, repeat fulfillment, private resource access, five-question enforcement, retries, voice uploads, paid reconnection, account switching and compiler boundaries. A real synthetic Gemini check completed the free five-question flow with typed and generated voice answers, feedback after the fifth answer, and no sixth question. Temporary provider errors were also observed and preserved the allowance. The earlier paid Gemini Live transport check received a question and turn-complete event. Live Stripe checkout, webhook delivery and the customer portal await test credentials; no simulated result is presented as a real payment. Hardware microphone/speaker and hosted identity still require hands-on verification.
 
 See [subscription operations](docs/SUBSCRIPTIONS.md). Earlier learning/progress design documents are historical; they do not describe the current public navigation. CodeMirror/TypeScript and SDK licenses remain bundled.
+
+The homepage offers free and paid AI mock session cards inside Meet Nova. The free button is associated with the settings form, including its required consent. The public `/privacy.html` page describes the current local data handling and links to provider notices; it does not assert a configured public operator/contact or production retention policy.

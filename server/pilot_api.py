@@ -110,7 +110,7 @@ class Pilot:
             return {'document':json.loads(row['document']) if row else None,'revision':row['revision'] if row else 0},200
         if path=='/api/pilot/export':
             with self.db() as db:
-                export={table:[dict(row) for row in db.execute('SELECT * FROM '+table+' WHERE user_id=?',(user,)).fetchall()] for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','studio_sessions','studio_plans','studio_trials','billing_orders','billing_subscriptions')}
+                export={table:[dict(row) for row in db.execute('SELECT * FROM '+table+' WHERE user_id=?',(user,)).fetchall()] for table in ('pilot_drafts','pilot_attempts','pilot_plans','pilot_reports','pilot_events','studio_sessions','studio_plans','studio_trials','studio_question_previews','billing_orders','billing_subscriptions')}
             return {'schemaVersion':1,'exportedAt':now(),'scope':'This local browser workspace','data':export},200
         return {'error':'Unknown pilot route.'},404
     def post(self,user,path,body):
@@ -176,6 +176,7 @@ class Pilot:
             deleted='deleted-'+uuid.uuid4().hex
             db.execute("UPDATE billing_orders SET user_id=?,full_name='',email='' WHERE user_id=?",(deleted,user))
             db.execute('UPDATE billing_subscriptions SET user_id=? WHERE user_id=?',(deleted,user))
+            db.execute("UPDATE studio_question_previews SET user_id=?,selection='{}',question='',summary='',last_response=NULL WHERE user_id=?",(deleted,user))
             db.execute('UPDATE studio_trials SET user_id=? WHERE user_id=?',(deleted,user))
             db.execute('UPDATE studio_plans SET user_id=? WHERE user_id=?',('deleted-'+uuid.uuid4().hex,user))
             db.execute('UPDATE studio_sessions SET user_id=? WHERE user_id=?',('deleted-'+uuid.uuid4().hex,user))

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="How PrepSpace handles interview answers, voice, saved practice and subscription details in the current local preview.">
+  <meta name="theme-color" content="#203a5f">
+  <title>Privacy · PrepSpace</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=8880f9ad7e">
+  <link rel="stylesheet" href="public.css?v=d65c4abfa9">
+  <link rel="stylesheet" href="interview-studio.css?v=1bdc8e4488">
+  <link rel="stylesheet" href="theme.css?v=743fda83e8">
+  <link rel="stylesheet" href="privacy.css?v=21cf9375cb">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header"><div class="site-nav">
+    <a href="/#/" class="brand"><span class="brand-mark">p<span>.</span></span><span>prepspace<small>INTERVIEW PRACTICE</small></span></a>
+    <span class="flow-header-note">Your next interview starts here.</span>
+    <a class="flow-home-link" href="/#/">Interview setup</a>
+  </div></header>
+  <div class="app privacy-shell">
+    <main id="main" tabindex="-1">
+      <header class="privacy-intro">
+        <span class="studio-eyebrow">PRIVACY AT PREPSPACE</span>
+        <h1>Your practice.<br><em>Your privacy.</em></h1>
+        <p>What you share, what we save, and the choices you have.</p>
+        <span class="privacy-version">Local preview · Updated 24 November 2026</span>
+      </header>
+      <div class="privacy-summary" aria-label="Privacy at a glance">
+        <article><span>INTERVIEW ANSWERS</span><h2>Processed when you send.</h2><p>Your answers and chosen voice recordings go to our AI provider to run the mock interview.</p></article>
+        <article><span>SAVED PRACTICE</span><h2>Resume your progress.</h2><p>Settings, question counts, the current question and latest feedback are saved privately.</p></article>
+        <article><span>PAYMENT DETAILS</span><h2>Checkout through Stripe.</h2><p>When enabled, payment card details are entered on Stripe. PrepSpace does not receive your full card number.</p></article>
+      </div>
+      <div class="privacy-layout">
+        <nav class="privacy-contents" aria-label="On this page">
+          <span>ON THIS PAGE</span>
+          <a href="#interviews">AI interviews & voice</a>
+          <a href="#storage">Storage & retention</a>
+          <a href="#payments">Subscriptions</a>
+          <a href="#choices">Your choices</a>
+          <a href="#about">About this preview</a>
+        </nav>
+        <div class="privacy-sections">
+          <section id="interviews">
+            <h2>AI interviews and voice</h2>
+            <p>When you agree and start an interview, PrepSpace sends your selected role, business domain, language, experience level, target company and optional topic focus to <strong>Google Gemini</strong>. Your submitted answers and recent conversation context help it generate relevant questions and feedback.</p>
+            <p>Voice is optional. Recording begins only when you choose <strong>Start speaking</strong> and allow microphone access. Free voice answers are sent as short recordings; subscriber voice sessions stream audio while you are speaking. You can finish recording, use text instead, or end the session.</p>
+            <p>PrepSpace does not save submitted answer text or raw audio as interview records. The current question and AI feedback are saved and may refer to what you said. The full conversation remains in the open page unless you download it or choose to continue through checkout.</p>
+            <p>Google processes the content under its own service terms. Its retention and use of content depend on the configured service and applicable terms; PrepSpace’s free offer does not identify Google’s billing tier. We do not promise that provider copies are immediately deleted. Read the <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">Gemini API data terms</a> and <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</p>
+            <aside class="privacy-note">Use fictional examples. Avoid passwords, client records, employer secrets, payment card numbers and other sensitive personal information. Nova is an AI interviewer; feedback may be mistaken.</aside>
+          </section>
+          <section id="storage">
+            <h2>Storage and retention</h2>
+            <p>In this local preview, the application database is on the computer running PrepSpace. It stores your interview settings, free-question progress, current question, latest feedback and session usage metadata. If you use coding practice, saved drafts, code submissions, results, explanations and reported issues may also be stored.</p>
+            <p>Your browser stores preparation preferences and drafts. An essential cookie identifies your local workspace and lasts for up to one year, refreshed when you use the service. It is not a public sign-in account. Anyone with access to the same browser profile may be able to access that workspace.</p>
+            <p>If you choose the paid continuation, recent interview context can be kept in this tab’s session storage for up to one hour. It is removed when resumed or discarded; expired context is removed when the checkout flow next checks it. Use <strong>Discard saved interview context</strong> on the subscription page to remove it earlier. Closing the tab normally clears this tab-scoped storage.</p>
+            <p>Saved server records currently have no automatic expiry. They remain until the site owner removes them or your workspace data is deleted. Application logs record routes and status codes, rather than answer text or audio. Optional practice telemetry is off by default. This preview has no advertising trackers.</p>
+          </section>
+          <section id="payments">
+            <h2>Subscriptions and payment information</h2>
+            <p>When checkout is enabled and you choose to subscribe, PrepSpace sends your name, email and subscription order information to <strong>Stripe</strong>. You enter payment details on Stripe’s hosted checkout. PrepSpace saves contact details, payment references and subscription status to verify access and manage the subscription. Billing contact details are not sent to the AI interviewer.</p>
+            <p>Stripe handles its own payment records and retention. Read the <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">Stripe Privacy Policy</a>. Checkout is not active in the current local preview.</p>
+          </section>
+          <section id="choices">
+            <h2>Your choices</h2>
+            <ul>
+              <li><strong>Choose what to share.</strong> AI interviews require your agreement. Voice is optional, and you can stop recording or end a conversation at any time. Ending a session stops new submissions; it cannot recall content already processed.</li>
+              <li><strong>Keep a copy.</strong> Use <strong>Download transcript</strong> before leaving the interview page. Protect the downloaded file if it contains personal information.</li>
+              <li><strong>Request access, correction or deletion.</strong> Contact the person operating this local installation. The application supports a workspace export and deletion. Keep access to the same browser workspace so the operator can identify your records.</li>
+              <li><strong>Manage your subscription.</strong> When payments are enabled, use Stripe’s billing portal from the subscription page. An active subscription must be scheduled to cancel before workspace deletion. Deletion removes practice records and billing contact details; usage and payment references remain for accounting. It does not automatically delete records held by Stripe or Google.</li>
+              <li><strong>Clear this device.</strong> Browser site settings can remove local preferences and cookies. This does not delete server records and may prevent you from accessing them again. Request an export or deletion first if needed.</li>
+            </ul>
+          </section>
+          <section id="about">
+            <h2>About this preview</h2>
+            <p>This notice describes the current local PrepSpace installation, operated by its site owner. For privacy questions, contact the person who provided you with access. A public privacy contact, operator identity and hosting-specific processing details have not been configured.</p>
+            <p>AI and payment providers may process information outside your country under their own terms. This preview does not promise UK-only processing or a particular international transfer arrangement. The notice will need updating if the website’s operator, hosting or data handling changes.</p>
+          </section>
+        </div>
+      </div>
+    </main>
+    <footer class="flow-footer"><span>PrepSpace · Practise for the role you want.</span><a href="/#/">Back to interview setup</a></footer>
+  </div>
+</body>
+</html>

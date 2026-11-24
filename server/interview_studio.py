@@ -20,7 +20,7 @@ def bounded(value,default,low,high):
     except (ValueError,TypeError):return default
 def settings(env):
     configured=bool(env.get('GEMINI_API_KEY'))
-    return {'configured':configured,'enabled':configured and env.get('GEMINI_STUDIO_ENABLED')=='true','model':env.get('GEMINI_LIVE_MODEL','gemini-3.8-live'),'weeklyLimit':1,'freeMinutes':5,'budgetPence':bounded(env.get('GEMINI_STUDIO_BUDGET_PENCE'),1500,0,1500),'reservationPence':bounded(env.get('GEMINI_STUDIO_RESERVATION_PENCE'),100,100,500)}
+    return {'configured':configured,'enabled':configured and env.get('GEMINI_STUDIO_ENABLED')=='true','model':env.get('GEMINI_LIVE_MODEL','gemini-3.8-live'),'weeklyLimit':1,'freeQuestions':5,'budgetPence':bounded(env.get('GEMINI_STUDIO_BUDGET_PENCE'),1500,0,1500),'reservationPence':bounded(env.get('GEMINI_STUDIO_RESERVATION_PENCE'),100,100,500)}
 def validate(body):
     if not isinstance(body,dict):raise ValueError('Choose your interview settings.')
     body=dict(body)
@@ -46,14 +46,16 @@ class Studio:
         value=json.loads(result.stdout)
         if body.get('operation')!='plan' and (not isinstance(value.get('token'),str) or not value['token'].startswith('auth_tokens/')):raise RuntimeError('Incomplete provider result.')
         return value
+    def question_request(self,user,path,body=None):
+        command=shutil.which('node')
+        if not command:return {'error':'The interview service is unavailable.'},503
+        env={key:value for key,value in self.env.items() if key.startswith('GEMINI_')}
+        env['PATH']=os.environ.get('PATH','/usr/bin:/bin');env['PREPSPACE_PREVIEW_DB']=str(self.pilot.path)
+        result=subprocess.run([command,str(ROOT/'hosted/question-preview-cli.mjs')],input=json.dumps({'user':user,'path':path,'body':body or {}}),capture_output=True,text=True,cwd=ROOT,env=env,timeout=40)
+        if result.returncode or len(result.stdout)>60000:return {'error':'Nova could not complete this request. Your question progress is preserved; retry later.'},503
+        value=json.loads(result.stdout);return value['data'],value['status']
     def status(self,user):
-        cfg=settings(self.env);now=dt.datetime.now(dt.timezone.utc);stamp=now.isoformat();week=(now-dt.timedelta(days=7)).isoformat()
-        with self.pilot.db() as db:
-            used=db.execute('SELECT count(*) FROM studio_trials WHERE user_id=?',(user,)).fetchone()[0]
-            spent=db.execute('SELECT (SELECT COALESCE(sum(reserved_pence),0) FROM studio_sessions WHERE month=? AND id IN (SELECT session_id FROM studio_trials))+(SELECT COALESCE(sum(reserved_pence),0) FROM studio_plans WHERE month=?)',(stamp[:7],stamp[:7])).fetchone()[0]
-        from billing import Billing
-        subscribed=Billing(self.pilot,self.env).subscribed(user)
-        return {**cfg,'subscribed':subscribed,'eligible':True,'remaining':None if subscribed else max(0,cfg['weeklyLimit']-used),'capacityAvailable':subscribed or spent+cfg['reservationPence']<=cfg['budgetPence'],'provider':'Google Gemini','recording':'No audio or transcript is stored on this server.'}
+        return self.question_request(user,'/api/studio/status')[0]
     def plan(self,user,body):
         try:
             selection=validate({**body,'round':'technical','minutes':5,'mode':'text'})
@@ -78,6 +80,8 @@ class Studio:
             with self.pilot.db() as db:db.execute("UPDATE studio_plans SET status='failed' WHERE id=?",(selection['requestId'],))
             return {'error':'AI priorities could not be prepared. Your curated track is unchanged; retry later.'},502
     def post(self,user,path,body):
+        from billing import Billing
+        if path=='/api/studio/preview/answer' or path in ('/api/studio/session','/api/studio/end') and not Billing(self.pilot,self.env).subscribed(user):return self.question_request(user,path,body)
         if path=='/api/studio/plan':return self.plan(user,body)
         if path=='/api/studio/end':
             session=body.get('sessionId','')
@@ -103,7 +107,7 @@ class Studio:
             if recent>=5:return {'error':'Too many connection attempts. Please wait a minute and try again.'},429
             used=db.execute('SELECT count(*) FROM studio_trials WHERE user_id=?',(user,)).fetchone()[0]
             active=db.execute("SELECT id FROM studio_sessions WHERE user_id=? AND status IN ('provisioning','issued') AND expires_at>?",(user,stamp)).fetchone()
-            if used and not subscribed:return {'error':'Your five-minute free interview has been used. Continue from the payment page.','code':'payment_required'},402
+            if not subscribed:return {'error':'Use the five-question free AI mock interview.','code':'free_questions'},402
             if db.execute('SELECT id FROM studio_sessions WHERE id=?',(id,)).fetchone() or active or (not subscribed and spent+cfg['reservationPence']>cfg['budgetPence']):return {'error':'The interview allowance or capacity is unavailable, or another session is still active. End that session or try after its expiry.'},429
             if not subscribed:db.execute('INSERT INTO studio_trials VALUES (?,?,?)',(user,id,stamp))
             db.execute('INSERT INTO studio_sessions VALUES (?,?,?,?,?,?,?)',(id,user,stamp[:7],stamp,expires,'provisioning',cfg['reservationPence']))

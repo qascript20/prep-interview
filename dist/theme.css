@@ -183,4 +183,25 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .cm-s-default .cm-variable, .cm-s-default .cm-variable-2,
 .cm-s-default .cm-property, .cm-s-default .cm-operator { color: #e5edf8; }
 #toast { color: #fff; background: var(--navy); border-color: #506e97; }
+.session-options { display:grid; grid-template-columns:1fr; gap:12px; margin-top:22px; }
+.session-option { display:flex; flex-direction:column; gap:8px; padding:17px; border:1px solid var(--silver); border-radius:10px; min-width:0; }
+.session-option-free { background:#edf3fc; border-color:#a9bfdd; }
+.session-option-paid { background:#f7f9fd; }
+.session-option-label { font-size:12px; font-weight:700; letter-spacing:1px; color:#45638b; }
+.session-option h3 { margin:0; font-size:18px; line-height:1.4; color:var(--ink); }
+.session-option p { margin:0 0 5px; font-size:14px; line-height:1.65; color:var(--muted); }
+.flow-setup-layout .session-option .button { flex-direction:column; gap:6px; margin-top:auto; min-height:72px; padding:12px 10px; font-size:14px; text-align:center; line-height:1.45; }
+.session-button-detail { display:block; font-size:12px; font-weight:400; letter-spacing:0; }
+.session-upgrade { background:#fff; border-color:#91aaca; }
+.session-upgrade:hover { background:#e4edf9; }
+@media(max-width:520px) { .session-options { grid-template-columns:1fr; gap:14px; } .session-option { padding:18px; } }
 @media print { body { background: #fff; } }
+
+.flow-what-to-expect .session-option>p { font-size:14px; line-height:1.6; }
+.flow-what-to-expect .session-option .button { width:100%; justify-content:center; }
+.flow-what-to-expect>.button { width:100%; margin:20px 0; }
+.flow-what-to-expect>small { margin-top:18px; font-size:12px; }
+.flow-what-to-expect h2 { font-size:24px; }
+.flow-what-to-expect .nova-avatar-hero { width:112px; height:112px; }
+.flow-footer a, .studio-data-note a, .studio-consent a, .checkout-privacy a { color:var(--navy); text-decoration:underline; text-underline-offset:3px; }
+@media(max-width:720px) { .flow-what-to-expect { display:block; padding:26px 22px; } .flow-what-to-expect .nova-profile { margin-bottom:18px; } .nova-avatar-mobile { display:none; } }

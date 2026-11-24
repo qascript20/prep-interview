@@ -15,6 +15,12 @@ await writeFile('dist/index.html',index);
 let library=await readFile('dist/library.html','utf8');
 for(const file of await readdir('dist',{withFileTypes:true}))if(file.isFile()&&/\.(?:js|css)$/.test(file.name)){const hash=createHash('sha256').update(await readFile('dist/'+file.name)).digest('hex').slice(0,10),escaped=file.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');library=library.replace(new RegExp('((?:src|href)="'+escaped+')(?:\\?v=[^"]*)?(?=")','g'),(_m,prefix)=>prefix+'?v='+hash);}
 await writeFile('dist/library.html',library);
+let privacy=await readFile('dist/privacy.html','utf8');
+for(const file of await readdir('dist',{withFileTypes:true}))if(file.isFile()&&/\.css$/.test(file.name)){
+  const hash=createHash('sha256').update(await readFile('dist/'+file.name)).digest('hex').slice(0,10),escaped=file.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  privacy=privacy.replace(new RegExp('((?:src|href)="'+escaped+')(?:\\?v=[^"]*)?(?=")','g'),(_m,prefix)=>prefix+'?v='+hash);
+}
+await writeFile('dist/privacy.html',privacy);
 await mkdir('dist/client',{recursive:true});
 for(const file of await readdir('dist',{withFileTypes:true}))if(!['client','server','.openai'].includes(file.name))await cp('dist/'+file.name,'dist/client/'+file.name,{recursive:true});
 await build({entryPoints:['hosted/worker.mjs'],outfile:'dist/server/index.js',bundle:true,format:'esm',platform:'browser',target:'es2022',conditions:['workerd','worker','browser'],external:['node:*'],minify:true,legalComments:'external'});

@@ -1,12 +1,14 @@
 # Subscription workflow and operations
 
-Updated 22 November 2026. The agreed offer is £9.99 GBP/month for unlimited AI interviews and all available learning/coding resources. The site remains local and unpublished.
+Updated 24 November 2026. The agreed offer is £9.99 GBP/month for unlimited AI interviews and all available learning/coding resources. The site remains local and unpublished.
 
 ## Public flow
 
 The homepage directly asks role, domain, language and company. Round, level and optional topic focus are under Interview settings. Text or push-to-talk voice and Gemini data consent are selected before starting. There is no My track, Progress, dashboard or marketing catalogue navigation.
 
-A free preview receives one constrained, one-use Gemini token expiring five minutes after authorization. The server always sets the duration, ignoring a client request for more time. Failed token provisioning or cancellation before token delivery releases the preview claim. An issued preview allocates its five-minute connection; ending it early does not create another free preview. At expiry, the conversation stops and a voluntary subscription action is shown. There is no automatic payment or redirect into a purchase.
+A free AI mock provides five questions, without a five-minute cutoff. The server issues one question at a time and atomically records accepted answers. A follow-up uses one of the five questions; repeating an already issued question does not. Pausing and resuming use the existing preview. Retries and concurrent submissions cannot advance the same question twice. The fifth answer returns advisory feedback without issuing a sixth question. A voluntary subscription action follows; no automatic purchase occurs.
+
+Free questions use server-held Gemini credentials and bounded structured responses, rather than giving the browser a reusable Live token. Text answers and up to 90 seconds of mono WAV voice input are supported. An available local browser voice can read the questions; written questions are always shown. Failed model responses preserve the current question. Old timed-trial records remain for accounting, while the new per-account question record supplies the current allowance.
 
 Subscriber conversations renew with recent context through new five-minute leases. Current subscription state is checked server-side for each new lease; a client flag grants nothing. There is no personal weekly interview quota. One API conversation is admitted at a time, and reconnection storms are rate-limited. The original £15 conservative allocation now bounds free previews rather than subscriber AI usage. Subscriber model usage is not subject to that artificial cap; provider billing/monitoring must be operated separately. Local identity is a browser cookie, not a public multi-tenant account system. Production access depends on trusted Sites identity.
 
@@ -37,7 +39,7 @@ The application uses Stripe API version `2026-11-18.endive`. It creates a Custom
 
 ## Data and account deletion
 
-The application stores private name/email and provider order identifiers for checkout ownership. Card details remain with Stripe. Browser form values remain transient in memory. Interview context is stored only temporarily in the current tab when starting checkout, with a clear notice; billing contact details are excluded from that context. The context is scoped to workspace, expires after an hour and is cleared when resumed/discarded. Audio is never stored.
+The application stores private name/email and provider order identifiers for checkout ownership. Free-interview records also contain owner-scoped settings, question counters, the current AI question and latest AI feedback so the session can resume. Submitted answers and audio are not stored as records; the full conversation remains in browser page memory and can be downloaded by the candidate. Generated questions/feedback may refer to what was discussed. These records are included in private export, and their content is cleared on account deletion while anonymous capacity accounting remains. Card details remain with Stripe. Browser form values remain transient in memory. Interview context is stored only temporarily in the current tab when starting checkout, with a clear notice; billing contact details are excluded from that context. The context is scoped to workspace, expires after an hour and is cleared when resumed/discarded. Audio is never stored.
 
 Local cookies are HttpOnly, SameSite=Lax and loopback-scoped, allowing a top-level payment return while same-origin JSON and workspace guards protect mutations. The loopback server must never be exposed publicly. Hosted identity remains Sites-managed.
 
@@ -45,8 +47,10 @@ Private export includes only the owner's trial, billing and practice records. Ac
 
 ## Checks and launch limits
 
-Automated tests cover exact pricing, recurring consent, ownership, forged returns, signatures, cancellation, replay-safe fulfillment, disabled setup, private resources, five-minute free timing, paid renewal and account switching. The synthetic Gemini transport was checked with a separate local test workspace, preserving the owner's free preview. No Stripe test key or webhook secret is currently present, so live provider checkout, payment confirmation, portal cancellation and webhook delivery have not been verified or claimed.
+Automated tests cover exact pricing, recurring consent, ownership, forged returns, signatures, cancellation, replay-safe fulfillment, disabled setup, private resources, five-question free enforcement, paid renewal and account switching. The complete five-question Gemini flow, including typed and generated voice answers and final feedback, was checked with a separate local test workspace, preserving the owner's free preview. Temporary provider errors preserved the current question; the adapter retries transient server errors once. No Stripe test key or webhook secret is currently present, so live provider checkout, payment confirmation, portal cancellation and webhook delivery have not been verified or claimed.
 
 Before activating real payments, test the complete Stripe test-mode purchase and return, webhook success without a browser return, renewal/payment failure, portal cancellation and recovery from a pending verification state. Source synchronization does not deploy the website or enable billing.
 
 Official references: [Stripe Checkout lifecycle](https://docs.stripe.com/payments/checkout/how-checkout-works?payment-ui=stripe-hosted), [subscription fulfillment](https://docs.stripe.com/checkout/fulfillment?ui=full-page), [subscription object](https://docs.stripe.com/api/subscriptions/object), [webhook delivery/signatures](https://docs.stripe.com/events/manage-webhook-endpoints), [Gemini ephemeral tokens](https://aistudio.google.com/docs/live-api/ephemeral-tokens).
+
+The free and paid AI mock cards live inside the Meet Nova panel. The public Privacy page is `/privacy.html`, linked from consent, checkout and both footers. It describes the local preview, third-party processing, storage and retention, and the operator details still needed before a public launch.
