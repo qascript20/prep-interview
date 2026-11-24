@@ -184,6 +184,19 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .cm-s-default .cm-property, .cm-s-default .cm-operator { color: #e5edf8; }
 #toast { color: #fff; background: var(--navy); border-color: #506e97; }
 .flow-setup-layout { align-items:stretch; }
+.flow-setup-layout .studio-setup { display:flex; flex-direction:column; justify-content:space-between; gap:24px; padding:28px; }
+.flow-setup-layout .studio-fields { gap:26px 20px; }
+.flow-setup-layout .studio-setup label:not(.studio-consent) { font-size:14px; line-height:1.5; gap:9px; }
+.flow-setup-layout .studio-setup select,
+.flow-setup-layout .studio-setup input:not([type=radio]):not([type=checkbox]) { height:48px; font-size:16px; padding-top:10px; padding-bottom:10px; }
+.flow-setup-layout .studio-focus { margin-top:0; }
+.flow-setup-layout .studio-mode { margin-top:0!important; }
+.flow-setup-layout .studio-mode legend { font-size:22px; line-height:1.35; margin-bottom:14px; }
+.flow-setup-layout .studio-mode label { padding:15px 13px; margin-bottom:0; }
+.flow-setup-layout .studio-mode small { font-size:14px; line-height:1.6; }
+.flow-setup-layout .studio-consent { font-size:14px; line-height:1.7; margin-top:0; }
+.flow-setup-layout .studio-setup>.studio-data-note { font-size:12px; line-height:1.8; margin:0; }
+@media(max-width:720px) { .flow-setup-layout .studio-setup { justify-content:flex-start; gap:24px; padding:24px 22px; } }
 .session-options { display:grid; grid-template-columns:1fr; gap:12px; margin-top:22px; }
 .session-option { display:flex; flex-direction:column; gap:8px; padding:17px; border:1px solid var(--silver); border-radius:10px; min-width:0; }
 .session-option-free { background:#edf3fc; border-color:#a9bfdd; }
