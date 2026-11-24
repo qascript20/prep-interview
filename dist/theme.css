@@ -231,3 +231,5 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .company-results [role=option]:hover,.company-results [aria-selected=true] { background:#e9eff8; }
 .company-results strong { display:block; font-size:14px; line-height:1.5; }
 .company-results small { display:block; font-size:12px; line-height:1.5; color:var(--muted); }
+
+#studio-setup { scroll-margin-top:24px; }
