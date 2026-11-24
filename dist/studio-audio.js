@@ -44,6 +44,7 @@ window.PrepStudioAudio=class {
     for(const node of [capture.source,capture.node,capture.sink])try{node?.disconnect();}catch{}
     if(capture.context&&capture.context.state!=='closed')await capture.context.close();
   }
+  notifyPlayback(active){if(this.playing===active)return;this.playing=active;this.onPlaybackChange?.(active);}
   play(base64,mime='audio/pcm;rate=24000'){
     if(this.closed||!this.output||this.output.state!=='running'||!mime.startsWith('audio/pcm'))return;
     const decoded=atob(base64);if(decoded.length>1048576||decoded.length%2)return;
@@ -53,15 +54,23 @@ window.PrepStudioAudio=class {
     const buffer=this.output.createBuffer(1,bytes.length/2,rate),channel=buffer.getChannelData(0);
     for(let i=0;i<channel.length;i++)channel[i]=view.getInt16(i*2,true)/32768;
     const source=this.output.createBufferSource();source.buffer=buffer;source.connect(this.output.destination);this.sources.add(source);
-    source.onended=()=>{this.sources.delete(source);source.disconnect();};
-    this.nextPlayback=Math.max(this.output.currentTime+.025,this.nextPlayback);source.start(this.nextPlayback);this.nextPlayback+=buffer.duration;
+    source.onended=()=>{this.sources.delete(source);source.disconnect();this.notifyPlayback(this.sources.size>0);};
+    this.nextPlayback=Math.max(this.output.currentTime+.025,this.nextPlayback);source.start(this.nextPlayback);this.notifyPlayback(true);this.nextPlayback+=buffer.duration;
   }
-  speak(text){
+  async playEncoded(audio){
+    if(this.closed||!this.output)throw new Error('Voice playback unavailable');
+    this.stopPlayback();const epoch=this.playbackEpoch=(this.playbackEpoch||0)+1;
+    const bytes=Uint8Array.from(atob(audio.data),c=>c.charCodeAt(0));
+    const buffer=await this.output.decodeAudioData(bytes.buffer);if(this.closed||epoch!==this.playbackEpoch)return;
+    const source=this.output.createBufferSource();source.buffer=buffer;source.connect(this.output.destination);this.sources.add(source);
+    await new Promise(resolve=>{source.onended=()=>{this.sources.delete(source);source.disconnect();this.notifyPlayback(this.sources.size>0);resolve();};source.start();this.notifyPlayback(true);});
+  }
+  speak(text,onEnd=()=>{}){
     if(this.closed||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return false;
     const voice=window.speechSynthesis.getVoices().find(v=>v.localService&&/^en\b/i.test(v.lang));
     if(!voice)return false;
     this.stopPlayback();const utterance=new window.SpeechSynthesisUtterance(text);utterance.voice=voice;utterance.rate=.97;
-    this.utterance=utterance;utterance.onend=()=>{if(this.utterance===utterance)this.utterance=null;};window.speechSynthesis.speak(utterance);return true;
+    this.utterance=utterance;utterance.onend=utterance.onerror=()=>{if(this.utterance===utterance){this.utterance=null;this.notifyPlayback(false);onEnd();}};window.speechSynthesis.speak(utterance);this.notifyPlayback(true);return true;
   }
   static inputLevel(bytes){
     if(!bytes?.byteLength||bytes.byteLength%2)return 0;
@@ -77,6 +86,6 @@ window.PrepStudioAudio=class {
     const encoded=[];for(let i=0;i<bytes.length;i+=8192)encoded.push(String.fromCharCode(...bytes.subarray(i,i+8192)));
     return {mimeType:'audio/wav',data:btoa(encoded.join(''))};
   }
-  stopPlayback(){if(this.utterance){window.speechSynthesis?.cancel();this.utterance=null;}for(const source of this.sources)try{source.stop();}catch{}this.sources.clear();this.nextPlayback=this.output?.currentTime||0;}
+  stopPlayback(){this.playbackEpoch=(this.playbackEpoch||0)+1;if(this.utterance){window.speechSynthesis?.cancel();this.utterance=null;}for(const source of this.sources)try{source.stop();}catch{}this.sources.clear();this.nextPlayback=this.output?.currentTime||0;this.notifyPlayback(false);}
   async close(){this.closed=true;this.generation++;await this.stopCapture(false);this.stopPlayback();if(this.output&&this.output.state!=='closed')await this.output.close();}
 };

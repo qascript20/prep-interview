@@ -52,7 +52,7 @@ class Studio:
         env={key:value for key,value in self.env.items() if key.startswith('GEMINI_')}
         env['PATH']=os.environ.get('PATH','/usr/bin:/bin');env['PREPSPACE_PREVIEW_DB']=str(self.pilot.path)
         result=subprocess.run([command,str(ROOT/'hosted/question-preview-cli.mjs')],input=json.dumps({'user':user,'path':path,'body':body or {}}),capture_output=True,text=True,cwd=ROOT,env=env,timeout=40)
-        if result.returncode or len(result.stdout)>60000:return {'error':'Nova could not complete this request. Your question progress is preserved; retry later.'},503
+        if result.returncode or len(result.stdout)>8000000:return {'error':'Nova could not complete this request. Your question progress is preserved; retry later.'},503
         value=json.loads(result.stdout);return value['data'],value['status']
     def status(self,user):
         return self.question_request(user,'/api/studio/status')[0]
@@ -81,7 +81,7 @@ class Studio:
             return {'error':'AI priorities could not be prepared. Your curated track is unchanged; retry later.'},502
     def post(self,user,path,body):
         from billing import Billing
-        if path=='/api/studio/preview/answer' or path in ('/api/studio/session','/api/studio/end') and not Billing(self.pilot,self.env).subscribed(user):return self.question_request(user,path,body)
+        if path.startswith('/api/studio/preview/') or path in ('/api/studio/session','/api/studio/end') and not Billing(self.pilot,self.env).subscribed(user):return self.question_request(user,path,body)
         if path=='/api/studio/plan':return self.plan(user,body)
         if path=='/api/studio/end':
             session=body.get('sessionId','')

@@ -242,3 +242,7 @@ details.answer>summary, .practice-answer>summary { color: var(--navy); backgroun
 .voice-signal-bars i:nth-child(3n+2) { animation-delay:-.4s; }
 @keyframes voice-signal-wave { from { transform:scaleY(.65); } to { transform:scaleY(1); } }
 @media(prefers-reduced-motion:reduce) { .studio-voice-signal .voice-signal-bars i { animation:none; transition:none; } }
+.studio-response-tools { gap:8px; }
+.studio-response-tools .button { font-size:14px; min-height:42px; }
+.studio-message>span { font-size:12px; line-height:1.6; }
+.studio-message p { font-size:14px; }

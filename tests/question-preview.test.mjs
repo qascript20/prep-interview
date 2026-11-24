@@ -63,3 +63,16 @@ test('authenticated Worker entry serves question previews and the free budget in
  const request=new Request('https://prep.test/api/studio/session',{method:'POST',headers:{'Content-Type':'application/json','oai-authenticated-user-id':'alice','X-PrepSpace-Workspace':hash},body:JSON.stringify(selection())});const r=await worker.fetch(request,s.env,{});assert.equal(r.status,201);assert.equal((await r.json()).transport,'questions');
  s.env.GEMINI_STUDIO_BUDGET_PENCE='100';assert.equal((await s.request('session',selection(),'bob')).status,429);
 });
+test('explanation and illustrative answers are private, cached and never advance the free questions',async()=>{
+ const s=setup(),first=await s.request('session',selection());let calls=0;const support={coach:async(_env,input)=>{calls++;assert(input.question);return 'A short explanation or illustrative answer.';},speech:async(_env,text)=>{assert.equal(text,'Question 1?');return {data:'UklGRg==',mimeType:'audio/wav'};}};
+ const request=async(path,kind,user='alice',patch={})=>{const r=await questionRoute('/api/studio/preview/'+path,s.env,user,{sessionId:first.body.sessionId,questionNumber:1,requestId:crypto.randomUUID(),kind,...patch},undefined,support);return{status:r.status,body:await r.json()};};
+ assert.equal((await request('help','explanation','bob')).status,404);assert.equal((await request('help','bad')).status,400);
+ assert.equal((await request('help','explanation')).status,200);assert.equal((await request('help','explanation')).body.cached,true);assert.equal(calls,1);
+ assert.equal((await request('help','answer')).status,200);assert.equal((await questionStatus(s.env,'alice')).remaining,5);assert.equal(s.calls.length,1);
+ for(let i=0;i<3;i++)assert.equal((await request('speech','question')).status,200);assert.equal((await request('speech','question')).status,429);
+ await s.request('preview/answer',s.answer(first.body.sessionId,1));assert.equal((await request('help','answer')).status,409);assert.equal((await questionStatus(s.env,'alice')).remaining,4);
+});
+test('a failed help request preserves question progress and releases its lock',async()=>{
+ const s=setup(),first=await s.request('session',selection()),body={sessionId:first.body.sessionId,questionNumber:1,requestId:crypto.randomUUID(),kind:'answer'};
+ const r=await questionRoute('/api/studio/preview/help',s.env,'alice',body,undefined,{coach:async()=>{throw new Error('private provider error');}});assert.equal(r.status,502);assert(!(await r.text()).includes('private provider'));assert.equal((await questionStatus(s.env,'alice')).remaining,5);assert.equal((await s.request('preview/answer',s.answer(first.body.sessionId,1))).status,200);
+});
