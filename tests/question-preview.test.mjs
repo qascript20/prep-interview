@@ -76,3 +76,8 @@ test('a failed help request preserves question progress and releases its lock',a
  const s=setup(),first=await s.request('session',selection()),body={sessionId:first.body.sessionId,questionNumber:1,requestId:crypto.randomUUID(),kind:'answer'};
  const r=await questionRoute('/api/studio/preview/help',s.env,'alice',body,undefined,{coach:async()=>{throw new Error('private provider error');}});assert.equal(r.status,502);assert(!(await r.text()).includes('private provider'));assert.equal((await questionStatus(s.env,'alice')).remaining,5);assert.equal((await s.request('preview/answer',s.answer(first.body.sessionId,1))).status,200);
 });
+test('follow-up requests retain the previous question and candidate answer without making another counted turn',async()=>{
+ const question='How would you prevent duplicate trades during API retries?',answer='I would combine an idempotency key with a unique database constraint.',history=[{role:'assistant',text:question}];let request;
+ const result=await generatePreviewTurn({GEMINI_API_KEY:'test'},{selection:selection(),questionNumber:2,currentQuestion:question,answer,history},{generate:async value=>{request=value;return{text:JSON.stringify({question:'You combined request keys with a database safeguard. How would you test two concurrent retries?',summary:'',transcript:''})};}});
+ const payload=JSON.parse(request.contents[0].parts[0].text);assert.equal(payload.previousQuestion,question);assert.equal(payload.answer,answer);assert.deepEqual(payload.history,history);assert.equal(payload.questionNumber,2);assert.equal((result.question.match(/\?/g)||[]).length,1);assert.equal(result.summary,'');assert(!request.config.systemInstruction.includes('numbered 2 of 5'));
+});

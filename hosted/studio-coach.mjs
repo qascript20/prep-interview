@@ -5,6 +5,6 @@ export async function generateCoaching(env,{kind,question,selection},{generate}=
  const text=JSON.parse(response.text).text;if(typeof text!=='string'||!text.trim()||text.length>1600)throw new Error('Incomplete coaching response');return text.trim();
 }
 export async function generateSpeech(env,text){
- const response=await new GoogleGenAI({apiKey:env.GEMINI_API_KEY,httpOptions:{apiVersion:'v1beta',timeout:24000,retryOptions:{attempts:1}}}).interactions.create({model:'gemini-3.8-flash-lite-tts',input:[{type:'user_input',content:[{type:'text',text,annotations:[{type:'speech_metadata',style:'Calm, clear, warm professional interview coach.'}]}]}],response_format:{type:'audio'},generation_config:{speech_config:[{voice:'Kore'}]}});
+ const response=await new GoogleGenAI({apiKey:env.GEMINI_API_KEY,httpOptions:{apiVersion:'v1beta',timeout:24000,retryOptions:{attempts:1}}}).interactions.create({model:'gemini-3.8-flash-lite-tts',input:[{type:'user_input',content:[{type:'text',text,annotations:[{type:'speech_metadata',style:'Warm, attentive, natural interview conversation. Use gentle pauses at sentence boundaries and conversational intonation. Keep a clear, unhurried pace; avoid an announcer or robotic checklist delivery.'}]}]}],response_format:{type:'audio'},generation_config:{speech_config:[{voice:'Kore'}]}});
  const audio=response.output_audio;if(!audio?.data||audio.data.length>7500000||audio.mime_type!=='audio/wav')throw new Error('Speech unavailable');return {data:audio.data,mimeType:audio.mime_type};
 }
